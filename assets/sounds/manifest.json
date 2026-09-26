@@ -1,0 +1,129 @@
+{
+  "bells": [
+    "bells_1.mp3"
+  ],
+  "bird_caw": [
+    "bird_caw_1.mp3",
+    "bird_caw_2.mp3",
+    "bird_caw_3.mp3"
+  ],
+  "bird_chirp": [
+    "bird_chirp_1.mp3",
+    "bird_chirp_2.mp3",
+    "bird_chirp_3.mp3",
+    "bird_chirp_4.mp3",
+    "bird_chirp_5.mp3",
+    "bird_chirp_6.mp3",
+    "bird_chirp_7.mp3",
+    "bird_chirp_8.mp3"
+  ],
+  "bird_flock": [
+    "bird_flock_1.mp3",
+    "bird_flock_2.mp3",
+    "bird_flock_3.mp3"
+  ],
+  "bird_harsh": [
+    "bird_harsh_1.mp3",
+    "bird_harsh_2.mp3",
+    "bird_harsh_3.mp3"
+  ],
+  "bird_song": [
+    "bird_song_1.mp3",
+    "bird_song_2.mp3",
+    "bird_song_3.mp3",
+    "bird_song_4.mp3",
+    "bird_song_5.mp3",
+    "bird_song_6.mp3",
+    "bird_song_7.mp3",
+    "bird_song_8.mp3"
+  ],
+  "bird_whistle": [
+    "bird_whistle_1.mp3",
+    "bird_whistle_2.mp3",
+    "bird_whistle_3.mp3"
+  ],
+  "cat_angry": [
+    "cat_angry_1.mp3",
+    "cat_angry_2.mp3",
+    "cat_angry_3.mp3",
+    "cat_angry_4.mp3"
+  ],
+  "cat_high": [
+    "cat_high_1.mp3",
+    "cat_high_2.mp3",
+    "cat_high_3.mp3"
+  ],
+  "cat_long": [
+    "cat_long_1.mp3",
+    "cat_long_2.mp3",
+    "cat_long_3.mp3",
+    "cat_long_4.mp3"
+  ],
+  "cat_meow": [
+    "cat_meow_1.mp3",
+    "cat_meow_2.mp3",
+    "cat_meow_3.mp3",
+    "cat_meow_4.mp3",
+    "cat_meow_5.mp3",
+    "cat_meow_6.mp3",
+    "cat_meow_7.mp3",
+    "cat_meow_8.mp3"
+  ],
+  "cat_short": [
+    "cat_short_1.mp3",
+    "cat_short_2.mp3",
+    "cat_short_3.mp3",
+    "cat_short_4.mp3"
+  ],
+  "crickets": [
+    "crickets_1.mp3",
+    "crickets_2.mp3"
+  ],
+  "dog_big": [
+    "dog_big_1.mp3",
+    "dog_big_2.mp3",
+    "dog_big_3.mp3",
+    "dog_big_4.mp3",
+    "dog_big_5.mp3",
+    "dog_big_6.mp3",
+    "dog_big_7.mp3",
+    "dog_big_8.mp3"
+  ],
+  "dog_mid": [
+    "dog_mid_1.mp3",
+    "dog_mid_2.mp3",
+    "dog_mid_3.mp3",
+    "dog_mid_4.mp3",
+    "dog_mid_5.mp3"
+  ],
+  "dog_seq": [
+    "dog_seq_1.mp3",
+    "dog_seq_2.mp3",
+    "dog_seq_3.mp3",
+    "dog_seq_4.mp3",
+    "dog_seq_5.mp3"
+  ],
+  "dog_small": [
+    "dog_small_1.mp3",
+    "dog_small_2.mp3",
+    "dog_small_3.mp3",
+    "dog_small_4.mp3"
+  ],
+  "engine": [
+    "engine_1.mp3",
+    "engine_2.mp3"
+  ],
+  "horn": [
+    "horn_1.mp3",
+    "horn_2.mp3"
+  ],
+  "rooster": [
+    "rooster_1.mp3",
+    "rooster_2.mp3",
+    "rooster_3.mp3"
+  ],
+  "wind": [
+    "wind_1.mp3",
+    "wind_2.mp3"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "red-dead-paw-ii",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Red Dead Paw II — juego 3D de gatos callejeros en Santiago de Chile (three.js).",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --watch --serve",
+    "format": "prettier --write src/game.js src/styles.css",
+    "check": "node --check src/game.js && node build.mjs && node scripts/smoke.mjs",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "playwright-core": "^1.63.0",
+    "prettier": "^3.9.9"
+  }
+}
