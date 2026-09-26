@@ -1645,3 +1645,45 @@ input[type="checkbox"] {
     opacity: 1;
   }
 }
+/* quest waypoint marker (on-screen, sticks to the screen edge when off-view) */
+.wpmark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.wpmark[hidden] {
+  display: none;
+}
+.wpmark i {
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  background: var(--sodium);
+  border: 2px solid var(--asphalt);
+  box-shadow: 0 0 12px rgba(255, 200, 97, 0.7);
+}
+.wpmark.edge i {
+  left: -13px;
+  top: -13px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  clip-path: polygon(100% 50%, 0 0, 28% 50%, 0 100%);
+  filter: drop-shadow(0 0 3px #000);
+}
+.wpmark span {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  font: 600 0.95rem/1 var(--body);
+  color: var(--sodium);
+  white-space: nowrap;
+  text-shadow: 0 1px 2px #000, 0 0 6px #000;
+}

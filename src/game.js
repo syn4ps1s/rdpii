@@ -26351,15 +26351,15 @@ uniform sampler2D detailMap; varying vec3 vWP;`,
       spawn: [-20, 20],
       counts: {
         rivals: 2,
-        wanderers: 5,
-        birds: 34,
-        rats: 12,
-        dogsStreet: 5,
-        dogsYard: 16,
+        wanderers: 14,
+        birds: 64,
+        rats: 20,
+        dogsStreet: 10,
+        dogsYard: 18,
         haters: 9,
-        walkers: 8,
-        cars: 10,
-        parked: 90,
+        walkers: 28,
+        cars: 22,
+        parked: 130,
       },
     },
     locanas: {
@@ -26378,15 +26378,15 @@ uniform sampler2D detailMap; varying vec3 vWP;`,
       spawn: [-60, -30],
       counts: {
         rivals: 2,
-        wanderers: 4,
-        birds: 30,
-        rats: 8,
-        dogsStreet: 7,
-        dogsYard: 12,
+        wanderers: 11,
+        birds: 56,
+        rats: 14,
+        dogsStreet: 10,
+        dogsYard: 14,
         haters: 6,
-        walkers: 4,
-        cars: 4,
-        parked: 30,
+        walkers: 14,
+        cars: 10,
+        parked: 50,
       },
     },
   };
@@ -27232,6 +27232,7 @@ ${L2}`,
       for (let dt of [_.body, _.tail]) {
         let ot = new ba(dt, G);
         (T.add(ot),
+          ot.updateMatrixWorld(!0),
           ot.bind(B, ot.matrixWorld),
           (ot.frustumCulled = !0),
           (ot.castShadow = !0),
@@ -27400,9 +27401,9 @@ ${L2}`,
         this.nextBlink < 0 && ((this.blink = 0.14), (this.nextBlink = 2 + Math.random() * 4)),
         (this.blink = Math.max(0, this.blink - t)));
       let m = this.blink > 0 || this.lie > 0.8 || this.ko > 0.5;
-      for (let p of this.eyes) p.scale.y = m ? 0.002 : 0.015;
-      let g = Et((e.night || 0) + (e.alert ? 0.8 : 0) + this.crouch * 0.6 + this.puff, 0, 1);
-      for (let p of this.pupils) ((p.scale.x = Dt(0.18, 0.75, g)), (p.scale.y = Dt(0.95, 0.85, g)));
+      for (let p of this.eyes) ((p.scale.y = m ? 0.002 : 0.015), (p.position.z = 0.064 + this.puff * 0.006));
+      let g = Et((e.night || 0) * 0.7 + (e.alert ? 0.5 : 0) + this.crouch * 0.4 + this.puff * 0.6, 0, 1);
+      for (let p of this.pupils) ((p.scale.x = Dt(0.18, 0.55, g)), (p.scale.y = Dt(0.95, 0.85, g)));
       ((this.eyeMat.emissiveIntensity = this.eyeMat2.emissiveIntensity =
         0.12 + (e.night || 0) * 2.2 + (e.rage ? 1.5 : 0)),
         (this.mouth.scale.y = 0.004 + this.mouthOpen * 0.018));
@@ -28179,7 +28180,7 @@ ${L2}`,
         (a.vy = this.vel.y),
         (a.swipe = this.swipeT),
         (a.pounce = this.charge),
-        (a.puff = this.puffT > 0 || n.dangerLevel > 0.55),
+        (a.puff = this.puffT > 0 || !!n.standoff),
         (a.meow = this.meowT > 0),
         (a.sit = this.sitting),
         (a.sleep = this.sleeping),
@@ -29556,8 +29557,16 @@ ${L2}`,
             this.honkT < 0 &&
             this.speed > 3 &&
             ((this.honkT = 4), e.audio.horn(this.pos), e.event("carHonk", this)));
-        let c = l ? (a < 5 ? 0 : this.max * 0.35) : this.max;
-        for (this.speed = ee(this.speed, c, l ? 1.6 : 0.8, t), this.s += this.speed * t; this.s > this.L;) {
+        // brake for anything in the lane: player, cats, dogs, birds on the ground, rats, people, other cars
+        let r = this.laneBlock(l ? a : 1 / 0),
+          c = r < 1 / 0 ? Math.min(this.max, Math.max(0, (r - this.half - 2.2) * 1.1)) : this.max;
+        for (
+          this.speed = ee(this.speed, c, c < this.speed ? (r - this.half < 5 ? 5 : 2.2) : 0.8, t),
+            this.speed < c + 0.05 && c === 0 && (this.speed = Math.max(0, this.speed - t * 6)),
+            this.s += this.speed * t;
+          this.s > this.L;
+
+        ) {
           if (
             ((this.s -= this.L), (this.i += this.dir > 0 ? 1 : -1), this.i < 0 || this.i >= this.road.pts.length - 1)
           ) {
@@ -29588,6 +29597,26 @@ ${L2}`,
               ),
             }),
           Math.hypot(n, s) < 45 ? e.audio.engine(this.id, this.pos, this.speed) : e.audio.stopEngine(this.id));
+      }
+      laneBlock(t) {
+        let e = this.game,
+          i = Math.sin(this.yaw),
+          n = Math.cos(this.yaw),
+          s = this.half + 4 + this.speed * 1.1,
+          a = (o, l, c) => {
+            let h = o.x - this.pos.x,
+              u = o.z - this.pos.z;
+            if (Math.abs(h) > s + 3 || Math.abs(u) > s + 3 || o.y - this.pos.y > 1.3) return;
+            let f = h * i + u * n;
+            f > 0 && f < s && Math.abs(h * n - u * i) < l + (c || 0) && f < t && (t = f);
+          };
+        for (let o of e.cats) o.obj.visible && !o.dead && a(o.pos, 1.25);
+        for (let o of e.dogs) !o.dead && a(o.pos, 1.35);
+        for (let o of e.birds) o.state === "ground" && a(o.pos, 1.1);
+        for (let o of e.rats) o.obj.visible && !o.dead && a(o.pos, 1.1);
+        for (let o of e.humans) !o.dead && a(o.pos, 1.4);
+        for (let o of e.cars) o !== this && a(o.pos, 1.3, o.half * 0.5);
+        return t;
       }
       threat() {
         let t = this.game.player,
@@ -31198,6 +31227,21 @@ ${L2}`,
           )),
           (this.checkRing.visible = !1),
           this.scene.add(this.checkRing),
+          (() => {
+            // quest guide: flat chevron on the ground next to the cat, pointing at the waypoint
+            let y = new Jt();
+            (y.setAttribute(
+              "position",
+              new Pt([0, 0, 0.5, -0.34, 0, -0.05, 0, 0, 0.14, 0, 0, 0.5, 0, 0, 0.14, 0.34, 0, -0.05], 3),
+            ),
+              (this.guideArrow = new nt(
+                y,
+                new we({ color: 16762977, transparent: !0, opacity: 0.85, depthTest: !1, depthWrite: !1, side: ve }),
+              )),
+              (this.guideArrow.renderOrder = 20),
+              (this.guideArrow.visible = !1),
+              this.scene.add(this.guideArrow));
+          })(),
           this.updateSectorRings(),
           this.audio.ambience(t.style),
           this
@@ -32720,6 +32764,20 @@ ${L2}`,
                 0.1 * Math.sin(this.time * 3) * 0.5 +
                 (Math.hypot(e.x - this.player.pos.x, e.z - this.player.pos.z) < 6 ? -0.1 : 0.05)))
             : (this.beam.visible = !1));
+        let ga = this.guideArrow;
+        if (ga) {
+          let i = this.player,
+            dx = e ? e.x - i.pos.x : 0,
+            dz = e ? e.z - i.pos.z : 0,
+            d = Math.hypot(dx, dz);
+          if (((ga.visible = !!e && d > 3.5 && !i.sleeping && !this.koCam), ga.visible)) {
+            let r = 0.75 + 0.35 * i.scale + Math.sin(this.time * 4) * 0.06;
+            (ga.position.set(i.pos.x + (dx / d) * r, i.pos.y + 0.06, i.pos.z + (dz / d) * r),
+              (ga.rotation.y = Math.atan2(dx, dz)),
+              ga.scale.setScalar(0.6 + 0.4 * i.scale),
+              (ga.material.opacity = 0.55 + 0.3 * Math.sin(this.time * 4) ** 2));
+          }
+        }
         for (let i of this.world.sectors)
           i.ring &&
             (i.ring.scale.setScalar(1 + Math.sin(this.time * 2 + i.id) * 0.08),
@@ -36282,9 +36340,9 @@ ${L2}`,
           (n.innerHTML = `<header><b>Spotify</b><button class="x" aria-label="${e ? "Cerrar" : "Close"}">\u2715</button></header>
       <div class="spSlot"><div id="spEmbed"></div><p class="small spMsg">${e ? "Cargando Spotify\u2026" : "Loading Spotify\u2026"}</p></div>
       <div class="spRow"><input id="spUrl" placeholder="${e ? "Pega un link de Spotify (playlist, \xE1lbum, canci\xF3n)" : "Paste a Spotify link (playlist, album, track)"}" value=""><button class="chip spGo">${e ? "Cargar" : "Load"}</button></div>
-      <div class="spRow chips"><button class="chip spTop">Top 50 \xB7 Chile</button><a class="chip spApp" href="${i.uri}">${e ? "Abrir en la app de Spotify" : "Open in the Spotify app"}</a></div>
+      <div class="spRow chips"><button class="chip spTop">Top 50 \xB7 Chile</button><a class="chip spApp" href="${spWeb(i.uri)}" target="_blank" rel="noopener">${e ? "Abrir en Spotify" : "Open in Spotify"}</a></div>
       <div class="spRow"><label for="spDuck">${e ? "M\xFAsica del juego mientras suena Spotify" : "Game music while Spotify plays"}</label><select id="spDuck"><option value="mute">${e ? "Silenciar" : "Mute"}</option><option value="duck">${e ? "Bajar" : "Lower"}</option><option value="keep">${e ? "Mantener" : "Keep"}</option></select></div>
-      <p class="small">${e ? "Canciones completas si iniciaste sesi\xF3n en Spotify en este navegador; si no, avances de 30 s. \xABAbrir en la app\xBB usa el Spotify instalado en tu computador." : "Full tracks if you are logged in to Spotify in this browser; otherwise 30 s previews. \u201COpen in the app\u201D uses the Spotify installed on your computer."}</p>`),
+      <p class="small">${e ? "Canciones completas si iniciaste sesi\xF3n en Spotify en este navegador; si no, avances de 30 s. \xABAbrir en Spotify\xBB abre la app o la web de Spotify en otra pesta\xF1a." : "Full tracks if you are logged in to Spotify in this browser; otherwise 30 s previews. \u201COpen in Spotify\u201D opens the Spotify app or web player in a new tab."}</p>`),
           document.getElementById("ui").appendChild(n),
           (rt(".x", n).onclick = () => (n.hidden = !0)),
           (rt("#spDuck", n).value = i.duck || "duck"),
@@ -36298,7 +36356,7 @@ ${L2}`,
           }
           ((i.uri = a),
             t.saveSettings(),
-            (rt(".spApp", n).href = a),
+            (rt(".spApp", n).href = spWeb(a)),
             this.spCtl ? this.spCtl.loadUri(a) : this._spLoad());
         };
         ((rt(".spGo", n).onclick = () => s(Yd(rt("#spUrl", n).value))),
@@ -36322,12 +36380,29 @@ ${L2}`,
         let t = st() === "es",
           e = document.querySelector("#spotify .spMsg"),
           i = () => {
-            this.spCtl ||
-              ((this._spLoading = !1),
+            // iframe API blocked (e.g. sandboxed artifact CSP): fall back to a plain embed iframe
+            if (this.spCtl) return;
+            this._spLoading = !1;
+            let a = document.getElementById("spEmbed");
+            if (!a) return;
+            let o = document.createElement("iframe");
+            ((o.src = spWeb(this.app.settings.spotify.uri, !0)),
+              (o.width = "100%"),
+              (o.height = "152"),
+              (o.style.border = "0"),
+              (o.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"),
+              (o.loading = "eager"),
+              a.replaceChildren(o),
+              (this.spCtl = { loadUri: (l) => (o.src = spWeb(l, !0)), fallback: !0 }),
               e &&
                 (e.textContent = t
-                  ? "No se pudo cargar el reproductor (sin internet o bloqueado aqu\xED). Usa \xABAbrir en la app de Spotify\xBB."
-                  : "Could not load the player (offline or blocked here). Use \u201COpen in the Spotify app\u201D."));
+                  ? "Si el reproductor no aparece, este sitio bloquea Spotify: usa \xABAbrir en Spotify\xBB (se abre en otra pesta\xF1a)."
+                  : "If the player doesn\u2019t show up, this site blocks Spotify: use \u201COpen in Spotify\u201D (opens in a new tab)."));
+            // no playback events without the API: clicking into the player (window blur) counts as playing
+            let l = () => {
+              document.activeElement === o && !this.spPlaying && ((this.spPlaying = !0), this._spDuck());
+            };
+            window.addEventListener("blur", () => setTimeout(l, 0));
           };
         this._spLoading = !0;
         let n = (a) => {
@@ -36358,7 +36433,7 @@ ${L2}`,
           (s.async = !0),
           (s.onerror = i),
           document.head.appendChild(s),
-          setTimeout(i, 9e3));
+          setTimeout(i, 6e3));
       }
       hideHud() {
         ((this.hudEl.hidden = !0),
@@ -36387,6 +36462,7 @@ ${L2}`,
           (n.xp.style.width = `${(i.xp / t.xpNeed(i.level)) * 100}%`),
           (this._t -= e),
           this.updateMarks(t),
+          this.waypointMark(t),
           this.updateGivers(t),
           this.updateBar(t),
           this.compass(t),
@@ -36551,17 +36627,34 @@ ${L2}`,
             e.fillText(b, f(p.pos.x), m(p.pos.z) + 9));
         }
         if (t.waypoint && t.quests.guide) {
-          let d = Et(f(t.waypoint.x), 14, n - 14),
-            p = Et(m(t.waypoint.z), 14, n - 14);
-          (e.save(),
-            e.translate(d, p),
-            e.rotate(Math.PI / 4),
-            (e.fillStyle = "#ffc861"),
-            e.fillRect(-7, -7, 14, 14),
-            (e.strokeStyle = "#16151b"),
-            (e.lineWidth = 2),
-            e.strokeRect(-7, -7, 14, 14),
-            e.restore());
+          let d = f(t.waypoint.x) - n / 2,
+            p = m(t.waypoint.z) - n / 2,
+            b = Math.hypot(d, p),
+            v = n / 2 - 18;
+          if ((e.save(), e.translate(n / 2, n / 2), b > v)) {
+            // outside the minimap: arrow on the rim pointing at the waypoint
+            (e.rotate(Math.atan2(p, d)),
+              e.translate(v, 0),
+              (e.fillStyle = "#ffc861"),
+              (e.strokeStyle = "#16151b"),
+              (e.lineWidth = 2.5),
+              e.beginPath(),
+              e.moveTo(14, 0),
+              e.lineTo(-8, -11),
+              e.lineTo(-3, 0),
+              e.lineTo(-8, 11),
+              e.closePath(),
+              e.fill(),
+              e.stroke());
+          } else
+            (e.translate(d, p),
+              e.rotate(Math.PI / 4),
+              (e.fillStyle = "#ffc861"),
+              e.fillRect(-8, -8, 16, 16),
+              (e.strokeStyle = "#16151b"),
+              (e.lineWidth = 2),
+              e.strokeRect(-8, -8, 16, 16));
+          e.restore();
         }
         (e.save(),
           e.translate(n / 2, n / 2),
@@ -36587,6 +36680,38 @@ ${L2}`,
           (e.font = "700 22px Barlow Condensed, system-ui"),
           (e.textAlign = "center"),
           e.fillText("N", n / 2, 26));
+      }
+      waypointMark(t) {
+        let e = this.wpEl;
+        if (!e) {
+          ((e = this.wpEl = Kt("div", "wpmark", "<i></i><span></span>")), this.fx.appendChild(e));
+        }
+        let i = t.waypoint && t.quests.guide ? t.waypoint : null;
+        if (!i || !this.q || t.player.sleeping) {
+          e.hidden = !0;
+          return;
+        }
+        let n = this._wv || (this._wv = new I()),
+          s = t.app.camera;
+        n.set(i.x, (i.y ?? t.world.heightAt(i.x, i.z)) + 0.6, i.z).project(s);
+        let a = innerWidth,
+          o = innerHeight,
+          l = n.z > 1,
+          c = (l ? -n.x : n.x) * 0.5 * a,
+          h = (l ? n.y : -n.y) * 0.5 * o,
+          u = Math.hypot(i.x - t.player.pos.x, i.z - t.player.pos.z),
+          f = a / 2 - 40,
+          m = o / 2 - 70,
+          g = l || Math.abs(c) > f || Math.abs(h) > m;
+        if (g) {
+          let x = Math.min(f / Math.abs(c || 1e-6), m / Math.abs(h || 1e-6));
+          ((c *= x), (h *= x));
+        }
+        ((e.hidden = u < 3),
+          e.classList.toggle("edge", g),
+          (e.style.transform = `translate(${a / 2 + c}px,${o / 2 + h}px)`),
+          (e.firstChild.style.transform = g ? `rotate(${Math.atan2(h, c)}rad)` : "rotate(45deg)"),
+          (e.lastChild.textContent = `${Math.round(u)} m`));
       }
       alertMark(t) {
         (this.marks.push({ a: t, t: 2.5, el: Kt("div", "mark", "!") }),
@@ -36692,6 +36817,11 @@ ${L2}`,
             r,
           )),
         t ? `spotify:${t[1]}:${t[2]}` : null);
+  }
+  // spotify:type:id -> https://open.spotify.com/[embed/]type/id
+  function spWeb(r, t) {
+    let e = /^spotify:([a-z]+):([A-Za-z0-9]+)$/.exec(r || "");
+    return e ? `https://open.spotify.com/${t ? "embed/" : ""}${e[1]}/${e[2]}${t ? "?utm_source=generator&theme=0" : ""}` : r;
   }
   var wh = class {
     constructor() {
