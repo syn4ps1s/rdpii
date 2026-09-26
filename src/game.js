@@ -24232,37 +24232,8 @@ uniform sampler2D detailMap; varying vec3 vWP;`,
             n(p, b, t.pick(["espino", "espino", "bush", "quillay", "eucalipto"]));
         }
       }
-      let a = new Te(0.11, 0.19, 1, 6);
-      a.translate(0, 0.5, 0);
-      let o = E2(),
-        l = new bi(a, new jt({ roughness: 0.95 }), e.length),
-        c = new bi(o, new jt({ roughness: 0.9, flatShading: !1 }), e.length),
-        h = new Yt(),
-        u = new xi(),
-        f = new I(),
-        m = new I(),
-        g = new I(0, 1, 0),
-        x = 0;
-      (e.forEach((d, p) => {
-        (u.setFromAxisAngle(g, d.rot),
-          d.th > 0 &&
-            (h.compose(
-              f.set(d.x, d.y - 0.2, d.z),
-              u,
-              m.set(d.r * 0.35 + 0.4, d.th + d.r * d.sy * 0.6, d.r * 0.35 + 0.4),
-            ),
-            l.setMatrixAt(x, h),
-            l.setColorAt(x, Di(d.trunk)),
-            x++),
-          h.compose(f.set(d.x, d.y + d.th + d.r * d.sy * 0.55, d.z), u, m.set(d.r, d.r * d.sy, d.r)),
-          c.setMatrixAt(p, h),
-          c.setColorAt(p, Di(d.c)));
-      }),
-        (l.count = x),
-        (l.castShadow = c.castShadow = !0),
-        (c.receiveShadow = !0),
-        this.group.add(l, c),
-        (this.canopy = c));
+      this.canopy = treeMeshes(e, t);
+      this.group.add(...this.canopy.meshes);
     }
     _sky() {
       let t = new ge(5e3, 32, 16);
@@ -24620,6 +24591,183 @@ uniform sampler2D detailMap; varying vec3 vWP;`,
       (c.translate((o * e) / 3, r ? 0.9 : 0.75, -t / 2 - 0.01), a.push(c));
     }
     return Vn(a);
+  }
+  // ---------- trees: visible climbable trunks, branches, clustered leafy canopies per species ----------
+  function smoothGeo(r) {
+    // weld duplicated vertices so computeVertexNormals() gives smooth (not faceted) shading
+    let t = r.attributes.position,
+      e = new Map(),
+      i = [],
+      n = [];
+    for (let a = 0; a < t.count; a++) {
+      let o = `${Math.round(t.getX(a) * 1e4)},${Math.round(t.getY(a) * 1e4)},${Math.round(t.getZ(a) * 1e4)}`,
+        l = e.get(o);
+      (l === void 0 && ((l = i.length / 3), e.set(o, l), i.push(t.getX(a), t.getY(a), t.getZ(a))), n.push(l));
+    }
+    let s = new Jt();
+    return (s.setAttribute("position", new Pt(i, 3)), s.setIndex(n), s.computeVertexNormals(), s);
+  }
+  function lumpy(r, t, e = 0.28) {
+    let i = r.attributes.position;
+    for (let n = 0; n < i.count; n++) {
+      let s = i.getX(n),
+        a = i.getY(n),
+        o = i.getZ(n),
+        l = 1 + (t(s * 2.3 + o * 1.7, a * 2.1 - o * 1.3) - 0.5) * e;
+      i.setXYZ(n, s * l, a * l, o * l);
+    }
+    return (r.computeVertexNormals(), r);
+  }
+  var leafGLSL = `
+float lh(vec3 p){ p = fract(p*0.3183099+vec3(0.71,0.113,0.419)); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+float ln3(vec3 x){ vec3 i=floor(x), f=fract(x); f=f*f*(3.0-2.0*f);
+  return mix(mix(mix(lh(i),lh(i+vec3(1,0,0)),f.x),mix(lh(i+vec3(0,1,0)),lh(i+vec3(1,1,0)),f.x),f.y),mix(mix(lh(i+vec3(0,0,1)),lh(i+vec3(1,0,1)),f.x),mix(lh(i+vec3(0,1,1)),lh(i+vec3(1,1,1)),f.x),f.y),f.z); }
+`;
+  function natMat(r, t) {
+    // bark (t=0) or foliage (t=1): world-space procedural detail so trees read as leaves/bark up close
+    let e = new jt({ roughness: t ? 0.85 : 0.95, metalness: 0 });
+    return (
+      (e.customProgramCacheKey = () => "nat" + t),
+      (e.onBeforeCompile = (i) => {
+        ((i.vertexShader = i.vertexShader
+          .replace("#include <common>", "#include <common>\nvarying vec3 vNatP;")
+          .replace(
+            "#include <begin_vertex>",
+            `#include <begin_vertex>
+#ifdef USE_INSTANCING
+  vNatP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz;
+#else
+  vNatP = (modelMatrix * vec4(transformed, 1.0)).xyz;
+#endif`,
+          )),
+          (i.fragmentShader = i.fragmentShader
+            .replace("#include <common>", `#include <common>\nvarying vec3 vNatP;\n${leafGLSL}`)
+            .replace(
+              "#include <color_fragment>",
+              t
+                ? `#include <color_fragment>
+  float n1 = ln3(vNatP*4.5), n2 = ln3(vNatP*14.0), n3 = ln3(vNatP*38.0);
+  float leaf = n1*0.45 + n2*0.35 + n3*0.2;
+  diffuseColor.rgb *= 0.55 + leaf*0.85;
+  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb*vec3(1.18,1.22,0.85), smoothstep(0.72,0.92,n3)*0.6);`
+                : `#include <color_fragment>
+  float b1 = ln3(vec3(vNatP.x*26.0, vNatP.y*2.2, vNatP.z*26.0)), b2 = ln3(vNatP*9.0);
+  diffuseColor.rgb *= 0.62 + b1*0.45 + b2*0.18;`,
+            )));
+      }),
+      e
+    );
+  }
+  function treeMeshes(r, t) {
+    let e = Hn(11),
+      i = new Te(0.62, 1, 1, 10, 3);
+    (i.translate(0, 0.5, 0),
+      (() => {
+        // root flare
+        let x = i.attributes.position;
+        for (let d = 0; d < x.count; d++) {
+          let p = x.getY(d);
+          if (p < 0.2) {
+            let b = 1 + (0.2 - p) * 1.6;
+            x.setXYZ(d, x.getX(d) * b, p, x.getZ(d) * b);
+          }
+        }
+        i.computeVertexNormals();
+      })());
+    let n = new Te(0.45, 1, 1, 6);
+    n.translate(0, 0.5, 0);
+    let s = lumpy(smoothGeo(new Na(1, 1)), e, 0.3),
+      a = lumpy(smoothGeo(new Ci(1, 1, 10, 2)), e, 0.18),
+      o = [],
+      l = [],
+      c = [],
+      h = [],
+      u = (x, d, p, b, v, _, E) => o.push([x, d, p, b, v, _, E]),
+      f = new ft(),
+      m = new ft();
+    for (let x of r) {
+      let d = x.r,
+        p = x.sy,
+        b = x.type,
+        v = x.y + x.th,
+        _ = x.rot,
+        E = Math.min(0.42, 0.22 * (x.th > 3 ? 1 : 0.7) + 0.1) * (b === "espino" ? 0.7 : 1);
+      (b !== "bush" && l.push([x.x, x.y - 0.15, x.z, E, x.th + d * p * 0.35, _, x.trunk]),
+        (x.trunkR = E));
+      let S = t.pick ? t : null,
+        T = () => (S ? S() : Math.random()),
+        A = (k, y, M, w, P, D, N) => {
+          f.set(N || x.c);
+          let z = 0.88 + T() * 0.24;
+          (f.multiplyScalar(z), u(x.x + k, v + y, x.z + M, w, P, D, f.getHex()));
+        };
+      if (b === "pino") {
+        let k = d * p * 1.9;
+        for (let y = 0; y < 4; y++) {
+          let M = 1 - y * 0.22;
+          h.push([x.x, v + y * k * 0.2 - d * 0.1, x.z, d * 0.95 * M, k * 0.42, _ + y, x.c]);
+        }
+        continue;
+      }
+      let k = b === "bush" ? 4 : b === "eucalipto" ? 6 : b === "acacia" || b === "espino" || b === "jacaranda" ? 7 : 6;
+      if (b === "bush") {
+        v = x.y + d * p * 0.45;
+        for (let y = 0; y < k; y++) {
+          let M = (y / k) * 6.28 + _;
+          A(Math.cos(M) * d * 0.45, T() * d * 0.2, Math.sin(M) * d * 0.45, d * (0.5 + T() * 0.15), d * p * 0.55, M);
+        }
+        A(0, d * 0.15, 0, d * 0.6, d * p * 0.7, _);
+        continue;
+      }
+      let y = b === "acacia" || b === "espino" || b === "jacaranda" ? 0.55 : b === "eucalipto" ? 1.35 : 0.85;
+      if (b === "eucalipto")
+        for (let M = 0; M < k; M++) {
+          let w = T() * 6.28;
+          A(Math.cos(w) * d * 0.35, d * p * (0.1 + (M / k) * 1.4), Math.sin(w) * d * 0.35, d * (0.42 + T() * 0.14), d * 0.55 * y, w);
+        }
+      else {
+        let M = b === "acacia" || b === "espino" || b === "jacaranda" ? 0.62 : 0.5;
+        A(0, d * p * 0.62, 0, d * 0.62, d * p * 0.62 * (y > 0.8 ? 1 : 0.8), _);
+        for (let w = 0; w < k; w++) {
+          let P = (w / k) * 6.28 + _ + T() * 0.4,
+            D = b === "jacaranda" && T() < 0.3 ? "#6f8a3e" : null;
+          A(Math.cos(P) * d * M, d * p * (0.3 + T() * 0.45), Math.sin(P) * d * M, d * (0.4 + T() * 0.16), d * p * 0.5 * y, P, D);
+        }
+      }
+      for (let M = 0; M < 3; M++) {
+        let w = _ + (M / 3) * 6.28 + T() * 0.5;
+        c.push([x.x, x.y + x.th * 0.8, x.z, E * 0.5, d * 0.75, w, b === "eucalipto" ? 0.35 : 0.75, x.trunk]);
+      }
+    }
+    let g = new Yt(),
+      x = new xi(),
+      d = new I(),
+      p = new I(),
+      b = new I(0, 1, 0),
+      v = new Ri(),
+      _ = (k, y, M) => {
+        let w = new bi(k, M, Math.max(1, y.length));
+        return ((w.count = y.length), (w.castShadow = !0), (w.receiveShadow = !0), w);
+      },
+      E = _(i, l, natMat("#6e5a45", 0)),
+      S = _(n, c, E.material),
+      T = _(s, o, natMat("#6f8f3a", 1)),
+      A = _(a, h, T.material);
+    return (
+      l.forEach(([k, y, M, w, P, D, N], z) => {
+        (x.setFromAxisAngle(b, D), g.compose(d.set(k, y, M), x, p.set(w, P, w)), E.setMatrixAt(z, g), E.setColorAt(z, m.set(N)));
+      }),
+      c.forEach(([k, y, M, w, P, D, N, z], G) => {
+        (v.set(N, D, 0, "YXZ"), x.setFromEuler(v), g.compose(d.set(k, y, M), x, p.set(w, P, w)), S.setMatrixAt(G, g), S.setColorAt(G, m.set(z)));
+      }),
+      o.forEach(([k, y, M, w, P, D, N], z) => {
+        (x.setFromAxisAngle(b, D), g.compose(d.set(k, y, M), x, p.set(w, P, w)), T.setMatrixAt(z, g), T.setColorAt(z, m.set(N)));
+      }),
+      h.forEach(([k, y, M, w, P, D, N], z) => {
+        (x.setFromAxisAngle(b, D), g.compose(d.set(k, y, M), x, p.set(w, P, w)), A.setMatrixAt(z, g), A.setColorAt(z, m.set(N)));
+      }),
+      { meshes: [E, S, T, A].filter((k) => k.count > 0), trunks: E, leaves: T, cones: A }
+    );
   }
   function E2() {
     let r = [],
@@ -27483,7 +27631,7 @@ ${L2}`,
       (d.scale.set(1, 0.9, 0.8), d.position.set(0, 1.08, 0.06), i.add(d));
     }
     let u = new Wt();
-    ((u.position.y = 1.64), i.add(u), (c.head = u));
+    ((u.position.y = 1.64), i.add(u), (c.head = u), (e.userData.head = u));
     let f = new nt(new ge(0.125, 12, 10), n);
     (f.scale.set(0.92, 1.05, 0.98), u.add(f));
     let m = new nt(new ge(0.025, 6, 6), n);
@@ -27592,7 +27740,7 @@ ${L2}`,
     let h = new Wt();
     (h.position.set(0, 0.1, 0.33), o.add(h));
     let u = new Wt();
-    (u.position.set(0, 0.12, 0.06), h.add(u));
+    (u.position.set(0, 0.12, 0.06), h.add(u), (e.userData.head = u));
     let f = new nt(new qt(0.2, 0.18, 0.2), n);
     u.add(f);
     let m = new nt(new qt(0.11, 0.09, 0.16), s);
@@ -27954,6 +28102,7 @@ ${L2}`,
         (this.dodgeCD -= t),
         (this.comboT -= t),
         (this.puffT -= t),
+        (this.clawBuffT = (this.clawBuffT || 0) - t),
         (this.eatT -= t),
         (this.senseT -= t),
         (this.senseCD -= t),
@@ -28187,6 +28336,9 @@ ${L2}`,
         (a.eat = this.eatT > 0),
         (a.alert = n.dangerLevel > 0.3 || !!n.currentFoe),
         (a.rage = !!n.currentFoe && n.fightRage > 0.5),
+        this.scratchT > 0 &&
+          ((this.scratchT -= t), (a.climbing = !0), (a.speed = 0), (a.sit = !1), (a.swipe = (this.scratchT * 2.6) % 1)),
+        (this.nip || 0) > 2.2 && this.speed < 0.3 && (a.sleep = Math.sin(n.time * 0.9) > 0.3),
         this.model.animate(t, a),
         this.sync(),
         this.carryObj)
@@ -28221,6 +28373,12 @@ ${L2}`,
     }
   };
   var Vd = {
+      shopkeep: [
+        ["Pan amasado, marraquetas calentitas\u2026", "Homemade bread, warm marraquetas\u2026"],
+        ["\xBFQu\xE9 le doy, vecina? \xBFUn cuarto de jam\xF3n?", "What can I get you? A quarter of ham?"],
+        ["Ya, espere un poquito que busco el vuelto\u2026", "Hang on, let me find your change\u2026"],
+        ["\xA1Llegaron las longanizas de Chill\xE1n!", "The Chill\xE1n sausages just arrived!"],
+      ],
       haterSpot: [
         ["\xA1Sale, gato! \xA1Sale de aqu\xED!", "Shoo, cat! Get out of here!"],
         ["\xA1Otra vez este gato en el techo, oye!", "This cat on the roof again, ugh!"],
@@ -29030,7 +29188,8 @@ ${L2}`,
             let a = this.steer(this.door.x, this.door.z, 1.6, t);
             ((s.speed = this.speed), a < 0.4 && ((this.state = "inside"), (this.obj.visible = !1), (this.cool = 18)));
           }
-        } else if (this.kind === "feeder") {
+        } else if (this.kind === "shop") this.shopAI(t, s, n);
+        else if (this.kind === "feeder") {
           let a = e.hours,
             o = a > 6.5 && a < 23.5;
           if (((this.obj.visible = o), o)) {
@@ -29063,22 +29222,187 @@ ${L2}`,
               this.lineT < 0 &&
               j() < t * 0.35 &&
               (this.say(this.kind === "kid" ? "kid" : e.night > 0.6 ? "night" : "walker"), (s.talk = !0)),
-            this.kind === "kid" &&
-              n < 7 &&
-              i.speed < 1 &&
+            this.temper ||
+              (this.temper =
+                this.kind === "kid"
+                  ? j() < 0.55
+                    ? "chaser"
+                    : "lover"
+                  : j() < 0.45
+                    ? "lover"
+                    : j() < 0.3
+                      ? "grump"
+                      : "neutral"),
+            this.cool < 0 &&
+              n < (this.temper === "chaser" ? 9 : 7.5) &&
+              !i.ko &&
               !i.hidden &&
-              j() < t * 0.4 &&
-              ((this.state = "approach"), (this.timer = 8)));
+              i.pos.y - this.pos.y < 1 &&
+              (i.speed < 1.5 || this.temper === "chaser") &&
+              j() < t * (this.temper === "neutral" ? 0 : 0.45) &&
+              (this.temper === "lover"
+                ? ((this.state = "approach"),
+                  (this.timer = 9),
+                  e.say(
+                    this,
+                    pe([
+                      ["\xA1Hola, gatito! Ven, michi, michi\u2026", "Hi, kitty! Here, kitty kitty\u2026"],
+                      ["\xA1Qu\xE9 lindo! \xBFDe qui\xE9n eres t\xFA?", "So cute! Whose are you?"],
+                      ["Psst, psst\u2026 ven, no te voy a hacer nada.", "Psst, psst\u2026 come here, I won't hurt you."],
+                    ]),
+                    1,
+                  ))
+                : this.temper === "chaser"
+                  ? ((this.state = "chase"), (this.timer = 5 + j() * 3), e.audio.sample("laugh", { pos: this.pos, vol: 0.5 }))
+                  : ((this.state = "shoo"),
+                    (this.timer = 6),
+                    e.say(this, pe([["\xA1Sale, gato!", "Shoo, cat!"], ["\xA1Fuera de aqu\xED, gato cochino!", "Get out of here, dirty cat!"]]), 1))),
+            this.temper === "lover" &&
+              this.cool < 0 &&
+              this.state === "walk" &&
+              j() < t * 0.25 &&
+              (() => {
+                // stop to pet a neighbourhood cat that is nearby and calm
+                let o = null,
+                  l = 7;
+                for (let c of e.cats) {
+                  if (!c.obj.visible || c.dead || c.isRival || c.hostile || c.state === "fight") continue;
+                  let h = Math.hypot(c.pos.x - this.pos.x, c.pos.z - this.pos.z);
+                  h < l && Math.abs(c.pos.y - this.pos.y) < 0.8 && ((l = h), (o = c));
+                }
+                o && ((this.state = "petcat"), (this.petCat = o), (this.timer = 9));
+              })());
         } else if (this.state === "approach") {
           let a = this.steer(i.pos.x, i.pos.z, 1.5, t, { arrive: 0.9 });
           ((s.speed = this.speed),
-            a < 1.1 && ((s.pet = !0), this.faceP(t), this.petted || ((this.petted = !0), e.event("petted", this))),
-            (this.timer < 0 || n > 10 || i.speed > 3) && ((this.state = "walk"), (this.petted = !1)));
+            a < 1.1 &&
+              ((s.pet = !0),
+              this.faceP(t),
+              this.petted ||
+                ((this.petted = !0), e.event("petted", this), (i.hp = Math.min(i.maxHp, i.hp + i.maxHp * 0.08)))),
+            a < 1.1 && j() < t * 0.8 && e.vfx.hearts(i.pos.clone().setY(i.pos.y + 0.5)),
+            (this.timer < 0 || n > 10 || i.speed > 3) &&
+              ((this.state = "walk"), (this.petted = !1), (this.cool = 25 + j() * 20)));
+        } else if (this.state === "petcat") {
+          let a = this.petCat;
+          if (!a || a.dead || !a.obj.visible || this.timer < 0) ((this.state = "walk"), (this.cool = 20 + j() * 20));
+          else {
+            let o = this.steer(a.pos.x, a.pos.z, 1.3, t, { arrive: 0.9 });
+            ((s.speed = this.speed),
+              o < 1.1 &&
+                ((s.pet = !0),
+                (this.yaw = Pi(this.yaw, Math.atan2(a.pos.x - this.pos.x, a.pos.z - this.pos.z), 6, t)),
+                a.state !== "sit" && a.state !== "sleep" && a.state !== "fight" && ((a.state = "sit"), (a.timer = 5)),
+                j() < t * 0.7 && e.vfx.hearts(a.pos.clone().setY(a.pos.y + 0.45)),
+                j() < t * 0.25 && a.dP() < 14 && e.audio.meow({ pos: a.pos, type: "mrrp", pitch: 1, vol: 0.3 })));
+          }
+        } else if (this.state === "chase") {
+          // playful kid runs after the cat, laughing; a grab only startles and nudges it
+          let a = this.steer(i.pos.x, i.pos.z, 3.3, t, { arrive: 0.7 });
+          ((s.speed = this.speed),
+            this.lineT < 0 &&
+              j() < t * 0.6 &&
+              (e.say(this, pe([["\xA1Gatitooo!", "Kittyyy!"], ["\xA1Ven ac\xE1, gato!", "Come here, cat!"], ["\xA1Te voy a pillar!", "I'm gonna get you!"]]), 1),
+              j() < 0.5 && e.audio.sample("laugh", { pos: this.pos, vol: 0.45 })),
+            a < 1 &&
+              (this.grabT || 0) < e.time &&
+              ((this.grabT = e.time + 1.6),
+              (i.vel.x += Math.sin(this.yaw) * 3.5),
+              (i.vel.z += Math.cos(this.yaw) * 3.5),
+              (i.puffT = 1),
+              e.audio.meow({ pos: i.pos, type: "angry", pitch: i.small ? 1.6 : 1.15, vol: 0.5 })),
+            (this.timer < 0 || n > 13 || i.hidden || i.pos.y - this.pos.y > 1.2) &&
+              ((this.state = "walk"), (this.cool = 30 + j() * 30)));
+        } else if (this.state === "shoo") {
+          let a = this.steer(i.pos.x, i.pos.z, 2.2, t, { arrive: 1.2 });
+          ((s.speed = this.speed),
+            this.faceP(t, 6),
+            a < 1.6 &&
+              (this.stompT || 0) < e.time &&
+              ((this.stompT = e.time + 2.2),
+              (s.swing = 0.5),
+              e.audio.thud(this.pos),
+              (i.vel.x += Math.sin(this.yaw) * 4.5),
+              (i.vel.z += Math.cos(this.yaw) * 4.5),
+              (i.vel.y = Math.max(i.vel.y, 1.5)),
+              (i.onGround = !1),
+              (i.puffT = 1.2)),
+            (this.timer < 0 || n > 9 || i.pos.y - this.pos.y > 1.2) &&
+              ((this.state = "walk"), (this.cool = 40 + j() * 30)));
         }
         (this.obj.userData.animate(t, s), this.sync());
       }
+      shopAI(t, e, i) {
+        let n = this.game,
+          s = this.P,
+          a = this.shop,
+          o = n.hours > 8 && n.hours < 22,
+          l = st() === "es";
+        if (((this.obj.visible = o), !o)) {
+          (this.place(this.post.x, this.post.z), (this.state = "watch"));
+          return;
+        }
+        let c = Math.atan2(a.nx, a.nz);
+        if (this.state === "watch" || this.state === "busy") {
+          let h = this.state === "watch";
+          (this.pos.distanceTo(new I(this.post.x, this.pos.y, this.post.z)) > 0.3
+            ? (this.steer(this.post.x, this.post.z, 1.6, t), (e.speed = this.speed))
+            : (this.yaw = Pi(this.yaw, h ? c : c + Math.PI * 0.85, 4, t)),
+            (e.talk = !h && this.lineT > 2),
+            this.eye.material.color.set(h ? "#ff4a4a" : "#6cc070"),
+            this.timer < 0 &&
+              ((this.state = h ? "busy" : "watch"),
+              (this.timer = h ? 3 + j() * 4 : 3.5 + j() * 5),
+              !h && i < 12 && j() < 0.4 && this.say("shopkeep", 1)));
+          // spotting a cat sneaking up to the counter while watching
+          if (h && i < 6.5 && !s.ko) {
+            let u = s.pos.x - this.pos.x,
+              f = s.pos.z - this.pos.z,
+              m = (u * a.nx + f * a.nz) / (i || 1);
+            m > 0.1 && !(s.crouch && i > 2.2) && s.pos.y - this.pos.y < 1.6 && (this._susp = (this._susp || 0) + t * (s.crouch ? 0.8 : 2));
+            this._susp > 1.2 && this.catch("spot");
+          } else this._susp = Math.max(0, (this._susp || 0) - t);
+        } else if (this.state === "turn") {
+          ((this.yaw = Pi(this.yaw, c, 10, t)), this.eye.material.color.set("#ffc861"), this.timer < 0 && (i < 9 ? this.catch("theft") : ((this.state = "watch"), (this.timer = 3))));
+        } else if (this.state === "chase") {
+          let h = this.steer(s.pos.x, s.pos.z, 2.9, t, { arrive: 1.1 });
+          ((e.speed = this.speed),
+            this.eye.material.color.set("#ff4a4a"),
+            h < 1.4 &&
+              (this.hitT || 0) < n.time &&
+              s.pos.y - this.pos.y < 1.5 &&
+              ((this.hitT = n.time + 1.4),
+              (e.swing = 0.5),
+              n.hurtPlayer(7, this, { kind: "broom", knock: 4, dir: new I(Math.sin(this.yaw), 0.3, Math.cos(this.yaw)) })),
+            (this.timer < 0 || i > 14 || Math.hypot(this.pos.x - this.post.x, this.pos.z - this.post.z) > 22) &&
+              ((this.state = "busy"), (this.timer = 2)));
+        }
+      }
+      catch(t) {
+        let e = st() === "es";
+        (this.state !== "chase" &&
+          this.game.say(
+            this,
+            pe(
+              t === "theft"
+                ? [["\xA1Oye! \xA1Gato ladr\xF3n! \xA1Devuelve eso!", "Hey! Thief cat! Give that back!"], ["\xA1Se llev\xF3 la longaniza! \xA1Pillen a ese gato!", "It took the sausage! Get that cat!"]]
+                : [["\xA1Sale de aqu\xED, gato! \xA1Te estoy viendo!", "Get out of here, cat! I can see you!"], ["\xA1Ni se te ocurra, michi!", "Don't even think about it, kitty!"]],
+            ),
+            2,
+          ),
+          (this.state = "chase"),
+          (this.timer = 6),
+          (this._susp = 0),
+          this.game.dangerSpike(this));
+      }
       threat() {
-        return this.kind === "hater" && this.state === "attack" ? Et(1 - this.dP() / 16, 0.25, 0.8) : 0;
+        return this.kind === "hater" && this.state === "attack"
+          ? Et(1 - this.dP() / 16, 0.25, 0.8)
+          : this.kind === "shop" && this.state === "chase"
+            ? 0.6
+            : this.state === "shoo" || this.state === "chase"
+              ? 0.3
+              : 0;
       }
     },
     ro = class {
@@ -30095,6 +30419,127 @@ ${L2}`,
       },
     },
     pr = "es";
+  // Automatic weather: clear -> cloudy -> rain -> storm, with rain streaks, gloom, lightning and thunder
+  var Wx = class {
+    constructor(t) {
+      ((this.g = t), (this.rain = 0), (this.gloom = 0), (this.wind = 0), (this.flash = 0), (this.boltT = 6));
+      let e = (this.N = 2200),
+        i = new Jt();
+      ((this.posArr = new Float32Array(e * 6)), i.setAttribute("position", new ae(this.posArr, 3)), (this.geo = i));
+      this.drops = new Float32Array(e * 3);
+      for (let n = 0; n < e; n++)
+        this.drops.set([(Math.random() - 0.5) * 40, Math.random() * 24, (Math.random() - 0.5) * 40], n * 3);
+      ((this.lines = new ws(
+        i,
+        new Nn({ color: 11322568, transparent: !0, opacity: 0, depthWrite: !1 }),
+      )),
+        (this.lines.frustumCulled = !1),
+        (this.lines.visible = !1),
+        t.scene.add(this.lines));
+      let n = t.saveData?.weather;
+      this.set(n && Wx.T[n] ? n : Math.random() < 0.7 ? "clear" : "cloudy", !0);
+    }
+    set(t, e) {
+      let i = Wx.T[t];
+      ((this.kind = t),
+        (this.tRain = i[0]),
+        (this.tGloom = i[1]),
+        (this.tWind = i[2]),
+        (this.timer = (t === "storm" ? 45 : 70) + Math.random() * (t === "storm" ? 50 : 130)));
+      let n = st() === "es";
+      e ||
+        (t === "rain" && this.g.ui.toast(n ? "Empieza a llover\u2026 busca un techo" : "It starts to rain\u2026 find a roof"),
+        t === "storm" && this.g.ui.toast(n ? "\xA1Se viene una tormenta!" : "A storm is rolling in!"),
+        t === "clear" && this.rain > 0.2 && this.g.ui.toast(n ? "Sale el sol" : "The sun comes out"));
+    }
+    next() {
+      let t = Wx.M[this.kind],
+        e = Math.random(),
+        i = 0;
+      for (let [n, s] of t) if (((i += s), e < i)) return n;
+      return "clear";
+    }
+    get icon() {
+      return this.rain > 0.75 && this.kind === "storm" ? "\u26C8" : this.rain > 0.2 ? "\u{1F327}" : this.gloom > 0.3 ? "\u2601" : "\u2600";
+    }
+    covered(t) {
+      for (let e of this.g.world.near(t.x, t.z, 0.3)) if (e.base > t.y + 0.25 && vn(e, t.x, t.z, 0)) return !0;
+      return !!this.g.player.indoors;
+    }
+    update(t) {
+      let e = this.g,
+        i = e.world;
+      ((this.timer -= t),
+        this.timer < 0 && this.set(this.next()),
+        (this.rain = ee(this.rain, this.tRain, 0.12, t)),
+        (this.gloom = ee(this.gloom, this.tGloom, 0.1, t)),
+        (this.wind = ee(this.wind, this.tWind, 0.2, t)));
+      let n = this.gloom;
+      // darken the scene after updateSky() has set the clear-sky values
+      ((i.sun.intensity *= 1 - 0.72 * n),
+        (i.hemi.intensity *= 1 - 0.3 * n),
+        this._gray || (this._gray = new ft(0.42, 0.44, 0.48)),
+        this._gray.setRGB(0.4 - 0.3 * e.night, 0.42 - 0.3 * e.night, 0.46 - 0.3 * e.night),
+        i.skyU.uHor.value.lerp(this._gray, n * 0.75),
+        i.skyU.uZen.value.lerp(this._gray, n * 0.85),
+        i.scene.fog.color.lerp(this._gray, n * 0.7),
+        this._fog || (this._fog = [i.scene.fog.near, i.scene.fog.far]),
+        (i.scene.fog.near = this._fog[0] * (1 - 0.6 * n)),
+        (i.scene.fog.far = this._fog[1] * (1 - 0.55 * n)));
+      // lightning
+      if (((this.flash = Math.max(0, this.flash - t * 2.5)), this.kind === "storm" && this.rain > 0.55)) {
+        if (((this.boltT -= t), this.boltT < 0)) {
+          this.boltT = 4 + Math.random() * 10;
+          let s = Math.random();
+          ((this.flash = 1.1 - s * 0.6), (this.thunderAt = e.time + 0.25 + s * 2.8), (this.thunderD = s));
+        }
+        this.flash > 0 && (i.hemi.intensity += this.flash * 2.5);
+      }
+      this.thunderAt && e.time > this.thunderAt && ((this.thunderAt = 0), e.audio.thunder(this.thunderD));
+      let a = this.covered(e.player.pos);
+      (e.audio.rainLoop(this.rain * (a ? 0.7 : 1), a),
+        this.rain > 0.3 && !a && !e.player.sleeping && (e.player.wetT = Math.max(e.player.wetT, 0.6)));
+      // rain streaks around the camera
+      let o = this.lines,
+        l = Math.floor(this.N * Math.min(1, this.rain * 1.1));
+      if (((o.visible = l > 10), !o.visible)) return;
+      let c = e.camera.position,
+        h = this.drops,
+        u = this.posArr,
+        f = 17 + this.rain * 6,
+        m = this.wind * 5,
+        g = (0.35 + 0.35 * this.rain) / f;
+      for (let x = 0; x < l; x++) {
+        let d = x * 3;
+        ((h[d + 1] -= f * t), (h[d] += m * t), h[d + 1] < -4 && ((h[d + 1] += 24), (h[d] = (Math.random() - 0.5) * 40)));
+        h[d] > 20 && (h[d] -= 40);
+        let y = h[d],
+          w = h[d + 2];
+        // keep drops out of a small bubble around the lens so none cover the screen
+        Math.abs(y) < 2.2 && Math.abs(w) < 2.2 && (y += y < 0 ? -2.2 : 2.2);
+        let p = c.x + y,
+          b = c.y + h[d + 1] - 8,
+          v = c.z + w,
+          _ = x * 6;
+        ((u[_] = p), (u[_ + 1] = b), (u[_ + 2] = v), (u[_ + 3] = p - m * g), (u[_ + 4] = b + f * g), (u[_ + 5] = v));
+      }
+      (this.geo.setDrawRange(0, l * 2),
+        (this.geo.attributes.position.needsUpdate = !0),
+        (o.material.opacity = 0.14 + this.rain * 0.22),
+        o.material.color.setRGB(0.62 + e.night * -0.3, 0.68 - e.night * 0.3, 0.8 - e.night * 0.3));
+    }
+    dispose() {
+      (this.g.scene.remove(this.lines), this.geo.dispose(), this.lines.material.dispose(), this.g.audio.rainLoop(0));
+    }
+  };
+  // [rain, gloom, wind] targets and Markov transitions
+  Wx.T = { clear: [0, 0, 0.1], cloudy: [0, 0.5, 0.35], rain: [0.65, 0.72, 0.45], storm: [1, 0.93, 1] };
+  Wx.M = {
+    clear: [["clear", 0.35], ["cloudy", 0.45], ["rain", 0.2]],
+    cloudy: [["clear", 0.35], ["rain", 0.4], ["storm", 0.15], ["cloudy", 0.1]],
+    rain: [["cloudy", 0.45], ["storm", 0.3], ["clear", 0.15], ["rain", 0.1]],
+    storm: [["rain", 0.6], ["cloudy", 0.4]],
+  };
   function oo(r) {
     ((pr = vh[r] ? r : "es"), (document.documentElement.lang = pr));
   }
@@ -31094,7 +31539,7 @@ ${L2}`,
           },
           look: { skin: "#d8ad8c", shirt: "#8e5b8a", pants: "#3b3b44", hair: "#b8b8b8", bun: !0, apron: !0, old: !0 },
           female: !0,
-          voice: { pitch: 1.35, rate: 0.95 },
+          voice: { pitch: 1.05, rate: 0.9 },
         })),
           this.humans.push(this.gladys));
         let v = ["hose", "broom", "chancla"];
@@ -31114,7 +31559,7 @@ ${L2}`,
                 cap: !w && h() < 0.3 ? pe(["#c0392b", "#2c3e50"]) : null,
                 old: h() < 0.5,
               },
-              voice: w ? { pitch: 1.2, rate: 1.05 } : { pitch: 0.75, rate: 1 },
+              voice: w ? { pitch: 1.02, rate: 1 } : { pitch: 0.82, rate: 0.95 },
             }),
           );
         }
@@ -31127,7 +31572,7 @@ ${L2}`,
               look: { ...b(), kid: M, cap: h() < 0.2 ? "#2c3e50" : null },
               prop: M ? null : pe(["bag", "phone", null]),
               name: M ? (st() === "es" ? "Ni\xF1o" : "Kid") : st() === "es" ? "Vecino" : "Neighbor",
-              voice: M ? { pitch: 1.7, rate: 1.1 } : { pitch: h() < 0.5 ? 0.85 : 1.15, rate: 1 },
+              voice: M ? { pitch: 1.45, rate: 1.08 } : { pitch: h() < 0.5 ? 0.9 : 1.04, rate: 0.98 },
             }),
           );
         }
@@ -31242,6 +31687,7 @@ ${L2}`,
               (this.guideArrow.visible = !1),
               this.scene.add(this.guideArrow));
           })(),
+          this.buildSpots(),
           this.updateSectorRings(),
           this.audio.ambience(t.style),
           this
@@ -31339,9 +31785,12 @@ ${L2}`,
           a = t.voice || {},
           o = t.female ?? a.pitch > 1.1,
           l = (this.speech.esVoices?.length || 0) > 1,
+          h = a.pitch ?? 1,
           c = this.speech.say(n, {
-            pitch: l ? (a.pitch ?? 1) * (o ? 0.85 : 1.1) : (a.pitch ?? 1),
-            rate: a.rate ?? 1,
+            // with gendered voices available keep pitch near natural so adults sound like adults
+            pitch: l ? 1 + (h - 1) * (t.kind === "kid" ? 0.8 : 0.35) : h,
+            rate: (a.rate ?? 1) * 0.96,
+            voiceIdx: t.vIdx ?? (t.vIdx = Math.floor(Math.random() * 97)),
             vol: Et(1.2 - t.dP() / 25, 0.15, 1),
             pos: t.pos,
             priority: i,
@@ -31576,6 +32025,7 @@ ${L2}`,
         return n;
       }
       playerAttack(t) {
+        this.player.clawBuffT > 0 && (t = { ...t, dmg: t.dmg * 1.25 });
         let e = this.player,
           i = e.pos,
           n = !1,
@@ -31828,6 +32278,320 @@ ${L2}`,
           i
         );
       }
+      // ---------- interactive spots: scratching (trees, sofas, sisal post) and catnip ----------
+      buildSpots() {
+        let t = this.world,
+          e = Ie(777),
+          i = (this.spots = []),
+          n = Hn(3),
+          s = (l, c) => l.x !== void 0 && t.inBounds(l.x, l.z, 4) && t.isFree(l.x, l.z, c),
+          a = new Wt();
+        (this.scene.add(a), (this.spotGroup = a));
+        // sisal scratching post next to the home box
+        {
+          let l = null;
+          for (let c = 0; c < 40 && !l; c++) {
+            let h = e() * 6.28,
+              u = 2.5 + e() * 3,
+              f = { x: this.home.x + Math.cos(h) * u, z: this.home.z + Math.sin(h) * u };
+            s(f, 0.6) && (l = f);
+          }
+          if (l) {
+            let c = new Wt(),
+              h = t.heightAt(l.x, l.z),
+              u = new nt(new Te(0.09, 0.09, 0.75, 12), natMat(0, 0));
+            ((u.material.color = new ft("#c9a86a")), (u.position.y = 0.42), (u.castShadow = !0), c.add(u));
+            let f = new nt(new qt(0.5, 0.06, 0.5), new jt({ color: "#7a5a44", roughness: 0.9 }));
+            ((f.position.y = 0.03), c.add(f));
+            let m = new nt(new qt(0.34, 0.05, 0.34), new jt({ color: "#8a6a9a", roughness: 1 }));
+            ((m.position.y = 0.82), c.add(m), c.position.set(l.x, h, l.z), a.add(c),
+              i.push({ kind: "scratch", sub: "post", x: l.x, z: l.z, y: h, r: 0.9, obj: c }));
+          }
+        }
+        // discarded sofas on the sidewalk (very Santiago)
+        let o = ["#6b3b3b", "#3f5a6b", "#6b6444", "#4f4f55", "#7a5a3a", "#355a45"];
+        for (let l = 0, c = 0; l < 8 && c < 200; c++) {
+          let h = t.randomStreetPoint(e, (x) => x.type === "residential" || x.type === "living_street"),
+            u = e() * 6.28,
+            f = { x: h.x + Math.cos(u) * 2.6, z: h.z + Math.sin(u) * 2.6 };
+          let g0 = Math.hypot(f.x - this.home.x, f.z - this.home.z);
+          if (!s(f, 1.3) || g0 < 12 || (l < 4 && g0 > 110 && c < 150)) continue;
+          l++;
+          let m = new Wt(),
+            g = new jt({ color: e.pick(o), roughness: 1 }),
+            d = (x, y, M, w, P, D) => {
+              let N = new nt(new qt(x, y, M), g);
+              return (N.position.set(w, P, D), (N.castShadow = N.receiveShadow = !0), m.add(N), N);
+            };
+          (d(1.7, 0.42, 0.8, 0, 0.25, 0), d(1.7, 0.6, 0.22, 0, 0.62, -0.3), d(0.2, 0.3, 0.8, -0.85, 0.58, 0), d(0.2, 0.3, 0.8, 0.85, 0.58, 0),
+            d(0.78, 0.12, 0.62, -0.4, 0.5, 0.06), d(0.78, 0.12, 0.62, 0.4, 0.5, 0.06));
+          let x = t.heightAt(f.x, f.z);
+          (m.position.set(f.x, x, f.z), (m.rotation.y = e() * 6.28), (m.rotation.z = (e() - 0.5) * 0.06), a.add(m),
+            i.push({ kind: "scratch", sub: "sofa", x: f.x, z: f.z, y: x, r: 1.5, obj: m }));
+        }
+        // catnip patches: one near home, the rest in parks and yards
+        let l = this.zone.polys.filter((c) => c.kind === "leisure:park" || c.kind === "landuse:village_green" || c.kind === "landuse:grass"),
+          c = [];
+        for (let h = 0; h < 60 && c.length < 1; h++) {
+          let u = e() * 6.28,
+            f = 6 + e() * 14,
+            m = { x: this.home.x + Math.cos(u) * f, z: this.home.z + Math.sin(u) * f };
+          s(m, 0.8) && c.push(m);
+        }
+        for (let h = 0; h < 400 && c.length < 12; h++) {
+          let u = null;
+          if (l.length && e() < 0.6) {
+            let f = e.pick(l),
+              [m, g, x, d] = Zi(f.pts),
+              y = { x: Dt(m, x, e()), z: Dt(g, d, e()) };
+            Ii(y.x, y.z, f.pts) && (u = y);
+          } else if (t.yards.length) {
+            let f = e.pick(t.yards);
+            u = { x: f.cx + f.along[0] * (e() - 0.5) * f.hl, z: f.cz + f.along[1] * (e() - 0.5) * f.hl };
+          }
+          u && s(u, 0.8) && c.every((f) => Math.hypot(f.x - u.x, f.z - u.z) > 25) && c.push(u);
+        }
+        let h = lumpy(smoothGeo(new Na(1, 1)), n, 0.3),
+          u = new jt({ color: "#7d9c6e", roughness: 0.9 }),
+          f = new jt({ color: "#b79be0", roughness: 0.7, emissive: "#3a2a55", emissiveIntensity: 0.4 }),
+          m = new Ci(0.03, 0.14, 5);
+        for (let g of c) {
+          let x = new Wt(),
+            d = t.heightAt(g.x, g.z);
+          for (let y = 0; y < 9; y++) {
+            let M = (y / 9) * 6.28 + e(),
+              w = y ? 0.12 + e() * 0.18 : 0,
+              P = new nt(h, u);
+            (P.scale.set(0.13 + e() * 0.05, 0.1 + e() * 0.06, 0.13 + e() * 0.05), P.position.set(Math.cos(M) * w, 0.08, Math.sin(M) * w), x.add(P));
+            let D = new nt(m, f);
+            (D.position.set(Math.cos(M) * w, 0.24 + e() * 0.06, Math.sin(M) * w), x.add(D));
+          }
+          (x.position.set(g.x, d, g.z), a.add(x), i.push({ kind: "nip", x: g.x, z: g.z, y: d, r: 1.1, obj: x, left: 3, regrow: 0 }));
+        }
+        this.buildShops(e);
+      }
+      // ---------- corner shops ("almacenes"): a watchful owner, food on the counter to steal ----------
+      buildShops(t) {
+        let e = this.world,
+          i = (this.shops = []),
+          n = new Set(this.humans.filter((d) => d.house).map((d) => d.house)),
+          s = e.houses
+            .filter(
+              (d) =>
+                d.front &&
+                d.front.depth > 2.2 &&
+                !n.has(d) &&
+                Math.hypot(d.cx - this.home.x, d.cz - this.home.z) > 18 &&
+                e.inBounds(d.cx, d.cz, 30),
+            )
+            .sort((d, p) => Math.hypot(d.cx - this.home.x, d.cz - this.home.z) - Math.hypot(p.cx - this.home.x, p.cz - this.home.z)),
+          a = ["Don Tito", "La Se\xF1ora Juanita", "Do\xF1a Rosa", "El Chino", "Don Manolo", "La Vecina"],
+          o = (d, p = 256, b = 64) => {
+            let v = gn(p, b),
+              _ = v.getContext("2d");
+            return (d(_, p, b), yn(v, { repeat: !1 }));
+          },
+          l = new jt({ color: "#8a6440", roughness: 0.85 }),
+          c = new jt({ color: "#d9d2c4", roughness: 0.9 });
+        for (let d of s) {
+          if (i.length >= 4) break;
+          if (i.some((M) => Math.hypot(M.x - d.cx, M.z - d.cz) < 90)) continue;
+          let p = d.front,
+            b = Math.min(p.depth - 0.9, 2.4),
+            v = p.fx + p.nx * b,
+            _ = p.fz + p.nz * b;
+          if (!e.isFree(v, _, 1.2)) continue;
+          let E = e.heightAt(v, _),
+            S = Math.atan2(p.nx, p.nz),
+            T = new Wt(),
+            A = a[i.length % a.length],
+            k = (M, w, P, D, N, z, G) => {
+              let B = new nt(new qt(M, w, P), G);
+              return (B.position.set(D, N, z), (B.castShadow = B.receiveShadow = !0), T.add(B), B);
+            };
+          // counter (climbable), shelves, awning, sign, fruit crates
+          (k(2.4, 0.9, 0.6, 0, 0.45, 0, l),
+            k(2.5, 0.06, 0.7, 0, 0.93, 0, c),
+            k(2.6, 1.9, 0.35, 0, 0.95, -1.35, l));
+          for (let M = 0; M < 3; M++) {
+            k(2.5, 0.04, 0.34, 0, 0.45 + M * 0.55, -1.2, c);
+            for (let w = 0; w < 7; w++)
+              k(0.18, 0.26, 0.16, -1.05 + w * 0.35, 0.6 + M * 0.55, -1.2, new jt({ color: t.pick(["#c0392b", "#f1c40f", "#2e86de", "#27ae60", "#e67e22", "#ecf0f1"]), roughness: 0.6 }));
+          }
+          let y = o((M, w, P) => {
+            for (let D = 0; D < 8; D++) ((M.fillStyle = D % 2 ? "#f4efe6" : t.pick(["#c0392b", "#1f6f8b", "#2e7d32"])), M.fillRect((D * w) / 8, 0, w / 8, P));
+          }, 128, 16);
+          {
+            let M = new nt(new qt(2.9, 0.05, 1.6), new jt({ map: y, roughness: 0.9 }));
+            (M.position.set(0, 2.25, -0.35), (M.rotation.x = 0.28), (M.castShadow = !0), T.add(M));
+            for (let w of [-1.35, 1.35]) k(0.07, 2.3, 0.07, w, 1.15, 0.35, l);
+          }
+          {
+            let M = o((P, D, N) => {
+                ((P.fillStyle = "#16151b"), P.fillRect(0, 0, D, N), (P.fillStyle = "#ffc861"), (P.font = "700 30px Barlow Condensed, Arial Narrow, sans-serif"),
+                  (P.textAlign = "center"), (P.textBaseline = "middle"), P.fillText(`ALMAC\xC9N ${A.toUpperCase()}`, D / 2, N / 2 + 2));
+              }),
+              w = new nt(new qt(2.2, 0.42, 0.05), [c, c, c, c, new jt({ map: M, roughness: 0.7 }), c]);
+            (w.position.set(0, 2.62, 0.3), T.add(w));
+          }
+          for (let M of [-1, 1]) {
+            k(0.55, 0.3, 0.4, M * 1.65, 0.15, 0.45, l);
+            for (let w = 0; w < 6; w++) {
+              let P = new nt(new ge(0.07, 8, 6), new jt({ color: M < 0 ? "#f39c12" : "#c0392b", roughness: 0.5 }));
+              (P.position.set(M * 1.65 + (w % 3 - 1) * 0.15, 0.36, 0.45 + (w < 3 ? -0.08 : 0.08)), T.add(P));
+            }
+          }
+          (T.position.set(v, E, _), (T.rotation.y = S), this.spotGroup.add(T), T.updateMatrixWorld(!0));
+          let M = (w, P) => ({ x: v + p.nx * P + p.nz * w, z: _ + p.nz * P - p.nx * w });
+          {
+            let w = M(0, 0);
+            e.addCol({ shape: "box", kind: "wall", cx: w.x, cz: w.z, ux: p.nz, uz: -p.nx, hu: 1.2, hv: 0.3, base: E, top: E + 0.96 });
+            let P = M(0, -1.35);
+            e.addCol({ shape: "box", kind: "wall", cx: P.x, cz: P.z, ux: p.nz, uz: -p.nx, hu: 1.3, hv: 0.18, base: E, top: E + 1.9 });
+          }
+          // shopkeeper standing behind the counter
+          let w = M(0, -0.75),
+            P = t() < 0.5,
+            D = new Ls(this, {
+              kind: "shop",
+              name: A,
+              female: P,
+              look: { skin: t.pick(["#d8ad8c", "#c89a78", "#a8785a"]), shirt: t.pick(["#f0f0f0", "#8e5b8a", "#2e86de"]), pants: "#3b3b44", hair: t.pick(["#2b211c", "#b8b8b8", "#5a3a22"]), apron: !0, old: t() < 0.5 },
+              voice: P ? { pitch: 1.02, rate: 0.95 } : { pitch: 0.85, rate: 0.95 },
+            });
+          (D.place(w.x, w.z), (D.yaw = S), (D.post = w), (D.state = "watch"), (D.timer = 4));
+          let N = new nt(new ge(0.07, 10, 8), new we({ color: 16730698 }));
+          ((N.position.y = 2.05), D.obj.add(N), (D.eye = N), this.humans.push(D));
+          let z = { x: v, z: _, y: E, nx: p.nx, nz: p.nz, name: A, keeper: D, items: [] };
+          D.shop = z;
+          let G = [
+            ["longaniza", "#7a3b24", (B) => (B.scale.set(0.09, 0.09, 0.32), (B.rotation.y = 0.4))],
+            ["marraqueta", "#d9a55a", (B) => B.scale.set(0.16, 0.1, 0.2)],
+            ["queso", "#f2d15c", (B) => B.scale.set(0.14, 0.08, 0.14)],
+          ];
+          G.forEach(([B, Q, et], ut) => {
+            let wt = new nt(new ge(1, 12, 8), new jt({ color: Q, roughness: 0.6 }));
+            (et(wt), wt.position.set(-0.7 + ut * 0.7, 1.02, 0.05), (wt.castShadow = !0), T.add(wt));
+            let pt = M(-0.7 + ut * 0.7, 0.05),
+              $ = { kind: "shopitem", item: B, x: pt.x, z: pt.z, y: E + 0.3, r: 1.15, obj: wt, shop: z, taken: !1 };
+            (z.items.push($), this.spots.push($));
+          });
+          i.push(z);
+        }
+      }
+      shopSteal(t) {
+        let e = this.player,
+          i = t.shop,
+          n = i.keeper,
+          s = st() === "es";
+        if (t.taken) {
+          this.ui.toast(s ? "Ya te llevaste eso. Ma\xF1ana reponen" : "Already taken. They restock tomorrow");
+          return;
+        }
+        if (n.obj.visible && n.state === "watch" && n.dP() < 7) {
+          (n.catch("seen"), this.ui.toast(s ? "\xA1Te pill\xF3 mirando! Espera a que se distraiga (luz verde)" : "Caught you! Wait until they look away (green light)"));
+          return;
+        }
+        ((t.taken = !0),
+          (t.obj.visible = !1),
+          (e.eatT = 1.5),
+          (e.hunger = Math.min(100, e.hunger + 45)),
+          (e.hp = Math.min(e.maxHp, e.hp + e.maxHp * 0.15)),
+          this.audio.crunch(e.pos),
+          this.addXP(18, s ? `\xA1${t.item}!` : `${t.item}!`),
+          this.ui.toast(
+            s ? `Robaste una ${t.item} del almac\xE9n de ${i.name}. \xA1Corre!` : `You stole a ${t.item} from ${i.name}'s shop. Run!`,
+          ),
+          n.obj.visible && n.dP() < 10 && ((n.state = "turn"), (n.timer = 0.9)));
+      }
+      restockShops() {
+        for (let t of this.shops || []) for (let e of t.items) ((e.taken = !1), (e.obj.visible = !0));
+      }
+      nearSpot(t) {
+        let e = null,
+          i = 1 / 0;
+        for (let n of this.spots) {
+          let s = Math.hypot(n.x - t.x, n.z - t.z);
+          s < n.r && s < i && Math.abs(t.y - n.y) < 1.2 && ((i = s), (e = n));
+        }
+        if (e) return e;
+        for (let n of this.world.near(t.x, t.z, 1)) {
+          if (n.kind !== "tree" || !n.tree || t.y - n.base > 0.8) continue;
+          let s = Math.hypot(n.cx - t.x, n.cz - t.z);
+          if (s < n.r + 0.55)
+            return (n._spot || (n._spot = { kind: "scratch", sub: "tree", x: n.cx, z: n.cz, y: n.base, r: n.r + 0.55 }));
+        }
+        return null;
+      }
+      spotLabel(t) {
+        let e = st() === "es";
+        return t.kind === "shopitem"
+          ? t.taken
+            ? e ? "Vac\xEDo" : "Empty"
+            : `${e ? "Robar" : "Steal"}: ${t.item}`
+          : t.kind === "nip"
+          ? t.left > 0
+            ? e ? "Comer hierba gatera" : "Eat catnip"
+            : e ? "Hierba gatera (rebrotando)" : "Catnip (regrowing)"
+          : e
+            ? { tree: "Rascar el tronco", sofa: "Rascar el sill\xF3n", post: "Rascar el poste" }[t.sub]
+            : { tree: "Scratch the trunk", sofa: "Scratch the sofa", post: "Scratch the post" }[t.sub];
+      }
+      useSpot(t) {
+        if (t.kind === "shopitem") return this.shopSteal(t);
+        let e = this.player,
+          i = st() === "es";
+        if (t.kind === "scratch") {
+          if (e.scratchT > 0) return;
+          ((e.yaw = Math.atan2(t.x - e.pos.x, t.z - e.pos.z)),
+            (e.scratchT = 2.4),
+            (e.sitting = !1),
+            this.audio.sample("scratch", { pos: e.pos, vol: 0.7 }),
+            this.vfx.dust && this.vfx.dust(e.pos.clone().setY(e.pos.y + 0.35)));
+          let n = !(e.clawBuffT > 0);
+          ((e.clawBuffT = 240),
+            (e.stamina = Math.min(e.maxStamina, e.stamina + e.maxStamina * 0.35)),
+            n && this.ui.toast(i ? "Garras afiladas: +25% de da\xF1o por un rato" : "Sharpened claws: +25% damage for a while"),
+            t._day !== this.day && ((t._day = this.day), this.addXP(6, i ? "Rasgu\xF1o" : "Scratch", !0)));
+          return;
+        }
+        if (t.left <= 0) {
+          this.ui.toast(i ? "Ya no queda hierba gatera aqu\xED. Vuelve m\xE1s tarde" : "No catnip left here. Come back later");
+          return;
+        }
+        ((t.left -= 1),
+          (t.regrow = this.time + 90),
+          t.obj.scale.setScalar(0.45 + t.left * 0.18),
+          (e.nip = (e.nip || 0) + 1),
+          (e.eatT = 1.2),
+          this.audio.crunch(e.pos),
+          this.audio.purr(!0),
+          setTimeout(() => this.audio.purr(!1), 2600),
+          this.vfx.hearts(e.pos.clone().setY(e.pos.y + 0.5)),
+          (e.stamina = e.maxStamina));
+        let n = e.nip;
+        this.ui.toast(
+          n < 1.5
+            ? i ? "\xA1Hierba gatera! Tu gato se relaja y ronronea" : "Catnip! Your cat relaxes and purrs"
+            : n < 2.5
+              ? i ? "Todo se ve\u2026 raro. Los colores respiran" : "Everything looks\u2026 weird. The colours are breathing"
+              : i ? "\xA1Demasiada hierba gatera! El barrio se derrite" : "Way too much catnip! The neighbourhood is melting",
+        );
+      }
+      updateSpots(t, e) {
+        let i = this.player;
+        for (let n of this.spots)
+          n.kind === "nip" && n.left < 3 && this.time > n.regrow && ((n.left += 1), (n.regrow = this.time + 90), n.obj.scale.setScalar(0.45 + n.left * 0.18));
+        if (((i.nip = Math.max(0, (i.nip || 0) - t * 0.016)), i.nip > 1.1)) {
+          let n = Et(i.nip - 1, 0, 1.2);
+          ((this.cam.yaw += Math.sin(this.time * 0.8) * 0.006 * n),
+            (e.x || e.z) && (e.x += Math.sin(this.time * 1.6) * 0.35 * n),
+            this.time > (this._nipMeow || 0) &&
+              ((this._nipMeow = this.time + 3 + Math.random() * 5),
+              this.audio.meow({ pos: i.pos, type: "mrrp", pitch: 0.9 + Math.random() * 0.4, vol: 0.4 })),
+            Math.random() < t * 1.5 && this.vfx.stars && this.vfx.stars(i.pos.clone().setY(i.pos.y + 0.6)));
+        }
+      }
       contextAction() {
         let t = this.player,
           e = t.pos;
@@ -31876,6 +32640,8 @@ ${L2}`,
             : { key: "E", label: `${X("nuzzle")}: ${s.name}`, cat: s };
         if (this.gladys.obj.visible && this.gladys.dP() < 1.8)
           return { key: "E", label: st() === "es" ? "Dejarse regalonear" : "Get petted" };
+        let r = this.nearSpot(e);
+        if (r) return { key: "E", label: this.spotLabel(r), spot: r };
         let a = this.world.sectorAt(e.x, e.z);
         return a && a.bossBeaten && a.owner !== "player" && i(a.post, 3)
           ? { key: "F", label: `${X("mark")}: ${a.name}` }
@@ -31891,6 +32657,7 @@ ${L2}`,
           return;
         }
         if (e.giver) return this.talkTo(e.giver.gid);
+        if (e.spot) return this.useSpot(e.spot);
         let i = t.pos;
         if (t.carrying) {
           let n = t.carrying.kind;
@@ -32387,6 +33154,7 @@ ${L2}`,
             this.hours >= 7 &&
             ((i.sleeping = !1), this.ui.toast(X("dawn") + " " + he({ es: this.cfgName(), en: this.cfgName() }))));
         let c = n.updateSky(this.hours, this.doy, this.camera, a);
+        (this.weather || (this.weather = new Wx(this)), this.weather.update(a));
         if (
           ((this.night = c.night),
           this.audio.ambNight(this.night),
@@ -32434,6 +33202,10 @@ ${L2}`,
           e.markPressed && this.mark(),
           e.restPressed && this.rest(),
           e.matePressed && this.toggleMate(),
+          e.nvPressed && this.toggleNightVision(),
+          this.updateNightVision(t),
+          i.scratchT > 0 && ((e.x = 0), (e.z = 0)),
+          this.updateSpots(a, e),
           i.update(a, e, h),
           (e.x || e.z) &&
             ((this._walked = (this._walked || 0) + i.speed * a),
@@ -32598,6 +33370,9 @@ ${L2}`,
           lowHp: i.hp < i.maxHp * 0.25,
           night: this.night,
           sense: i.senseT > 0,
+          nv: !!i.nv,
+          trip: Et((i.nip || 0) - 1, 0, 1.2),
+          flash: this.weather ? this.weather.flash : 0,
           speedLines: i.speed > 6.5 ? (i.speed - 6.5) / 3 : 0,
         }),
           this.audio.setListener(this.camera),
@@ -32606,10 +33381,43 @@ ${L2}`,
           this.saveT < 0 && ((this.saveT = 60), this.save()),
           this._saveSoon > 0 && ((this._saveSoon -= t), this._saveSoon <= 0 && this.save()));
       }
+      darkness() {
+        // 0 = daylight, 1 = pitch dark; indoors / under dense cover counts as darker
+        return Et(this.night + (this.player.indoors ? 0.55 : 0) + (this.weather ? this.weather.gloom * 0.35 : 0), 0, 1);
+      }
+      toggleNightVision() {
+        let t = this.player,
+          e = st() === "es";
+        if (!t.nv && this.darkness() < 0.35) {
+          (this.ui.toast(e ? "Hay demasiada luz para la visi\xF3n nocturna" : "Too bright for night vision"),
+            this.audio.ui("deny"));
+          return;
+        }
+        ((t.nv = !t.nv),
+          this.audio.ui(t.nv ? "heart" : "click"),
+          this.ui.toast(t.nv ? (e ? "Visi\xF3n nocturna" : "Night vision") : e ? "Visi\xF3n normal" : "Normal vision"),
+          this.ui.barState?.());
+      }
+      updateNightVision(t) {
+        let e = this.player,
+          i = this.darkness();
+        (e.nv && i < 0.2 && ((e.nv = !1), this.ui.toast(st() === "es" ? "Tus pupilas se cierran: ya hay luz" : "Your pupils narrow: it's bright again")),
+          !this._nvHint &&
+            i > 0.65 &&
+            !e.nv &&
+            ((this._nvHint = !0),
+            this.ui.toast(
+              st() === "es"
+                ? `Est\xE1 muy oscuro: pulsa ${this.app.keyLabel("nightvis")} para la visi\xF3n nocturna`
+                : `It's very dark: press ${this.app.keyLabel("nightvis")} for night vision`,
+              5e3,
+            )));
+      }
       cfgName() {
         return X(this.cfg.key || "zoneCustom");
       }
       onNewDay() {
+        this.restockShops();
         this.player.spec.age === "kitten" && this.day - (this.flags.bornDay || 1) >= 2 && this.growPlayer();
         for (let e of this.cats.filter((i) => i.role === "kitten"))
           this.day - (e.born || 0) >= 2 && e.spec.age === "kitten" && this.growKitten(e);
@@ -32800,6 +33608,7 @@ ${L2}`,
             });
         return {
           v: 1,
+          weather: this.weather?.kind,
           zone: this.zoneId,
           spec: this.charSpec,
           name: this.charSpec.name,
@@ -32836,7 +33645,7 @@ ${L2}`,
           t && this.ui.toast(X("saved")));
       }
       dispose() {
-        ((this.disposed = !0), this.save());
+        ((this.disposed = !0), this.save(), this.weather?.dispose(), this.guideArrow && this.scene.remove(this.guideArrow), this.spotGroup && this.scene.remove(this.spotGroup));
         for (let t of [...this.cats, ...this.dogs, ...this.birds, ...this.rats, ...this.humans])
           this.scene.remove(t.obj);
         for (let t of this.cars) (this.scene.remove(t.obj), this.audio.stopEngine(t.id));
@@ -33815,6 +34624,77 @@ ${L2}`,
           n.crickets && n.crickets.gain.gain.setTargetAtTime(n.crickets.base * Math.max(0, t * 1.3 - 0.3), i, 1.5),
           n.wind && n.wind.gain.gain.setTargetAtTime(n.wind.base * (0.7 + t * 0.3), i, 1.5));
       }
+      rainLoop(t, e = !1) {
+        if (!this.ok) return;
+        if (this.samplesReady && this.has("rain") && !this._rainS) {
+          // real rain recordings: light + heavy layers, muffled when under a roof
+          let n = this.ctx.createGain(),
+            a = this.filt("lowpass", 16e3);
+          ((n.gain.value = 0), n.connect(a), a.connect(this.bus.amb));
+          let o = (l) => {
+            let c = this.sample(l, { vol: 0, loop: !0, bus: "amb", verb: 0 });
+            return c ? (c.gain.disconnect(), c.gain.connect(n), c) : null;
+          };
+          ((this._rainS = { g: n, lp: a, light: o("rain"), heavy: this.has("rain_heavy") ? o("rain_heavy") : null }),
+            this._rain && this._rain.g.gain.setTargetAtTime(0, this.now, 0.5));
+        }
+        if (this._rainS) {
+          let n = this._rainS,
+            a = this.now,
+            o = Math.max(0, t),
+            l = Et((o - 0.5) / 0.45, 0, 1);
+          (n.g.gain.setTargetAtTime(o > 0.01 ? 0.55 : 0, a, 1),
+            n.light && n.light.gain.gain.setTargetAtTime(Math.min(1, o * 1.7) * (1 - l * 0.4), a, 1.2),
+            n.heavy && n.heavy.gain.gain.setTargetAtTime(l * 0.9, a, 1.2),
+            n.lp.frequency.setTargetAtTime(e ? 850 : 16e3, a, 0.35));
+          return;
+        }
+        if (!this._rain) {
+          let e = this.ctx,
+            i = e.createGain();
+          ((i.gain.value = 0), i.connect(this.bus.amb));
+          let n = e.createBufferSource();
+          ((n.buffer = this.noiseBuf), (n.loop = !0), n.start());
+          let s = this.filt("highpass", 1100),
+            a = this.filt("lowpass", 7e3);
+          (n.connect(s), s.connect(a), a.connect(i));
+          let o = e.createBufferSource();
+          ((o.buffer = this.brownBuf), (o.loop = !0), o.start());
+          let l = this.filt("lowpass", 420),
+            c = e.createGain();
+          ((c.gain.value = 0.7), o.connect(l), l.connect(c), c.connect(i), (this._rain = { g: i }));
+        }
+        this._rain.g.gain.setTargetAtTime(Math.max(0, t) * 0.32, this.now, 1.2);
+      }
+      thunder(t = 0.5) {
+        if (!this.ok) return;
+        if (this.has("thunder")) {
+          // real thunder: far strikes are quieter, slower and darker
+          let n = this.sample("thunder", { vol: 1.15 - t * 0.7, rate: 1.05 - t * 0.2, bus: "sfx", verb: 0.5 });
+          if (n) {
+            let a = this.filt("lowpass", 9e3 - t * 8e3);
+            (n.gain.disconnect(), n.gain.connect(a), a.connect(n.dest));
+          }
+          return;
+        }
+        let e = this.now,
+          i = t < 0.3,
+          n = this.noise(e, 5, !0),
+          s = this.filt("lowpass", i ? 1400 : 300),
+          a = this.ctx.createGain();
+        if (
+          (this.env(a, e, i ? 0.015 : 0.3, (1.25 - t) * 0.9, 0.25, 3.8),
+          n.connect(s),
+          s.connect(a),
+          a.connect(this.dest(null, "sfx", 0.6)),
+          i)
+        ) {
+          let o = this.noise(e, 0.4),
+            l = this.filt("highpass", 700),
+            c = this.ctx.createGain();
+          (this.env(c, e, 0.004, 0.5, 0.03, 0.35), o.connect(l), l.connect(c), c.connect(this.dest(null, "sfx", 0.4)));
+        }
+      }
       rooster(t) {
         this.samplesReady && this.sample("rooster", { pos: t, vol: 0.6, bus: "amb", verb: 0.3, ref: 25 });
       }
@@ -34195,6 +35075,7 @@ ${L2}`,
         if (
           ((this.audio = t),
           (this.voice = null),
+          (this.pref = ""),
           (this.has = "speechSynthesis" in window),
           (this.busyUntil = 0),
           (this.vol = 1),
@@ -34206,33 +35087,50 @@ ${L2}`,
           } catch {}
         }
       }
+      static score(t) {
+        // neural/natural voices sound adult and warm; Google's default Spanish voice sounds young and robotic
+        let e = t.lang.replace("_", "-").toLowerCase(),
+          i = /natural|neural|online|premium|enhanced|mejorad|wavenet/i.test(t.name) ? 100 : 0;
+        return (
+          i +
+          (e === "es-cl" ? 30 : /^es-(419|us|mx|ar|co|pe|uy|ve|ec|bo|py)/.test(e) ? 20 : e === "es-es" ? 8 : 5) +
+          (/google/i.test(t.name) ? -30 : 0) +
+          (/microsoft|apple|siri/i.test(t.name) ? 6 : 0)
+        );
+      }
       pick() {
         let t = speechSynthesis.getVoices();
         this.all = t;
-        let e = ["es-CL", "es-419", "es-US", "es-MX", "es-AR", "es-CO", "es-ES", "es"];
-        for (let n of e) {
-          let s = t.find((a) => a.lang.replace("_", "-").toLowerCase().startsWith(n.toLowerCase()));
-          if (s) {
-            this.voice = s;
-            break;
-          }
-        }
-        let i = this.voice ? this.voice.lang.toLowerCase() : "es";
-        this.esVoices = t.filter((n) => n.lang.toLowerCase() === i);
+        let e = t
+          .filter((i) => i.lang.toLowerCase().startsWith("es"))
+          .map((i) => ({ v: i, s: po.score(i) }))
+          .sort((i, n) => n.s - i.s);
+        ((this.ranked = e),
+          (this.esVoices = e.map((i) => i.v)),
+          (this.voice = this.esVoices[0] || null),
+          this.setPref(this.pref));
+      }
+      setPref(t) {
+        ((this.pref = t || ""), (this.forced = (t && this.esVoices?.find((e) => e.name === t)) || null));
       }
       get label() {
-        return this.voice ? `${this.voice.name} (${this.voice.lang})` : null;
+        let t = this.forced || this.voice;
+        return t ? `${t.name} (${t.lang})` : null;
       }
       speaking() {
         return performance.now() < this.busyUntil;
       }
-      voiceFor(t) {
-        let e = this.esVoices?.length ? this.esVoices : this.voice ? [this.voice] : [];
-        if (e.length < 2 || t === void 0) return this.voice;
-        let i =
-            /catalina|sabina|helena|paulina|laura|elvira|dalia|elena|lucia|monica|paloma|camila|valentina|francisca|sofia|isabel|female|mujer/i,
-          n = /lorenzo|jorge|pablo|raul|alvaro|diego|gonzalo|tomas|andres|enrique|juan|carlos|male|hombre/i;
-        return e.find((s) => (t ? i : n).test(s.name)) || this.voice;
+      voiceFor(t, e = 0) {
+        if (this.forced) return this.forced;
+        let i = this.ranked || [];
+        if (i.length < 2 || t === void 0) return this.voice;
+        let n =
+            /catalina|sabina|helena|paulina|laura|elvira|dalia|elena|lucia|monica|m\u00f3nica|paloma|camila|valentina|francisca|sofia|isabel|beatriz|candela|larissa|marina|nuria|renata|salome|abril|marisol|ximena|angelica|female|mujer/i,
+          s = /lorenzo|jorge|pablo|raul|alvaro|diego|gonzalo|tomas|andres|enrique|juan|carlos|gerardo|cecilio|liberto|luciano|pelayo|yago|alonso|arnau|emilio|male|hombre/i,
+          a = i.filter((l) => (t ? n : s).test(l.v.name));
+        if (!a.length) return this.voice;
+        let o = a.filter((l) => l.s >= a[0].s - 12);
+        return o[Math.abs(e | 0) % o.length].v;
       }
       say(
         t,
@@ -34246,7 +35144,7 @@ ${L2}`,
             let h = new SpeechSynthesisUtterance(t);
             return (
               (h.lang = this.voice.lang),
-              (h.voice = this.voiceFor(l)),
+              (h.voice = this.voiceFor(l, o)),
               h.voice.lang.toLowerCase().startsWith("es") || (h.voice = this.voice),
               (h.pitch = Et(e, 0.1, 2)),
               (h.rate = Et(i, 0.5, 1.6)),
@@ -34999,6 +35897,9 @@ ${L2}`,
           (this.sense = 0),
           (this.wasted = 0),
           (this.gray = 0),
+          (this.nv = 0),
+          (this.trip = 0),
+          (this.flash = 0),
           (this.dom = document.getElementById("fx")),
           (this.numbers = []),
           (this.speedCanvas = document.getElementById("speedlines")),
@@ -35030,14 +35931,37 @@ ${L2}`,
               uSense: { value: 0 },
               uVig: { value: 0.28 },
               uGray: { value: 0 },
+              uNV: { value: 0 },
+              uTrip: { value: 0 },
+              uFlash: { value: 0 },
             },
             vertexShader:
               "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }",
-            fragmentShader: `uniform sampler2D tDiffuse; uniform float uDanger, uTime, uHurt, uDesat, uCA, uWet, uSense, uVig, uGray; varying vec2 vUv;
+            fragmentShader: `uniform sampler2D tDiffuse; uniform float uDanger, uTime, uHurt, uDesat, uCA, uWet, uSense, uVig, uGray, uNV, uTrip, uFlash; varying vec2 vUv;
+        vec3 hueRot(vec3 c, float a){ const vec3 k = vec3(0.57735); float ca = cos(a); return c*ca + cross(k, c)*sin(a) + k*dot(k, c)*(1.0-ca); }
+        float h21(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
         void main(){ vec2 uv = vUv; vec2 c = uv - 0.5; float r = length(c);
           if (uWet > 0.0) uv += vec2(sin(uv.y*40.0+uTime*6.0), cos(uv.x*35.0+uTime*5.0)) * 0.0025 * uWet;
-          float ca = uCA * 0.012 * r;
+          if (uTrip > 0.0) { // catnip: breathing, wobbly, melting world
+            uv += vec2(sin(uv.y*9.0 + uTime*1.7 + sin(uv.x*5.0+uTime)), cos(uv.x*8.0 - uTime*1.3)) * 0.018 * uTrip;
+            uv = 0.5 + (uv - 0.5) * (1.0 - 0.035*uTrip*sin(uTime*1.1)); }
+          float ca = uCA * 0.012 * r + uTrip * 0.02;
           vec3 col = vec3(texture2D(tDiffuse, uv + c*ca).r, texture2D(tDiffuse, uv).g, texture2D(tDiffuse, uv - c*ca).b);
+          if (uTrip > 0.0) {
+            vec3 ghost = texture2D(tDiffuse, uv + vec2(sin(uTime*0.9), cos(uTime*0.7))*0.02*uTrip).rgb;
+            col = mix(col, max(col, ghost), 0.45*uTrip);
+            vec3 tc = hueRot(col, uTime*0.9 + r*7.0 + sin(uv.x*6.0+uTime)*1.5);
+            float l0 = dot(tc, vec3(0.3,0.59,0.11)); tc = mix(vec3(l0), tc, 1.9) * (1.05 + 0.15*sin(r*30.0 - uTime*4.0));
+            col = mix(col, clamp(tc, 0.0, 1.5), uTrip);
+          }
+          if (uNV > 0.0) { // cat night vision: amplified, blue-green, low detail on reds, film grain
+            vec3 a = col * 4.2 / (1.0 + col * 2.2);
+            float lm = dot(a, vec3(0.15, 0.6, 0.25));
+            vec3 nv = vec3(lm) * vec3(0.72, 1.05, 0.98) + a * vec3(0.05, 0.2, 0.2);
+            nv += (h21(uv*vec2(913.0,577.0) + fract(uTime*7.0)) - 0.5) * 0.07;
+            col = mix(col, nv, uNV);
+          }
+          col += vec3(0.75, 0.8, 1.0) * uFlash;
           float lum = dot(col, vec3(0.299,0.587,0.114));
           col = mix(col, vec3(lum), uDesat);
           col = mix(col, vec3(lum*0.9, lum*1.05, lum*0.7) * 1.25 + vec3(0.02,0.03,0.0), uSense*0.55);
@@ -35345,10 +36269,20 @@ ${L2}`,
           (this.wet = Dt(this.wet, n.wet ? 1 : 0, 1 - Math.exp(-3 * e))),
           (this.sense = Dt(this.sense, n.sense ? 1 : 0, 1 - Math.exp(-5 * e))),
           (this.gray = Dt(this.gray, this.wasted ? 1 : 0, 1 - Math.exp(-(this.wasted ? 2.2 : 6) * e))),
+          (this.nv = Dt(this.nv, n.nv ? 1 : 0, 1 - Math.exp(-4 * e))),
+          (this.trip = Dt(this.trip, n.trip || 0, 1 - Math.exp(-1.5 * e))),
+          (this.flash = Math.max(n.flash || 0, this.flash - e * 3)),
           !this.feline)
         ) {
           let l = document.getElementById("gl"),
-            c = this.gray > 0.02 ? `grayscale(${this.gray.toFixed(2)})` : "";
+            c = [
+              this.gray > 0.02 ? `grayscale(${this.gray.toFixed(2)})` : "",
+              this.nv > 0.02 ? `brightness(${(1 + this.nv * 1.6).toFixed(2)}) saturate(${(1 - this.nv * 0.6).toFixed(2)}) hue-rotate(${Math.round(this.nv * 25)}deg)` : "",
+              this.trip > 0.02 ? `hue-rotate(${Math.round((i * 60) % 360)}deg) saturate(${(1 + this.trip * 1.5).toFixed(2)})` : "",
+              this.flash > 0.02 ? `brightness(${(1 + this.flash * 1.5).toFixed(2)})` : "",
+            ]
+              .filter(Boolean)
+              .join(" ");
           l && l.style.filter !== c && (l.style.filter = c);
         }
         if (this.feline) {
@@ -35361,6 +36295,9 @@ ${L2}`,
             (l.uSense.value = this.sense),
             (l.uDesat.value = Et(this.danger * 0.35 + (n.lowHp ? 0.45 : 0), 0, 0.8)),
             (l.uCA.value = this.danger * 1.2 + this.hurt * 2),
+            (l.uNV.value = this.nv),
+            (l.uTrip.value = this.trip),
+            (l.uFlash.value = this.flash),
             (this.bloom.strength = 0.3 + n.night * 0.45 + this.hurt * 0.4));
         } else {
           let l = document.getElementById("dangerOverlay");
@@ -35523,6 +36460,16 @@ ${L2}`,
         input: "map",
         mode: "ui",
         icon: We('<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'),
+      },
+      nightvis: {
+        name: oe("Visi\xF3n nocturna", "Night vision"),
+        desc: oe(
+          "En la oscuridad, tus ojos de gato amplifican la luz. Tambi\xE9n con B.",
+          "In the dark, your cat eyes amplify the light. Also with B.",
+        ),
+        input: "nightvis",
+        mode: "press",
+        icon: We('<path d="M2 12c6-8 14-8 20 0-6 8-14 8-20 0z"/><circle cx="12" cy="12" r="3.2"/><path d="M19 3l-1.2 2.4M21.5 6.5l-2.4.8"/>'),
       },
       music: {
         name: oe("Spotify", "Spotify"),
@@ -35752,6 +36699,7 @@ ${L2}`,
       <div class="row"><label for="invz">${st() === "es" ? "Invertir zoom / eje Z (rueda)" : "Invert zoom / Z axis (wheel)"}</label><input type="checkbox" id="invz" ${e.invertZoom ? "checked" : ""}></div>
       <div class="row"><label for="cfol">${st() === "es" ? "La c\xE1mara sigue al gato" : "Camera follows the cat"}</label><input type="checkbox" id="cfol" ${e.camFollow !== !1 ? "checked" : ""}></div>
       <div class="row"><label for="guide">${st() === "es" ? "Gu\xEDa de misiones (marcadores)" : "Quest guide (markers)"}</label><input type="checkbox" id="guide" ${e.guide !== !1 ? "checked" : ""}></div>
+      <div class="row"><label for="vpick">${st() === "es" ? "Voz de las personas" : "People's voice"}</label><select id="vpick"></select></div>
       <p class="small voiceInfo"></p></div><footer class="scrFoot"></footer>`),
           rt(".langSlot", i).appendChild(this.langToggle()));
         for (let l of ["master", "music", "sfx", "voice"])
@@ -35795,6 +36743,28 @@ ${L2}`,
         rt("#guide", i).addEventListener("change", (l) => {
           ((e.guide = l.target.checked), t.applySettings());
         });
+        {
+          let l = rt("#vpick", i),
+            c = t.speech,
+            h = (u, f) => {
+              let m = document.createElement("option");
+              return ((m.value = u), (m.textContent = f), l.appendChild(m), m);
+            };
+          (h("", st() === "es" ? "Autom\xE1tica (mejor disponible)" : "Automatic (best available)"),
+            (c.ranked || []).forEach((u) =>
+              h(u.v.name, `${u.v.name} \xB7 ${u.v.lang}${u.s >= 100 ? " \u2605" : ""}`),
+            ),
+            (l.value = e.voicePref || ""),
+            (l.onchange = () => {
+              ((e.voicePref = l.value), c.setPref(l.value), t.saveSettings());
+              let u = rt(".voiceInfo", i);
+              (u && (u.textContent = `${X("voiceNote")}: ${c.label || "\u2014"}`),
+                c.say(st() === "es" ? "Hola, gatito. \xBFTienes hambre?" : "Hi, kitty. Are you hungry?", {
+                  priority: 2,
+                  female: !0,
+                }));
+            }));
+        }
         let a = rt(".voiceInfo", i),
           o = t.speech.label;
         ((a.textContent = o ? `${X("voiceNote")}: ${o}` : X("noVoice")),
@@ -36088,9 +37058,11 @@ ${L2}`,
         let t = this.hudEl;
         ((t.hidden = !1),
           (t.innerHTML = `
-      <div class="vitals"><p class="who"><b class="nm"></b><span class="lvl"></span></p>
+      <div class="vitals"><div class="portrait pp"></div><div class="vcol"><p class="who"><b class="nm"></b><span class="lvl"></span></p>
         <div class="bar hp"><i></i><span></span></div><div class="bar st"><i></i></div><div class="bar hu"><i></i></div><div class="xp"><i></i></div>
-        <p class="legend small"><span class="c-hp">${X("hp")}</span><span class="c-st">${X("stamina")}</span><span class="c-hu">${X("hunger")}</span></p></div>
+        <p class="legend small"><span class="c-hp">${X("hp")}</span><span class="c-st">${X("stamina")}</span><span class="c-hu">${X("hunger")}</span></p><p class="buffs small"></p></div></div>
+      <div class="tframe" hidden><div class="portrait tp"></div><div class="vcol"><p class="who"><b class="tn"></b><span class="tlv"></span></p>
+        <p class="ttype small"></p><div class="bar hp thp"><i></i><span></span></div><p class="tst"></p></div></div>
       <div class="compass"><div class="ticks"></div><p class="street"></p></div>
       <div class="foe" hidden><p><b class="fn"></b> <span class="fl"></span></p><div class="bar fhp"><i></i></div></div>
       <div class="standoff" hidden><p>${X("standoff")}</p><div class="duel"><i></i></div><p class="small">${X("intimidate")}</p></div>
@@ -36129,6 +37101,16 @@ ${L2}`,
             ctx: rt(".ctx", t),
             carry: rt(".carry", t),
             hint: rt(".hint", t),
+            pp: rt(".pp", t),
+            tf: rt(".tframe", t),
+            tp: rt(".tp", t),
+            tn: rt(".tn", t),
+            tlv: rt(".tlv", t),
+            ttype: rt(".ttype", t),
+            thp: rt(".thp i", t),
+            thpT: rt(".thp span", t),
+            tst: rt(".tst", t),
+            buffs: rt(".buffs", t),
           }),
           (this.mmCtx = this.q.mm.getContext("2d")),
           this.q.ctx.addEventListener("pointerdown", (e) => {
@@ -36222,7 +37204,10 @@ ${L2}`,
         let t = this.app.toggles;
         (this.slots || []).forEach((e, i) => {
           let n = qn[this.app.settings.bar[i]];
-          e.classList.toggle("on", !!(n && n.mode === "toggle" && t[n.input]));
+          e.classList.toggle(
+            "on",
+            !!(n && ((n.mode === "toggle" && t[n.input]) || (n.input === "nightvis" && this.app.game?.player.nv))),
+          );
         });
       }
       updateBar(t) {
@@ -36463,6 +37448,7 @@ ${L2}`,
           (this._t -= e),
           this.updateMarks(t),
           this.waypointMark(t),
+          this.targetFrame(t, e),
           this.updateGivers(t),
           this.updateBar(t),
           this.compass(t),
@@ -36476,7 +37462,7 @@ ${L2}`,
           (n.lvl.textContent = `${X("level")} ${i.level}`),
           n.hu.parentElement.classList.toggle("low", i.hunger < 20),
           n.hp.parentElement.classList.toggle("low", i.hp < i.maxHp * 0.25),
-          (n.clock.textContent = `${X("day")} ${t.day} \xB7 ${this.clock(t.hours)}`),
+          (n.clock.textContent = `${X("day")} ${t.day} \xB7 ${this.clock(t.hours)}${t.weather ? " " + t.weather.icon : ""}`),
           (n.street.textContent = [
             t.lastStreet,
             t.lastSector
@@ -36485,6 +37471,14 @@ ${L2}`,
           ]
             .filter(Boolean)
             .join(" \xB7 ")));
+        {
+          let r = st() === "es",
+            l = [];
+          (i.clawBuffT > 0 && l.push(`\u{1F43E} ${r ? "Garras afiladas" : "Sharp claws"} ${Math.ceil(i.clawBuffT)}s`),
+            i.nip > 0.15 && l.push(`\u{1F33F} ${i.nip > 1.1 ? (r ? "Volado" : "Tripping") : r ? "Relajado" : "Mellow"}`),
+            i.nv && l.push(`\u{1F441} ${r ? "Visi\xF3n nocturna" : "Night vision"}`),
+            (n.buffs.textContent = l.join(" \xB7 ")));
+        }
         let s = t.quests.trackerText();
         ((n.qt.textContent = s ? s.title : st() === "es" ? "Mundo libre" : "Free roam"),
           (n.qs.textContent = s ? s.txt : ""),
@@ -36681,6 +37675,140 @@ ${L2}`,
           (e.textAlign = "center"),
           e.fillText("N", n / 2, 26));
       }
+      // --- WoW-style unit frames: whoever has the player in focus gets a target frame with a live 3D portrait
+      pickFocus(t) {
+        let e = t.player,
+          i = (a) => Math.hypot(a.pos.x - e.pos.x, a.pos.z - e.pos.z),
+          n = null,
+          s = 1 / 0;
+        if (t.currentFoe && !t.currentFoe.dead) return [t.currentFoe, "fight"];
+        if (t.standoff) return [t.standoff.rival, "standoff"];
+        for (let a of t.dogs) {
+          if (a.dead || !a.obj.visible || (a.state !== "chase" && a.state !== "alert" && a.state !== "bark")) continue;
+          let o = i(a);
+          o < 18 && o < s && ((s = o), (n = [a, a.state === "chase" ? "chase" : "watch"]));
+        }
+        if (n) return n;
+        for (let a of t.humans) {
+          if (!a.obj.visible || !a.threat()) continue;
+          let o = i(a);
+          o < 18 && o < s && ((s = o), (n = [a, a.state === "attack" || a.kind === "shop" ? "attack" : a.state === "chase" ? "play" : "shoo"]));
+        }
+        if (n) return n;
+        for (let a of t.cats) {
+          if (a.dead || !a.obj.visible || !(a.isRival || a.hostile) || (a.state !== "approach" && a.state !== "stalk")) continue;
+          let o = i(a);
+          o < 20 && o < s && ((s = o), (n = [a, "stalk"]));
+        }
+        return n;
+      }
+      targetFrame(t, e) {
+        let i = this.q;
+        if (!i?.tf) return;
+        let n = this.pickFocus(t),
+          s = st() === "es";
+        (n ? ((this._tf = n), (this._tfT = 1.5)) : (this._tfT = (this._tfT || 0) - e),
+          this._tfT <= 0 && (this._tf = null));
+        let a = this._tf?.[0];
+        (this._tfObj !== a &&
+          (this._tfObj?.obj?.traverse((c) => c.layers.disable(8)),
+          a?.obj?.traverse((c) => c.layers.enable(8)),
+          (this._tfObj = a)),
+          (i.tf.hidden = !a));
+        if (!a) return;
+        let o = this._tf[1],
+          l = t.player.level,
+          c = a instanceof Fi,
+          h = a instanceof ks,
+          u = c ? a.level : h ? Math.max(1, Math.round(a.size * 4 + (a.kind === "yard" ? 1 : 0))) : null,
+          f = u == null ? 99 : u - l,
+          m = f >= 5 ? "#e2463f" : f >= 3 ? "#f08a3c" : f >= -2 ? "#ffd23f" : f >= -5 ? "#6cc070" : "#9d9aa3";
+        (h && !a.maxHp && (a.maxHp = Math.max(1, a.hp)),
+          (i.tn.textContent =
+            a.name || (h ? (s ? "Perro" : "Dog") : c ? (s ? "Gato" : "Cat") : s ? "Humano" : "Human")),
+          (i.tlv.textContent = u == null ? "??" : `${X("level")} ${u}`),
+          (i.tlv.style.color = m),
+          i.tf.classList.toggle("elite", !!a.boss),
+          (i.ttype.textContent = c
+            ? `${he(di[a.spec?.breed]?.name || di.quiltro.name)}${a.boss ? (s ? " \xB7 Jefe de sector" : " \xB7 Sector boss") : a.isRival ? (s ? " \xB7 Rival" : " \xB7 Rival") : ""}`
+            : h
+              ? { yard: s ? "Perro de patio" : "Yard dog", street: s ? "Perro callejero" : "Street dog", pack: s ? "Perro de jaur\xEDa" : "Pack dog" }[a.kind] || ""
+              : a.kind === "hater"
+                ? s ? "Humano \xB7 Vecino hostil" : "Human \xB7 Hostile neighbour"
+                : a.kind === "shop"
+                  ? s ? "Humano \xB7 Almacenero" : "Human \xB7 Shopkeeper"
+                : a.kind === "kid"
+                  ? s ? "Humano \xB7 Ni\xF1o" : "Human \xB7 Kid"
+                  : s ? "Humano \xB7 Vecino" : "Human \xB7 Neighbour"));
+        let g = a.maxHp ? Et(a.hp / a.maxHp, 0, 1) : 1;
+        ((i.thp.style.width = `${g * 100}%`),
+          (i.thpT.textContent = a.maxHp ? `${Math.max(0, Math.ceil(a.hp))}/${Math.ceil(a.maxHp)}` : "\u2014"),
+          (i.tst.textContent = {
+            fight: s ? "\xA1En pelea contigo!" : "Fighting you!",
+            standoff: s ? "Duelo de miradas" : "Stare-down",
+            chase: s ? "Te persigue" : "Chasing you",
+            watch: s ? "Te vigila" : "Watching you",
+            attack: s ? "Te ataca" : "Attacking you",
+            play: s ? "Te persigue jugando" : "Chasing you for fun",
+            shoo: s ? "Te quiere echar" : "Wants you gone",
+            stalk: s ? "Te acecha" : "Stalking you",
+          }[o]),
+          i.tst.classList.toggle("hot", o === "fight" || o === "attack" || o === "chase"));
+      }
+      portraits(t) {
+        let e = this.app.renderer,
+          i = this.q;
+        if (!i?.pp || this.hudEl.hidden) return;
+        let n =
+          this._pc ||
+          (() => {
+            let o = (this._pc = new Ge(32, 1, 0.01, 30));
+            this._pl = [new Va(16774374, 3.4), new Ha(13160660, 5263440, 2), new Va(10078975, 1.6)];
+            for (let l of this._pl) (l.layers.set(7), l.layers.enable(8), t.scene.add(l), l.target && t.scene.add(l.target));
+            return o;
+          })();
+        t.player.obj.layers.isEnabled(7) || t.player.obj.traverse((o) => o.layers.enable(7));
+        let s = [[i.pp, t.player, 7]];
+        (this._tfObj && !i.tf.hidden && s.push([i.tp, this._tfObj, 8]),
+          (this._pv || (this._pv = [new I(), new I(), new ft()])));
+        let [a, o, l] = this._pv,
+          c = t.scene.fog,
+          h = t.scene.background,
+          u = e.getClearAlpha();
+        (e.getClearColor(l), (t.scene.fog = null), (t.scene.background = null), (e.autoClear = !1));
+        for (let [f, m, g] of s) {
+          let x = f.getBoundingClientRect();
+          if (x.width < 4) continue;
+          let d = m.model ? m.model.head : m.obj.userData.head;
+          if (!d) continue;
+          d.getWorldPosition(a);
+          let p = m.yaw ?? m.obj.rotation.y,
+            b = m.model ? 0.25 * m.model.scale * (m.model.ageP?.head || 1) : m instanceof ks ? 0.62 * (m.size || 1) : 0.62;
+          (o.set(Math.sin(p), 0, Math.cos(p)),
+            n.position.copy(a).addScaledVector(o, b).add(o.set(0, b * 0.12, 0)),
+            n.lookAt(a.x, a.y - b * 0.05, a.z),
+            n.layers.set(g),
+            (n.aspect = x.width / x.height),
+            n.updateProjectionMatrix(),
+            this._pl[0].position.copy(n.position).add(o.set(0.6, 0.8, 0)),
+            this._pl[0].target.position.copy(a),
+            this._pl[2].position.copy(a).add(o.set(-Math.sin(p) * 2, 0.4, -Math.cos(p) * 2)),
+            this._pl[2].target.position.copy(a));
+          let v = innerHeight - x.bottom;
+          (e.setScissorTest(!0),
+            e.setScissor(x.left, v, x.width, x.height),
+            e.setViewport(x.left, v, x.width, x.height),
+            e.setClearColor(1447450, 1),
+            e.clear(!0, !0, !1),
+            e.render(t.scene, n));
+        }
+        (e.setScissorTest(!1),
+          e.setViewport(0, 0, innerWidth, innerHeight),
+          e.setClearColor(l, u),
+          (e.autoClear = !0),
+          (t.scene.fog = c),
+          (t.scene.background = h));
+      }
       waypointMark(t) {
         let e = this.wpEl;
         if (!e) {
@@ -36863,6 +37991,7 @@ ${L2}`,
         (this.camera = new Ge(60, innerWidth / innerHeight, 0.08, 6e3)),
         (this.audio = new fo()),
         (this.speech = new po(this.audio)),
+        this.speech.setPref(this.settings.voicePref),
         (this.ui = new wo(this)),
         (this.vfx = new bo(this.renderer, this.scene, this.camera, this.settings.quality)),
         (this.builtQuality = this.settings.quality),
@@ -37140,6 +38269,7 @@ ${L2}`,
           map: "Tab",
           music: "P",
           mate: "N",
+          nightvis: "B",
         }[t] || "?"
       );
     }
@@ -37210,6 +38340,7 @@ ${L2}`,
           AltLeft: "dodge",
           KeyT: "sense",
           KeyN: "mate",
+          KeyB: "nightvis",
           Tab: "map",
           KeyJ: "map",
           KeyP: "music",
@@ -37370,6 +38501,7 @@ ${L2}`,
         (i.markPressed = e.has("mark")),
         (i.restPressed = e.has("rest")),
         (i.matePressed = e.has("mate")),
+        (i.nvPressed = e.has("nightvis")),
         e.clear(),
         this.touchMove && ((i.x = this.touchMove.x), (i.z = this.touchMove.z), this.touchMove.run && (i.run = !0)),
         this.gamepad(i),
@@ -37530,7 +38662,7 @@ ${L2}`,
           this.vfx.update(t, t, performance.now() / 1e3, { danger: 0, night: e.night }),
           this.audio.ok && this.audio.music.set("title"));
       }
-      this.vfx.render();
+      (this.vfx.render(), this.game && this.ui.q && !this.paused && this.ui.portraits(this.game));
     }
   };
   function jd() {

@@ -125,5 +125,53 @@
   "wind": [
     "wind_1.mp3",
     "wind_2.mp3"
+  ],
+  "rain": [
+    "rain_1.mp3",
+    "rain_2.mp3",
+    "rain_3.mp3",
+    "rain_4.mp3"
+  ],
+  "rain_heavy": [
+    "rain_heavy_1.mp3",
+    "rain_heavy_2.mp3"
+  ],
+  "thunder": [
+    "thunder_1.mp3",
+    "thunder_2.mp3",
+    "thunder_3.mp3",
+    "thunder_4.mp3",
+    "thunder_5.mp3",
+    "thunder_6.mp3",
+    "thunder_7.mp3",
+    "thunder_8.mp3"
+  ],
+  "siren": [
+    "siren_1.mp3",
+    "siren_2.mp3"
+  ],
+  "laugh": [
+    "laugh_1.mp3",
+    "laugh_2.mp3",
+    "laugh_3.mp3"
+  ],
+  "door_creak": [
+    "door_creak_1.mp3",
+    "door_creak_2.mp3",
+    "door_creak_3.mp3"
+  ],
+  "scratch": [
+    "scratch_1.mp3",
+    "scratch_2.mp3",
+    "scratch_3.mp3"
+  ],
+  "can_open": [
+    "can_open_1.mp3",
+    "can_open_2.mp3",
+    "can_open_3.mp3"
+  ],
+  "hose": [
+    "hose_1.mp3",
+    "hose_2.mp3"
   ]
 }
