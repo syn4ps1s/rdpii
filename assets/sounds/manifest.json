@@ -173,5 +173,10 @@
   "hose": [
     "hose_1.mp3",
     "hose_2.mp3"
+  ],
+  "glass": [
+    "glass_1.mp3",
+    "glass_2.mp3",
+    "glass_3.mp3"
   ]
 }

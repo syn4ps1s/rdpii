@@ -32,6 +32,18 @@ npm run check    # sintaxis + build + prueba de humo en Chromium headless
 
 `dist/index.html` es autocontenido: es lo que se publica como artifact.
 
+## Novedades respecto del artifact original
+
+- Clima automático (despejado, nublado, lluvia, tormenta) con lluvia y truenos grabados.
+- Visión nocturna (`B`) cuando está oscuro; hierba gatera con efecto psicodélico; rascaderos (troncos, sillones botados, poste de sisal) que afilan las garras.
+- Almacenes de barrio con almacenero vigilante (luz roja = mira, verde = distraído) y comida para robar.
+- Casas con puerta o ventana abierta: interior con sobras, un vaso para botar y sillón para la siesta.
+- Marcos estilo WoW con retrato 3D del gato y de quien lo tiene en la mira.
+- Flecha de misión (en el suelo, en el minimapa y en pantalla), gente que acaricia/persigue/espanta gatos, autos que frenan por animales chicos, barrio más poblado.
+- Árboles, autos y perros rehechos; MSAA en el post-procesado; voces neuronales priorizadas (selector en Ajustes).
+
+Sonidos reales nuevos: ESC-50 (K. J. Piczak, CC BY-NC 3.0) — lluvia, truenos, sirenas, risas, puertas, rasguños, latas, agua, vidrio.
+
 ## Controles, idioma y guardado
 
 - Idiomas ES/EN (selector arriba a la derecha).

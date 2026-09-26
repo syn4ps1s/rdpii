@@ -24566,31 +24566,63 @@ uniform sampler2D detailMap; varying vec3 vWP;`,
     return ((r.userData.color = t), r);
   }
   function hh(r = !1) {
-    let t = r ? 12 : 4.2,
-      e = r ? 2.5 : 1.75,
-      i = Cs(new qt(e, r ? 2.2 : 0.72, t), [1, 1, 1]);
-    i.translate(0, r ? 1.55 : 0.62, 0);
-    let n = Cs(new qt(e * 0.9, r ? 0.9 : 0.62, r ? t * 0.96 : 2.3), [0.12, 0.13, 0.15]);
-    n.translate(0, r ? 2.25 : 1.28, r ? 0 : -0.15);
-    let s = Cs(new qt(e * 0.86, 0.06, r ? t * 0.95 : 1.9), [1, 1, 1]);
-    s.translate(0, r ? 2.73 : 1.6, r ? 0 : -0.2);
-    let a = [i, n, s];
-    for (let [o, l] of [
+    // car / bus: body in paint colour (vertex colour 1), glass, tyres, rims, lights, bumpers
+    let t = r ? 12 : 4.25,
+      e = r ? 2.5 : 1.78,
+      i = [],
+      n = (x, d, p, b, v, _, E, S = 0, T = 0) => {
+        let A = Cs(new qt(x, d, p), E);
+        return ((S || T) && (A.rotateX(S), A.rotateZ(T)), A.translate(b, v, _), i.push(A), A);
+      },
+      s = [1, 1, 1],
+      a = [0.1, 0.12, 0.15],
+      o = [0.16, 0.16, 0.17];
+    if (r) {
+      (n(e, 2.2, t, 0, 1.55, 0, s), n(e * 0.9, 0.9, t * 0.96, 0, 2.25, 0, a), n(e * 0.86, 0.06, t * 0.95, 0, 2.73, 0, s));
+      for (let x of [-1, 1]) n(e + 0.02, 0.8, 0.05, 0, 1.2, (x * t) / 2, a);
+    } else {
+      // lower body with sloped hood and trunk
+      (n(e, 0.55, t * 0.96, 0, 0.62, 0, s),
+        n(e * 0.98, 0.18, 1.15, 0, 0.93, t * 0.33, s, -0.1),
+        n(e * 0.98, 0.18, 0.85, 0, 0.93, -t * 0.36, s, 0.08),
+        n(e + 0.04, 0.2, 0.2, 0, 0.45, t * 0.49, o),
+        n(e + 0.04, 0.2, 0.2, 0, 0.45, -t * 0.49, o));
+      // cabin: roof + pillars in paint, glass slightly inset
+      let x = 0.92;
+      (n(e * 0.84, 0.06, 1.85, 0, 1.52, -0.18, s),
+        n(e * 0.8, 0.52, 0.06, 0, 1.24, 0.72, a, -0.55),
+        n(e * 0.8, 0.5, 0.06, 0, 1.24, -1.12, a, 0.5));
+      for (let d of [-1, 1]) {
+        (n(0.04, 0.44, 1.7, (d * e * 0.84) / 2, 1.26, -0.2, a),
+          n(0.06, 0.5, 0.08, (d * e * 0.84) / 2, 1.25, 0.66, s),
+          n(0.06, 0.5, 0.08, (d * e * 0.84) / 2, 1.25, -0.2, s),
+          n(0.06, 0.5, 0.08, (d * e * 0.84) / 2, 1.25, -1.05, s),
+          n(0.1, 0.07, 0.16, (d * e) / 2 + 0.03, 1.08, 0.78, s),
+          n(0.03, 0.03, 0.14, (d * e) / 2 + 0.005, 0.86, 0.1, o),
+          n(0.03, 0.03, 0.14, (d * e) / 2 + 0.005, 0.86, -0.75, o));
+      }
+      n(e * 0.5, 0.12, 0.04, 0, 0.66, t * 0.483, [0.08, 0.08, 0.09]);
+    }
+    for (let [x, d] of [
       [1, 1],
       [-1, 1],
       [1, -1],
       [-1, -1],
     ]) {
-      let c = Cs(new Te(0.33, 0.33, 0.24, 10), [0.08, 0.08, 0.08]);
-      (c.rotateZ(Math.PI / 2), c.translate((o * e) / 2, 0.33, l * (t / 2 - (r ? 2 : 0.8))), a.push(c));
+      let p = r ? 0.5 : 0.34,
+        b = (x * e) / 2 - x * 0.02,
+        v = d * (t / 2 - (r ? 2 : 0.82)),
+        _ = Cs(new Te(p, p, 0.24, 18), [0.06, 0.06, 0.06]);
+      (_.rotateZ(Math.PI / 2), _.translate(b, p, v), i.push(_));
+      let E = Cs(new Te(p * 0.58, p * 0.58, 0.02, 14), [0.62, 0.63, 0.66]);
+      (E.rotateZ(Math.PI / 2), E.translate(b + x * 0.125, p, v), i.push(E));
+      r || n(0.08, 0.1, p * 2.4, b, p * 1.7, v, o);
     }
-    for (let o of [-1, 1]) {
-      let l = Cs(new qt(0.3, 0.12, 0.05), [2.5, 2.4, 2]);
-      (l.translate((o * e) / 3, r ? 0.9 : 0.7, t / 2 + 0.01), a.push(l));
-      let c = Cs(new qt(0.3, 0.12, 0.05), [2, 0.1, 0.1]);
-      (c.translate((o * e) / 3, r ? 0.9 : 0.75, -t / 2 - 0.01), a.push(c));
+    for (let x of [-1, 1]) {
+      (n(0.34, 0.13, 0.05, (x * e) / 3, r ? 0.9 : 0.74, t / 2 + 0.01, [2.5, 2.4, 2]),
+        n(0.34, 0.12, 0.05, (x * e) / 3, r ? 0.9 : 0.8, -t / 2 - 0.01, [2, 0.1, 0.1]));
     }
-    return Vn(a);
+    return Vn(i);
   }
   // ---------- trees: visible climbable trunks, branches, clustered leafy canopies per species ----------
   function smoothGeo(r) {
@@ -27741,16 +27773,16 @@ ${L2}`,
     (h.position.set(0, 0.1, 0.33), o.add(h));
     let u = new Wt();
     (u.position.set(0, 0.12, 0.06), h.add(u), (e.userData.head = u));
-    let f = new nt(new qt(0.2, 0.18, 0.2), n);
-    u.add(f);
-    let m = new nt(new qt(0.11, 0.09, 0.16), s);
-    (m.position.set(0, -0.04, 0.16), u.add(m));
+    let f = new nt(new ge(0.11, 16, 12), n);
+    (f.scale.set(1, 0.9, 1.05), u.add(f));
+    let m = new nt(new ge(0.07, 14, 10), s);
+    (m.scale.set(0.85, 0.7, 1.3), m.position.set(0, -0.035, 0.13), u.add(m));
     let g = new Wt();
     (g.position.set(0, -0.08, 0.1), u.add(g));
     let x = new nt(new qt(0.1, 0.03, 0.14), s);
     ((x.position.z = 0.06), g.add(x));
-    let d = new nt(new qt(0.05, 0.035, 0.03), a);
-    (d.position.set(0, -0.01, 0.245), u.add(d));
+    let d = new nt(new ge(0.026, 10, 8), a);
+    (d.scale.set(1.2, 0.85, 0.9), d.position.set(0, -0.02, 0.215), u.add(d));
     for (let E of [-1, 1]) {
       let S = new nt(new ge(0.018, 6, 6), a);
       (S.position.set(0.055 * E, 0.03, 0.1), u.add(S));
@@ -32368,7 +32400,166 @@ ${L2}`,
           }
           (x.position.set(g.x, d, g.z), a.add(x), i.push({ kind: "nip", x: g.x, z: g.z, y: d, r: 1.1, obj: x, left: 3, regrow: 0 }));
         }
-        this.buildShops(e);
+        (this.buildShops(e), this.buildInteriors(e));
+      }
+      // ---------- houses with an open door or window the cat can walk into ----------
+      buildInteriors(t) {
+        let e = this.world,
+          i = (this.openHouses = []),
+          n = new Set([...this.humans.filter((y) => y.house).map((y) => y.house), ...(this.shops || []).map((y) => y.keeper && y.house)]),
+          s = e.houses
+            .filter(
+              (y) =>
+                y.front &&
+                !y.shed &&
+                y.hu > 2.3 &&
+                y.hv > 2.3 &&
+                y.hu < 9 &&
+                y.hv < 9 &&
+                !n.has(y) &&
+                Math.abs(y.top - y.ground - 2.6 * y.floors - 0.4) < 1.2 &&
+                !(this.shops || []).some((M) => Math.hypot(M.x - y.cx, M.z - y.cz) < 12) &&
+                Math.hypot(y.cx - this.home.x, y.cz - this.home.z) > 10,
+            )
+            .sort((y, M) => Math.hypot(y.cx - this.home.x, y.cz - this.home.z) - Math.hypot(M.cx - this.home.x, M.cz - this.home.z)),
+          a = (y, M, w, P, D, N, z) => {
+            e.addCol({ shape: "box", kind: "wall", cx: y, cz: M, ux: w, uz: P, hu: D, hv: 0.09, base: N, top: z, openHouse: !0 });
+          },
+          o = new jt({ color: "#23201c", roughness: 1 }),
+          l = new jt({ color: "#7a4a2a", roughness: 0.7 });
+        for (let y of s) {
+          if (i.length >= 10) break;
+          if (i.some((ot) => Math.hypot(ot.h.cx - y.cx, ot.h.cz - y.cz) < 22)) continue;
+          let M = y.ground,
+            w = Math.min(y.top - 0.15, M + 2.55),
+            P = [
+              { n: [y.ux, y.uz], t: [-y.uz, y.ux], d: y.hu, half: y.hv },
+              { n: [-y.ux, -y.uz], t: [y.uz, -y.ux], d: y.hu, half: y.hv },
+              { n: [-y.uz, y.ux], t: [y.ux, y.uz], d: y.hv, half: y.hu },
+              { n: [y.uz, -y.ux], t: [-y.ux, -y.uz], d: y.hv, half: y.hu },
+            ],
+            D = P.find((ot) => Math.abs(ot.n[0] - y.front.nx) < 0.01 && Math.abs(ot.n[1] - y.front.nz) < 0.01) || P[0],
+            N = t() < 0.7,
+            z = N ? D : t.pick(P.filter((ot) => ot !== D)),
+            G = (t() - 0.5) * Math.max(0, z.half * 2 - 2.4),
+            B = N ? 1.05 : 0.95,
+            Q = N ? 0 : 0.85,
+            et = N ? 2.05 : 1.85;
+          y.col.noBlock = !0;
+          for (let ot of P) {
+            let Ut = y.cx + ot.n[0] * ot.d,
+              Zt = y.cz + ot.n[1] * ot.d,
+              zt = (Mt, Lt) => {
+                if (Lt - Mt < 0.05) return;
+                let kt = (Mt + Lt) / 2;
+                a(Ut + ot.t[0] * kt, Zt + ot.t[1] * kt, ot.t[0], ot.t[1], (Lt - Mt) / 2, y.base, y.top);
+              };
+            if (ot === z) {
+              (zt(-ot.half, G - B / 2), zt(G + B / 2, ot.half));
+              let Mt = G;
+              (Q > 0 && a(Ut + ot.t[0] * Mt, Zt + ot.t[1] * Mt, ot.t[0], ot.t[1], B / 2, y.base, M + Q),
+                a(Ut + ot.t[0] * Mt, Zt + ot.t[1] * Mt, ot.t[0], ot.t[1], B / 2, M + et, y.top));
+            } else zt(-ot.half, ot.half);
+          }
+          // outside: dark opening + swung door leaf / shutter
+          let ut = new Wt(),
+            wt = y.cx + z.n[0] * (z.d + 0.03) + z.t[0] * G,
+            pt = y.cz + z.n[1] * (z.d + 0.03) + z.t[1] * G;
+          {
+            let ot = new nt(new qt(B, et - Q, 0.02), o);
+            ((ot.position.y = (et + Q) / 2), ut.add(ot));
+            let Ut = new nt(new qt(N ? 0.95 : 0.5, N ? 2 : 0.85, 0.05), l);
+            (Ut.position.set(-B / 2 - 0.05, N ? 1 : Q + 0.45, 0.45), (Ut.rotation.y = -1.35), (Ut.castShadow = !0), ut.add(Ut));
+            if (N) {
+              let Zt = new nt(new qt(0.8, 0.02, 0.5), new jt({ color: "#6a5a3a", roughness: 1 }));
+              (Zt.position.set(0, 0.01, 0.35), ut.add(Zt));
+            } else {
+              let Zt = new nt(new qt(B + 0.1, 0.06, 0.18), new jt({ color: "#d9d2c4" }));
+              (Zt.position.set(0, Q, 0.06), ut.add(Zt));
+            }
+            (ut.position.set(wt, M, pt), (ut.rotation.y = Math.atan2(z.n[0], z.n[1])), this.spotGroup.add(ut));
+          }
+          // inside
+          let $ = new Wt(),
+            J = y.hu - 0.14,
+            at = y.hv - 0.14,
+            mt = w - M,
+            dt = t.pick(["#e8dcc4", "#d7e0d0", "#e6d3cf", "#d9dbe6", "#efe6d2"]),
+            Ft = new jt({ color: dt, roughness: 0.95 }),
+            Ct = (ot, Ut, Zt, zt, Mt, Lt, kt, Ot = 0) => {
+              let Ht = new nt(new qt(ot, Ut, Zt), kt);
+              return (Ht.position.set(zt, Mt, Lt), (Ht.rotation.y = Ot), (Ht.castShadow = !0), (Ht.receiveShadow = !0), $.add(Ht), Ht);
+            };
+          (Ct(J * 2, 0.04, at * 2, 0, 0.02, 0, new jt({ color: t.pick(["#8a5a3a", "#9a7a5a", "#b8a48a", "#6f4a30"]), roughness: 0.8 })),
+            Ct(J * 2, 0.04, at * 2, 0, mt, 0, new jt({ color: "#f2efe8", roughness: 1 })));
+          for (let [ot, Ut, Zt, zt] of [
+            [J, 0, 0.04, at * 2],
+            [-J, 0, 0.04, at * 2],
+            [0, at, J * 2, 0.04],
+            [0, -at, J * 2, 0.04],
+          ])
+            Ct(Zt, mt, zt, ot, mt / 2, Ut, Ft);
+          // furniture in house-local coords (u along x, v along z)
+          let ht = t.pick(["#6b3b3b", "#3f5a6b", "#6b6444", "#4f4f55", "#355a45"]),
+            Rt = new jt({ color: ht, roughness: 1 }),
+            gt = new jt({ color: "#7a5236", roughness: 0.75 }),
+            ft0 = -J + 0.5;
+          (Ct(Math.min(1.9, at * 1.4), 0.42, 0.8, ft0, 0.25, 0, Rt, Math.PI / 2),
+            Ct(Math.min(1.9, at * 1.4), 0.55, 0.22, ft0 - 0.3, 0.62, 0, Rt, Math.PI / 2),
+            Ct(1.6, 0.02, 1.2, ft0 + 1.2, 0.05, 0, new jt({ color: t.pick(["#8e3b46", "#2f5d62", "#9a7b4f"]), roughness: 1 })));
+          let Pt0 = J - 0.35;
+          Ct(0.4, 0.5, 1.1, Pt0, 0.25, 0, gt);
+          let tv = Ct(0.06, 0.55, 0.95, Pt0 - 0.05, 0.8, 0, new jt({ color: "#111", emissive: "#6fa0ff", emissiveIntensity: 0.6 }));
+          let tb = Ct(1.2, 0.05, 0.8, 0, 0.75, at - 0.75, gt);
+          for (let [ot, Ut] of [[-0.55, -0.35], [0.55, -0.35], [-0.55, 0.35], [0.55, 0.35]]) Ct(0.05, 0.73, 0.05, ot, 0.37, at - 0.75 + Ut, gt);
+          for (let ot of [-0.8, 0.8]) (Ct(0.4, 0.04, 0.4, ot, 0.45, at - 0.75, gt), Ct(0.4, 0.5, 0.04, ot + Math.sign(ot) * 0.18, 0.7, at - 0.75, gt, Math.PI / 2));
+          (Ct(0.7, 1.7, 0.65, J - 0.4, 0.85, -at + 0.4, new jt({ color: "#e9ecef", roughness: 0.4 })),
+            at > 2.6 && Ct(1.5, 0.45, 2, -J + 1.0, 0.25, -at + 1.1, new jt({ color: "#f3efe6", roughness: 1 })),
+            Ct(0.3, 0.35, 0.3, J - 0.3, 0.18, at - 0.3, new jt({ color: "#8a5a3a" })));
+          {
+            let ot = new nt(new ge(0.28, 8, 6), new jt({ color: "#4f7a3a", roughness: 0.9 }));
+            (ot.position.set(J - 0.3, 0.55, at - 0.3), $.add(ot));
+          }
+          let plate = Ct(0.3, 0.04, 0.3, -0.3, 0.8, at - 0.75, new jt({ color: "#f5f5f5" })),
+            food = new nt(new ge(0.1, 8, 6), new jt({ color: "#c98a3a", roughness: 0.6 }));
+          (food.position.set(-0.3, 0.86, at - 0.75), food.scale.set(1.2, 0.6, 1), $.add(food));
+          let glass = new nt(new Te(0.04, 0.035, 0.12, 10), new jt({ color: "#bfe3ff", transparent: !0, opacity: 0.55, roughness: 0.1 }));
+          (glass.position.set(0.35, 0.84, at - 0.6), $.add(glass));
+          let fr = new Yt().makeBasis(new I(y.ux, 0, y.uz), new I(0, 1, 0), new I(-y.uz, 0, y.ux));
+          ($.position.set(y.cx, M, y.cz), $.setRotationFromMatrix(fr), ($.visible = !1), this.spotGroup.add($), $.updateMatrixWorld(!0));
+          let W = (ot) => ot.getWorldPosition(new I()),
+            H = { h: y, g: $, entry: z, sill: Q, tv: tv, light: M + mt - 0.35, ceil: M + mt };
+          i.push(H);
+          let fp = W(food),
+            gp = W(glass);
+          (this.spots.push({ kind: "hfood", x: fp.x, z: fp.z, y: M, r: 1.1, obj: food, plate: plate, house: H }),
+            this.spots.push({ kind: "glass", x: gp.x, z: gp.z, y: M, r: 1.1, obj: glass, house: H }));
+          let sp = $.localToWorld(new I(ft0 + 0.2, 0, 0));
+          this.spots.push({ kind: "nap", x: sp.x, z: sp.z, y: M, r: 1.1, house: H });
+        }
+        ((this.houseLight = new Es(16761716, 0, 9, 1.6)), this.scene.add(this.houseLight));
+      }
+      updateInteriors(t) {
+        let e = this.player,
+          i = e.pos,
+          n = null;
+        for (let s of this.openHouses || []) {
+          let a = Math.hypot(s.h.cx - i.x, s.h.cz - i.z);
+          if (a > 40) {
+            s.g.visible = !1;
+            continue;
+          }
+          (vn(s.h.col, i.x, i.z, -0.12) && i.y < s.ceil - 0.2 && (n = s), (s.g.visible = a < 14));
+          s.g.visible && (s.tv.material.emissiveIntensity = 0.45 + Math.sin(this.time * 7.3) * 0.1 + Math.sin(this.time * 2.1) * 0.12);
+        }
+        let s = e.indoors?.rec !== n;
+        if (((e.indoors = n ? n.h : null), n && (n.h.rec = n), s && n)) {
+          let a = st() === "es";
+          (this.houseLight.position.set(n.h.cx, n.light, n.h.cz),
+            this._inTip || ((this._inTip = 1), this.ui.toast(a ? "Entraste a una casa. Curiosea: comida, un vaso que botar\u2026 y un sill\xF3n c\xF3modo" : "You're inside a house. Snoop around: food, a glass to knock over\u2026 and a comfy couch", 5e3)),
+            this.audio.sample("door_creak", { pos: i, vol: 0.4 }));
+        }
+        this.houseLight.intensity = ee(this.houseLight.intensity, n ? 7 : 0, 5, t);
       }
       // ---------- corner shops ("almacenes"): a watchful owner, food on the counter to steal ----------
       buildShops(t) {
@@ -32506,6 +32697,8 @@ ${L2}`,
       }
       restockShops() {
         for (let t of this.shops || []) for (let e of t.items) ((e.taken = !1), (e.obj.visible = !0));
+        for (let t of this.spots || [])
+          (t.kind === "hfood" && (t.obj.visible = !0), t.kind === "glass" && t.broken && ((t.broken = !1), (t.obj.position.y = 0.84), (t.obj.rotation.z = 0)));
       }
       nearSpot(t) {
         let e = null,
@@ -32525,6 +32718,9 @@ ${L2}`,
       }
       spotLabel(t) {
         let e = st() === "es";
+        if (t.kind === "hfood") return t.eaten === this.day ? (e ? "Plato vac\xEDo" : "Empty plate") : e ? "Comer las sobras" : "Eat the leftovers";
+        if (t.kind === "glass") return t.broken ? (e ? "Vidrios rotos" : "Broken glass") : e ? "Botar el vaso de la mesa" : "Knock the glass off the table";
+        if (t.kind === "nap") return e ? "Siesta en el sill\xF3n" : "Nap on the couch";
         return t.kind === "shopitem"
           ? t.taken
             ? e ? "Vac\xEDo" : "Empty"
@@ -32539,6 +32735,43 @@ ${L2}`,
       }
       useSpot(t) {
         if (t.kind === "shopitem") return this.shopSteal(t);
+        let r = st() === "es",
+          q = this.player;
+        if (t.kind === "hfood") {
+          if (t.eaten === this.day) return this.ui.toast(r ? "Ya te comiste todo. Ma\xF1ana habr\xE1 m\xE1s" : "You ate it all. More tomorrow");
+          return (
+            (t.eaten = this.day),
+            (t.obj.visible = !1),
+            (q.eatT = 1.6),
+            (q.hunger = Math.min(100, q.hunger + 55)),
+            (q.hp = Math.min(q.maxHp, q.hp + q.maxHp * 0.2)),
+            this.audio.crunch(q.pos),
+            this.addXP(12, r ? "\xA1Pollo!" : "Chicken!"),
+            void this.ui.toast(r ? "\xA1Sobras de pollo con arroz! Qu\xE9 festín" : "Chicken and rice leftovers! What a feast")
+          );
+        }
+        if (t.kind === "glass") {
+          if (t.broken) return;
+          return (
+            (t.broken = !0),
+            (q.swipeT = 0),
+            (t.obj.position.y = 0.03),
+            (t.obj.rotation.z = Math.PI / 2),
+            this.audio.sample("glass", { pos: q.pos, vol: 0.8 }) || this.audio.hit(q.pos),
+            (q.noise = Math.max(q.noise, 1)),
+            this.addXP(10, r ? "\xA1Caos felino!" : "Feline chaos!"),
+            void this.ui.toast(r ? "\xA1CRASH! Lo miraste a los ojos y lo botaste. Cl\xE1sico" : "CRASH! You stared at it and pushed it off. Classic")
+          );
+        }
+        if (t.kind === "nap")
+          return (
+            (q.sitting = !0),
+            (q.hp = Math.min(q.maxHp, q.hp + q.maxHp * 0.25)),
+            (q.stamina = q.maxStamina),
+            this.audio.purr(!0),
+            setTimeout(() => this.audio.purr(!1), 3e3),
+            void this.ui.toast(r ? "Siesta en el sill\xF3n ajeno. Recuperas energ\xEDa" : "A nap on someone else's couch. You recover")
+          );
         let e = this.player,
           i = st() === "es";
         if (t.kind === "scratch") {
@@ -33206,6 +33439,7 @@ ${L2}`,
           this.updateNightVision(t),
           i.scratchT > 0 && ((e.x = 0), (e.z = 0)),
           this.updateSpots(a, e),
+          this.updateInteriors(a),
           i.update(a, e, h),
           (e.x || e.z) &&
             ((this._walked = (this._walked || 0) + i.speed * a),
@@ -33526,7 +33760,9 @@ ${L2}`,
           (i.focus.x = ee(i.focus.x, l.x, 14, t)),
           (i.focus.z = ee(i.focus.z, l.z, 14, t)),
           (i.focus.y = ee(i.focus.y, l.y, n.onGround ? 10 : 4, t)));
-        let c = i.dist * (0.75 + o * 0.35) * (this.currentFoe ? 1.2 : 1),
+        let c = i.dist * (0.75 + o * 0.35) * (this.currentFoe ? 1.2 : 1);
+        n.indoors && (c = Math.min(c, 2.1));
+        let _c0 = c,
           h = new I(Math.sin(i.yaw) * Math.cos(i.pitch), Math.sin(i.pitch), Math.cos(i.yaw) * Math.cos(i.pitch));
         for (let x = 0.6; x <= c; x += 0.35) {
           let d = i.focus.clone().addScaledVector(h, x),
@@ -33534,6 +33770,7 @@ ${L2}`,
           for (let b of this.world.near(d.x, d.z, 0.3))
             if (
               !(b.kind !== "house" && b.kind !== "bld") &&
+              !(n.indoors && b.house === n.indoors) &&
               vn(b, d.x, d.z, 0.2) &&
               d.y < b.top + (b.roof ? b.roof.rise : 0) &&
               d.y > b.base
@@ -33548,7 +33785,15 @@ ${L2}`,
         }
         let u = i.focus.clone().addScaledVector(h, c),
           f = this.world.heightAt(u.x, u.z) + 0.25;
-        u.y < f && (u.y = f);
+        if ((u.y < f && (u.y = f), n.indoors)) {
+          // keep the camera inside the room we are snooping in
+          let r = n.indoors,
+            q = u.x - r.cx,
+            z = u.z - r.cz,
+            U = Et(q * r.ux + z * r.uz, -r.hu + 0.35, r.hu - 0.35),
+            V = Et(-q * r.uz + z * r.ux, -r.hv + 0.35, r.hv - 0.35);
+          ((u.x = r.cx + U * r.ux - V * r.uz), (u.z = r.cz + U * r.uz + V * r.ux), (u.y = Math.min(u.y, r.ground + 2.3)));
+        }
         let m = this.vfx.consumeShake(t);
         (m > 0 &&
           ((u.x += (Math.random() - 0.5) * m * 0.3),
@@ -35913,7 +36158,11 @@ ${L2}`,
           return;
         }
         let e = t.getSize(new ht()),
-          i = new yo(t);
+          // MSAA in the post-processing targets: renderer antialias does not apply once a composer is used
+          i = new yo(
+            t,
+            new Xe(e.x * t.getPixelRatio(), e.y * t.getPixelRatio(), { type: wi, samples: this.quality === "high" ? 8 : 4 }),
+          );
         (i.setPixelRatio(t.getPixelRatio()),
           i.setSize(e.x, e.y),
           i.addPass((this.renderPass = new vo(this.scene, this.camera))),
@@ -37979,7 +38228,7 @@ ${L2}`,
         this.renderer.setPixelRatio(
           Math.min(
             devicePixelRatio,
-            this.settings.quality === "high" ? 2 : this.settings.quality === "low" ? 0.85 : 1.25,
+            this.settings.quality === "high" ? 2 : this.settings.quality === "low" ? 1 : 1.5,
           ),
         ),
         this.renderer.setSize(innerWidth, innerHeight),
