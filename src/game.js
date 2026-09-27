@@ -38953,7 +38953,13 @@ ${L2}`,
         guide: t.guide !== !1,
         gta: !!t.gta,
         bar: Array.isArray(t.bar) && t.bar.length === 10 ? t.bar : [...Mo],
-        spotify: { uri: "spotify:playlist:37i9dQZEVXbL0GavIqMTeb", duck: "duck", ...(t.spotify || {}) },
+        spotify: {
+          uri: "spotify:playlist:37i9dQZEVXbL0GavIqMTeb",
+          duck: "duck",
+          ...(t.spotify || {}),
+          // public Spotify app id (PKCE, no secret) registered for this game
+          clientId: (t.spotify && t.spotify.clientId) || "d33b93989a6a4dc9bb1177b708822b71",
+        },
       }),
         (this.toggles = {}),
         oo(this.settings.lang));
