@@ -1966,3 +1966,75 @@ input[type="checkbox"] {
     display: none !important;
   }
 }
+/* WoW-style loot window */
+.lootwin {
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  width: min(300px, 86vw);
+  pointer-events: auto;
+  padding: 0.5rem;
+  background: rgba(16, 14, 12, 0.92);
+  border: 2px solid #6b5a3a;
+  box-shadow: 0 0 0 1px #000, 0 8px 30px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.lootwin header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 400 1rem var(--display);
+  color: #ffd23f;
+}
+.lootwin .x {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1rem;
+}
+.lootwin ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.lootwin li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.4rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+.lootwin li:hover {
+  background: rgba(255, 210, 63, 0.12);
+  border-color: #ffd23f;
+}
+.lootwin .li {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  background: #1c1a17;
+  border: 1px solid #4a3f2a;
+}
+.lootwin .ln {
+  flex: 1;
+  font: 600 0.95rem var(--body);
+  text-shadow: 0 1px 1px #000;
+}
+.lootwin em {
+  font: 600 0.9rem var(--mono);
+  font-style: normal;
+  color: #ffd23f;
+}
+.lootwin .lootall {
+  width: auto;
+}

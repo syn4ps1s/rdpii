@@ -32402,7 +32402,8 @@ ${L2}`,
               ));
             return;
           }
-          (this.addXP(
+          (e === "won" && this.makeLoot(t),
+          this.addXP(
             e === "won" ? 60 + t.level * 25 : 30 + t.level * 10,
             `${t.name} ${e === "fled" ? X("fled") : ""}`,
           ),
@@ -32421,6 +32422,71 @@ ${L2}`,
               : this.ui.banner(X("victory"), `${t.name} ${X("fled")}`, 1600));
         }
         this.saveSoon();
+      }
+      // ---------- loot from beaten cats (WoW style) ----------
+      makeLoot(t) {
+        let e = st() === "es",
+          i = (d, p, b, v, _) => ({ id: d, name: p, icon: b, q: v, ...(_ || {}) }),
+          n = [],
+          s = Math.random;
+        // what a street cat carries around: prey leftovers, bits of its own fur, and stolen junk
+        n.push(i("tapitas", e ? "Tapitas robadas" : "Stolen bottle caps", "\u{1FA99}", 1, { n: 3 + t.level * 2 + Math.floor(s() * 4) + (t.boss ? 20 : 0) }));
+        let a = t.name,
+          o = [
+            [5, i("food", e ? "Trutro de paloma" : "Pigeon drumstick", "\u{1F357}", 1, { hunger: 35 })],
+            [5, i("food", e ? "Cola de rat\xF3n" : "Mouse tail", "\u{1F42D}", 0, { hunger: 10, xp: 3 })],
+            [4, i("food", e ? "Pata de rata" : "Rat foot", "\u{1F400}", 0, { hunger: 12 })],
+            [4, i("junk", e ? "Plumas de paloma" : "Pigeon feathers", "\u{1FAB6}", 0, { xp: 3 })],
+            [4, i("junk", e ? `Mech\xF3n de pelo de ${a}` : `Tuft of ${a}'s fur`, "\u{1F9F6}", 1, { xp: 6 })],
+            [2, i("junk", e ? `Bigote de ${a}` : `${a}'s whisker`, "\u3030\uFE0F", 2, { xp: 10 })],
+            [2, i("claw", e ? `U\xF1a de ${a} (garras afiladas 4 min)` : `${a}'s claw (sharp claws 4 min)`, "\u{1F43E}", 2, { claw: 240 })],
+            [4, i("junk", e ? "Calcet\xEDn robado" : "Stolen sock", "\u{1F9E6}", 0, { xp: 4 })],
+            [3, i("food", e ? "Vienesa robada" : "Stolen hot dog sausage", "\u{1F32D}", 1, { hunger: 30 })],
+            [3, i("food", e ? "Sobre de k\xE9tchup" : "Ketchup packet", "\u{1F96B}", 0, { hunger: 5 })],
+            [3, i("tapitas", e ? "Moneda de 100 pesos" : "100-peso coin", "\u{1FA99}", 1, { n: 10 })],
+            [2, i("junk", e ? "Chupete de guagua" : "Baby's pacifier", "\u{1F37C}", 0, { xp: 4 })],
+            [2, i("junk", e ? "Llaves de alguien" : "Someone's keys", "\u{1F511}", 2, { xp: 12 })],
+            [1, i("tapitas", e ? "Anillo de la vecina" : "The neighbour's ring", "\u{1F48D}", 3, { n: 25, xp: 20 })],
+            [2, i("nip", e ? "Ramita de hierba gatera" : "Catnip sprig", "\u{1F33F}", 2, { nip: 0.8 })],
+            [2, i("collar", e ? `Collar de ${a}` : `${a}'s collar`, "\u{1F4FF}", 2, { color: pe(["#c0392b", "#2e86de", "#27ae60", "#8e44ad", "#e67e22"]) })],
+          ],
+          l = 2 + (s() < 0.5 ? 1 : 0) + (t.level > 4 ? 1 : 0);
+        for (let c = 0; c < l && o.length; c++) {
+          let h = o.reduce((m, g) => m + g[0], 0) * s(),
+            u = 0;
+          for (; u < o.length - 1 && (h -= o[u][0]) > 0; ) u++;
+          n.push(o.splice(u, 1)[0][1]);
+        }
+        t.boss &&
+          (n.push(i("collar", e ? `Collar de jefe \xB7 ${t.sector?.name || a}` : `Boss collar \xB7 ${t.sector?.name || a}`, "\u{1F451}", 4, { color: "#d4af37" })),
+          n.push(i("claw", e ? "Garra del jefe (garras afiladas 10 min)" : "Boss claw (sharp claws 10 min)", "\u{1F43E}", 3, { claw: 600 })));
+        ((t.loot = n), (t.state = "ko"), (t.timer = 45));
+        let mk = new nt(new Na(0.09, 0), new jt({ color: "#ffd23f", emissive: "#ffb000", emissiveIntensity: 1.2, metalness: 0.6, roughness: 0.3 }));
+        ((mk.position.y = 0.75), t.obj.add(mk), (t.lootMark = mk));
+      }
+      takeLoot(t, e) {
+        let i = this.player,
+          n = st() === "es",
+          s = t.loot?.[e];
+        if (!s) return;
+        (t.loot.splice(e, 1), this.audio.ui("click"));
+        let a = this.flags;
+        s.xp && s.id !== "junk" && this.addXP(s.xp, s.name, !0);
+        s.id === "tapitas"
+          ? ((a.tapitas = (a.tapitas || 0) + s.n), this.vfx.number(i.pos.clone().setY(i.pos.y + 0.7), `+${s.n} \u{1FA99}`, "#ffd23f"))
+          : s.id === "food"
+            ? ((i.hunger = Math.min(100, i.hunger + s.hunger)), s.hp && (i.hp = Math.min(i.maxHp, i.hp + i.maxHp * s.hp)), (i.eatT = 1), this.audio.crunch(i.pos))
+            : s.id === "nip"
+              ? (i.nip = (i.nip || 0) + s.nip)
+              : s.id === "claw"
+                ? (i.clawBuffT = Math.max(i.clawBuffT || 0, s.claw))
+                : s.id === "collar"
+                  ? ((a.collar = s.color), this.addCollar(i.model, s.color), this.ui.toast(n ? `Te pusiste: ${s.name}` : `You put on: ${s.name}`))
+                  : (s.xp && this.addXP(s.xp, s.name, !0), ((a.trophies = a.trophies || {})[s.name] = (a.trophies[s.name] || 0) + 1));
+        (t.loot.length || this.lootDone(t), this.saveSoon());
+      }
+      lootDone(t) {
+        ((t.loot = null), t.lootMark && (t.obj.remove(t.lootMark), (t.lootMark = null)), (t.timer = Math.min(t.timer, 2)), this.ui.lootWindow(null));
       }
       onHiss() {
         let t = this.player;
@@ -33014,6 +33080,9 @@ ${L2}`,
       }
       updateSpots(t, e) {
         let i = this.player;
+        for (let n of this.cats)
+          n.lootMark && ((n.lootMark.rotation.y += t * 3), (n.lootMark.position.y = 0.75 + Math.sin(this.time * 3) * 0.05), n.timer < 1 && n.loot && this.lootDone(n));
+        this.ui.lootCat && this.ui.lootCat.dP() > 3.2 && this.ui.lootWindow(null);
         for (let n of this.spots)
           n.kind === "nip" && n.left < 3 && this.time > n.regrow && ((n.left += 1), (n.regrow = this.time + 90), n.obj.scale.setScalar(0.45 + n.left * 0.18));
         if (((i.nip = Math.max(0, (i.nip || 0) - t * 0.016)), i.nip > 1.1)) {
@@ -33048,6 +33117,10 @@ ${L2}`,
             label: `${X("eat")} (${X("prey")})`,
             alt: o ? { key: "G", label: `${X("gift")}: ${o.name}`, cat: o } : null,
           };
+        }
+        {
+          let o = this.cats.find((l) => l.loot?.length && l.dP() < 2);
+          if (o) return { key: "E", label: `${st() === "es" ? "Lootear" : "Loot"}: ${o.name}`, loot: o };
         }
         {
           let o = this.nearGiver(2.2);
@@ -33091,6 +33164,7 @@ ${L2}`,
           return;
         }
         if (e.giver) return this.talkTo(e.giver.gid);
+        if (e.loot) return this.ui.lootWindow(e.loot);
         if (e.spot) return this.useSpot(e.spot);
         let i = t.pos;
         if (t.carrying) {
@@ -38142,6 +38216,7 @@ ${L2}`,
           (i.clawBuffT > 0 && l.push(`\u{1F43E} ${r ? "Garras afiladas" : "Sharp claws"} ${Math.ceil(i.clawBuffT)}s`),
             i.nip > 0.15 && l.push(`\u{1F33F} ${i.nip > 1.1 ? (r ? "Volado" : "Tripping") : r ? "Relajado" : "Mellow"}`),
             i.nv && l.push(`\u{1F441} ${r ? "Visi\xF3n nocturna" : "Night vision"}`),
+            t.flags.tapitas && l.unshift(`\u{1FA99} ${t.flags.tapitas}`),
             (n.buffs.textContent = l.join(" \xB7 ")));
         }
         let s = t.quests.trackerText();
@@ -38339,6 +38414,32 @@ ${L2}`,
           (e.font = "700 22px Barlow Condensed, system-ui"),
           (e.textAlign = "center"),
           e.fillText("N", n / 2, 26));
+      }
+      lootWindow(t) {
+        let e = this.app.game,
+          i = st() === "es";
+        if ((this.lootEl?.remove(), (this.lootEl = null), (this.lootCat = t), !t || !t.loot?.length)) return;
+        let n = Kt("div", "lootwin");
+        n.innerHTML = `<header><b>${i ? "Bot\xEDn" : "Loot"}: ${ke(t.name)}</b><button class="x" aria-label="${i ? "Cerrar" : "Close"}">\u2715</button></header><ul></ul><button class="btn primary lootall">${i ? "Tomar todo" : "Take all"} <small>Enter</small></button>`;
+        let s = rt("ul", n),
+          a = ["#9d9d9d", "#ffffff", "#1eff00", "#0070dd", "#a335ee"];
+        (t.loot.forEach((o, l) => {
+          let c = Kt("li", "", `<span class="li">${o.icon}</span><span class="ln" style="color:${a[o.q]}">${ke(o.name)}</span>${o.n ? `<em>${o.n}</em>` : ""}`);
+          ((c.onclick = () => (e.takeLoot(t, l), this.lootWindow(t))), s.appendChild(c));
+        }),
+          (rt(".x", n).onclick = () => this.lootWindow(null)),
+          (rt(".lootall", n).onclick = () => {
+            for (; t.loot?.length; ) e.takeLoot(t, 0);
+            this.lootWindow(null);
+          }),
+          (this.lootEl = n),
+          this.hudEl.appendChild(n),
+          this._lootKey ||
+            ((this._lootKey = (o) => {
+              this.lootEl &&
+                (o.code === "Enter" ? (o.preventDefault(), rt(".lootall", this.lootEl)?.click()) : o.code === "Escape" && (o.stopPropagation(), this.lootWindow(null)));
+            }),
+            addEventListener("keydown", this._lootKey, !0)));
       }
       // --- WoW-style unit frames: whoever has the player in focus gets a target frame with a live 3D portrait
       pickFocus(t) {

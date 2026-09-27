@@ -44,6 +44,22 @@ npm run check    # sintaxis + build + prueba de humo en Chromium headless
 
 Sonidos reales nuevos: ESC-50 (K. J. Piczak, CC BY-NC 3.0) — lluvia, truenos, sirenas, risas, puertas, rasguños, latas, agua, vidrio.
 
+## Voces neuronales pregrabadas
+
+Las frases del juego (misiones, NPCs, modo GTA) se graban offline con [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) y se embeben como MP3 (`assets/voice/`, `voice/manifest.json`). Si cambias o agregas diálogos:
+
+```bash
+node scripts/extract-lines.mjs                 # regenera voice/lines.json
+pip install kokoro-onnx lameenc soundfile
+python scripts/render-voices.py <carpeta con kokoro-v1.0.int8.onnx y voices-v1.0.bin>
+```
+
+Las frases que no estén grabadas usan la voz del sistema. En Ajustes se puede elegir otra voz.
+
+## Spotify
+
+El widget (tecla `P`) muestra lo que suena en tu cuenta (carátula, canción, dispositivo) y lo controla vía Web API. Necesita un Client ID propio de developer.spotify.com (el widget muestra la Redirect URI a registrar). Controlar la reproducción requiere Spotify Premium.
+
 ## Controles, idioma y guardado
 
 - Idiomas ES/EN (selector arriba a la derecha).
