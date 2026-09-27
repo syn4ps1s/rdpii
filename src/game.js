@@ -37460,7 +37460,8 @@ ${L2}`,
       <p class="hint small"></p>
       <div class="abar" role="toolbar" aria-label="Acciones"></div>
       <div class="qdlg" hidden></div>
-      <button class="hudbtn spbtn" title="Spotify (P)" aria-label="Spotify">\u266B</button>`),
+      <button class="hudbtn spbtn" title="Spotify (P)" aria-label="Spotify">\u266B</button>
+      <button class="hudbtn setbtn" title="${st() === "es" ? "Ajustes (Esc)" : "Settings (Esc)"}" aria-label="${st() === "es" ? "Ajustes" : "Settings"}">\u2699</button>`),
           (this.q = {
             hp: rt(".bar.hp i", t),
             hpT: rt(".bar.hp span", t),
@@ -37508,7 +37509,10 @@ ${L2}`,
           this.renderPoints(),
           this.buildBar(),
           (this.giverEls = {}),
-          rt(".spbtn", t).addEventListener("click", () => this.spotify()));
+          rt(".spbtn", t).addEventListener("click", () => this.spotify()),
+          rt(".setbtn", t).addEventListener("click", () => {
+            (this.app.pause(), (this.back = "pause"), this.show("settings"));
+          }));
       }
       buildBar() {
         let t = this.app,

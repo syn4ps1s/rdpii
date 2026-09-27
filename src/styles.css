@@ -1798,3 +1798,8 @@ input[type="checkbox"] {
 .buffs:empty {
   display: none;
 }
+.hudbtn.setbtn {
+  right: 64px;
+  color: var(--snow);
+  font-size: 1.3rem;
+}
