@@ -31969,6 +31969,8 @@ ${L2}`,
             e.dropCarry(),
             this.vfx.slowmo(0.25, 2.4),
             (this.vfx.wasted = 1),
+            (e.nv = !1),
+            (e.nip = 0),
             this.vfx.stars(e.pos.clone().setY(e.pos.y + 0.4)),
             (this.koCam = !0),
             this.bacteriaFight)
@@ -36220,7 +36222,9 @@ ${L2}`,
           col = mix(col, vec3(0.55,0.03,0.02)*(0.6+0.4*pulse), vig*uDanger*0.55);
           col += vec3(0.9,0.05,0.02)*uHurt*smoothstep(0.2,0.8,r);
           col = mix(col, col*vec3(0.75,0.9,1.15), uWet*0.6);
-          float gl2 = dot(col, vec3(0.299,0.587,0.114)); col = mix(col, vec3(gl2)*vec3(1.0,0.97,0.92)*(1.0 - 0.25*smoothstep(0.3,0.9,r)), uGray);
+          float gl2 = dot(col, vec3(0.299,0.587,0.114));
+          float bw = clamp((gl2 - 0.5) * 1.35 + 0.52, 0.0, 1.0);
+          col = mix(col, vec3(bw) * (1.0 - 0.45*smoothstep(0.35,0.95,r)), uGray);
           gl_FragColor = vec4(col, 1.0); }`,
           })),
           i.addPass(this.feline),
@@ -36518,14 +36522,15 @@ ${L2}`,
           (this.wet = Dt(this.wet, n.wet ? 1 : 0, 1 - Math.exp(-3 * e))),
           (this.sense = Dt(this.sense, n.sense ? 1 : 0, 1 - Math.exp(-5 * e))),
           (this.gray = Dt(this.gray, this.wasted ? 1 : 0, 1 - Math.exp(-(this.wasted ? 2.2 : 6) * e))),
-          (this.nv = Dt(this.nv, n.nv ? 1 : 0, 1 - Math.exp(-4 * e))),
-          (this.trip = Dt(this.trip, n.trip || 0, 1 - Math.exp(-1.5 * e))),
-          (this.flash = Math.max(n.flash || 0, this.flash - e * 3)),
+          (this.nv = Dt(this.nv, n.nv && !this.wasted ? 1 : 0, 1 - Math.exp(-(this.wasted ? 12 : 4) * e))),
+          (this.trip = Dt(this.trip, this.wasted ? 0 : n.trip || 0, 1 - Math.exp(-(this.wasted ? 12 : 1.5) * e))),
+          (this.flash = Math.max(this.wasted ? 0 : n.flash || 0, this.flash - e * 3)),
+          this.wasted && ((this.wet = 0), (this.sense = 0)),
           !this.feline)
         ) {
           let l = document.getElementById("gl"),
             c = [
-              this.gray > 0.02 ? `grayscale(${this.gray.toFixed(2)})` : "",
+              this.gray > 0.02 ? `grayscale(${this.gray.toFixed(2)}) contrast(${(1 + this.gray * 0.35).toFixed(2)})` : "",
               this.nv > 0.02 ? `brightness(${(1 + this.nv * 1.6).toFixed(2)}) saturate(${(1 - this.nv * 0.6).toFixed(2)}) hue-rotate(${Math.round(this.nv * 25)}deg)` : "",
               this.trip > 0.02 ? `hue-rotate(${Math.round((i * 60) % 360)}deg) saturate(${(1 + this.trip * 1.5).toFixed(2)})` : "",
               this.flash > 0.02 ? `brightness(${(1 + this.flash * 1.5).toFixed(2)})` : "",

@@ -1453,13 +1453,16 @@ input[type="checkbox"] {
 .wband h2 {
   margin: 0;
   font:
-    400 clamp(4rem, 12vw, 8rem)/1 "Anton",
+    400 clamp(4.5rem, 13vw, 9rem)/1 "Anton",
     Impact,
     var(--display);
-  letter-spacing: 0.02em;
-  color: #b0100b;
-  -webkit-text-stroke: 3px #000;
-  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.04em;
+  color: #d4261c;
+  -webkit-text-stroke: 3px #120101;
+  paint-order: stroke fill;
+  text-shadow:
+    0 5px 0 rgba(0, 0, 0, 0.75),
+    0 0 26px rgba(212, 38, 28, 0.55);
   animation: wTxt 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .wsub {
@@ -1473,10 +1476,13 @@ input[type="checkbox"] {
   animation: tin 0.3s;
 }
 @keyframes wIn {
-  from {
-    background: rgba(0, 0, 0, 0);
+  0% {
+    background: rgba(190, 10, 10, 0.55);
   }
-  to {
+  25% {
+    background: rgba(120, 0, 0, 0.2);
+  }
+  100% {
     background: rgba(0, 0, 0, 0);
   }
 }
