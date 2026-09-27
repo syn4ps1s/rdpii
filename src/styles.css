@@ -1446,23 +1446,25 @@ input[type="checkbox"] {
 }
 .wband {
   width: 100%;
-  padding: 0.4rem 0;
-  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.72) 18%, rgba(0, 0, 0, 0.72) 82%, transparent);
+  padding: 0.5rem 0 0.7rem;
+  background: rgba(20, 20, 20, 0.58);
+  box-shadow: 0 0 40px 10px rgba(20, 20, 20, 0.35);
   text-align: center;
 }
 .wband h2 {
   margin: 0;
   font:
-    400 clamp(4.5rem, 13vw, 9rem)/1 "Anton",
+    400 clamp(4.5rem, 13vw, 9rem)/1 "Titan One",
+    "Anton",
     Impact,
     var(--display);
-  letter-spacing: 0.04em;
-  color: #d4261c;
-  -webkit-text-stroke: 3px #120101;
+  letter-spacing: 0.01em;
+  text-transform: lowercase;
+  color: #e3322b;
+  -webkit-text-stroke: 4px #0a0a0a;
   paint-order: stroke fill;
-  text-shadow:
-    0 5px 0 rgba(0, 0, 0, 0.75),
-    0 0 26px rgba(212, 38, 28, 0.55);
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  transform: scaleX(0.94);
   animation: wTxt 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .wsub {
@@ -1489,14 +1491,14 @@ input[type="checkbox"] {
 @keyframes wTxt {
   0% {
     opacity: 0;
-    transform: scale(1.6);
+    transform: scale(1.6) scaleX(0.94);
   }
   35% {
     opacity: 0;
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) scaleX(0.94);
   }
 }
 /* Spotify */
