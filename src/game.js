@@ -29924,7 +29924,8 @@ ${L2}`,
             this.speed > 3 &&
             ((this.honkT = 4), e.audio.horn(this.pos), e.event("carHonk", this)));
         // brake for anything in the lane: player, cats, dogs, birds on the ground, rats, people, other cars
-        let r = this.laneBlock(l ? a : 1 / 0),
+        // no braking for the player: cross carelessly and you get run over (only a honk as warning)
+        let r = this.laneBlock(1 / 0),
           c = r < 1 / 0 ? Math.min(this.max, Math.max(0, (r - this.half - 2.2) * 1.1)) : this.max;
         for (
           this.speed = ee(this.speed, c, c < this.speed ? (r - this.half < 5 ? 5 : 2.2) : 0.8, t),
@@ -32423,6 +32424,135 @@ ${L2}`,
         }
         this.saveSoon();
       }
+      // ---------- weapon loot -> temporary first-person "Doom mode" ----------
+      startFPS(t, e) {
+        if (this.fps) return (t === "pistol" && (this.fps.ammo += e || 12), void 0);
+        let i = st() === "es",
+          n = this.player;
+        ((this.fps = { w: t, ammo: t === "pistol" ? e || 24 : 1 / 0, t: 300, kills: 0, cd: 0, kick: 0, flash: 0, bob: 0, spawned: [] }),
+          n.obj.traverse((s) => s.layers.disable(0)),
+          (n.sitting = n.sleeping = !1),
+          this.ui.hudEl.classList.add("fps"),
+          this.buildViewmodel(t),
+          this.app.lock(),
+          this.audio.ui("sting"),
+          this.ui.banner(i ? "MODO ARMA" : "WEAPON MODE", t === "pistol" ? (i ? "Pistola \xB7 5 minutos o hasta que se acaben las balas" : "Pistol \xB7 5 minutes or until you run dry") : i ? "Cortaplumas \xB7 5 minutos" : "Pocket knife \xB7 5 minutes", 2600));
+        // a pack of strays smells trouble and comes for you
+        for (let s = 0; s < 5; s++) {
+          let a = (s / 5) * 6.28 + Math.random(),
+            o = 18 + Math.random() * 10,
+            l = n.pos.x + Math.cos(a) * o,
+            c = n.pos.z + Math.sin(a) * o;
+          if (!this.world.inBounds(l, c, 5)) continue;
+          let h = new ks(this, { kind: "street", name: pe(io), x: l, z: c, chill: !1 });
+          ((h.state = "chase"), (h.startPos = h.pos.clone()), (h.fps = !0), this.dogs.push(h), this.fps.spawned.push(h));
+        }
+      }
+      endFPS(t) {
+        let e = this.fps,
+          i = st() === "es";
+        if (!e) return;
+        this.fps = null;
+        let n = this.player;
+        (n.obj.traverse((s) => s.layers.enable(0)), this.ui.hudEl.classList.remove("fps"), this.viewmodel && (this.camera.remove(this.viewmodel), (this.viewmodel = null)));
+        for (let s of e.spawned) ((s.dead = !0), this.scene.remove(s.obj));
+        ((this.dogs = this.dogs.filter((s) => !s.dead)),
+          this.app.settings.mouseMode !== "capture" && this.app.unlock(),
+          this.ui.toast(
+            t === "ammo"
+              ? i ? `Sin balas. Fin del modo arma \xB7 ${e.kills} bajas` : `Out of ammo. Weapon mode over \xB7 ${e.kills} kills`
+              : t === "ko"
+                ? i ? "Te vencieron. Perdiste el arma" : "You got taken down. Weapon lost"
+                : i ? `Se acab\xF3 el tiempo \xB7 ${e.kills} bajas` : `Time's up \xB7 ${e.kills} kills`,
+            4e3,
+          ),
+          e.kills && this.addXP(e.kills * 15, i ? "Modo arma" : "Weapon mode"));
+      }
+      buildViewmodel(t) {
+        let e = new Wt(),
+          i = (l, c, h, u, f, m, g, x = {}) => {
+            let d = new nt(new qt(l, c, h), new jt({ color: g, roughness: 0.5, metalness: 0.4, depthTest: !1, ...x }));
+            return (d.position.set(u, f, m), (d.renderOrder = 999), e.add(d), d);
+          },
+          n = new nt(new ge(0.07, 14, 10), new jt({ color: this.player.model.coat.base, roughness: 0.95, depthTest: !1 }));
+        (n.scale.set(1, 0.8, 1.3), n.position.set(0.01, -0.06, 0.05), (n.renderOrder = 998), e.add(n));
+        if (t === "pistol")
+          (i(0.045, 0.06, 0.24, 0, 0, -0.06, "#2b2b2e"),
+            i(0.04, 0.11, 0.05, 0, -0.07, 0.02, "#3a2a1e", { metalness: 0 }),
+            i(0.02, 0.02, 0.06, 0, 0.012, -0.2, "#18181a"),
+            i(0.012, 0.018, 0.012, 0, 0.04, -0.15, "#18181a"));
+        else {
+          i(0.035, 0.035, 0.12, 0, 0, 0.01, "#6b3b22", { metalness: 0 });
+          let l = i(0.012, 0.035, 0.2, 0, 0.005, -0.15, "#d7dbe0", { metalness: 0.9, roughness: 0.2 });
+          l.rotation.x = 0.08;
+        }
+        let s = new nt(new ge(0.035, 8, 6), new we({ color: "#ffd27a", depthTest: !1, transparent: !0 }));
+        (s.position.set(0, 0.012, -0.26), (s.renderOrder = 1e3), (s.visible = !1), e.add(s), (e.userData.flash = s));
+        let a = new Es(16758626, 0, 6, 2);
+        (a.position.set(0, 0, -0.3),
+          e.add(a),
+          (e.userData.light = a),
+          e.position.set(0.16, -0.15, -0.36),
+          (e.rotation.y = 0.06),
+          this.camera.parent || this.scene.add(this.camera),
+          this.camera.add(e),
+          (this.viewmodel = e));
+      }
+      fpsTargets() {
+        let t = [];
+        for (let e of this.dogs) !e.dead && e.obj.visible && e.state !== "flee" && t.push([e, 0.28 * (e.size || 1), 0.42 * (e.size || 1)]);
+        for (let e of this.cats)
+          !e.dead && e.obj.visible && e.state !== "ko" && (e.isRival || e.hostile || e.boss) && t.push([e, 0.28 * (e.model?.scale || 1), 0.32 * (e.model?.scale || 1)]);
+        return t;
+      }
+      fireFPS() {
+        let t = this.fps,
+          e = this.camera;
+        if (t.cd > 0) return;
+        if (t.w === "pistol") {
+          if (t.ammo <= 0) return (this.audio.ui("click"), void (t.cd = 0.3));
+          (t.ammo--, (t.cd = 0.3), (t.flash = 0.06), this.audio.sample("gunshot", { vol: 0.9, verb: 0.35 }) || this.audio.hit(this.player.pos), this.vfx.shake(0.12));
+        } else ((t.cd = 0.42), this.audio.swipe(this.player.pos));
+        t.kick = 1;
+        let i = e.getWorldDirection(new I()),
+          n = e.position,
+          s = t.w === "pistol" ? 45 : 2,
+          a = null,
+          o = 1 / 0;
+        for (let [l, c, h] of this.fpsTargets()) {
+          let u = new I(l.pos.x - n.x, l.pos.y + c - n.y, l.pos.z - n.z),
+            f = u.dot(i);
+          if (f < 0 || f > s) continue;
+          u.addScaledVector(i, -f).length() < h && f < o && ((o = f), (a = l));
+        }
+        a && this.hitFPS(a, t.w === "pistol" ? 34 : 28, i.clone().setY(0).normalize());
+      }
+      hitFPS(t, e, i) {
+        let n = this.fps;
+        if (t instanceof ks) {
+          ((t.hp -= e), this.audio.yelp({ pos: t.pos }), t.pos.addScaledVector(i, 0.5), this.hitFx(t.pos, "#8a6a4a", e, !1, !1));
+          t.hp <= 0 ? ((t.state = "flee"), (t.timer = 12), (t.hp = 40 * (t.size || 1)), n.kills++, this.addXP(20, "", !0)) : ((t.state = "chase"), (t.startPos = t.pos.clone()));
+          return;
+        }
+        ((t.hp -= e), (t.hostile = !0), t.pos.addScaledVector(i, 0.4), this.hitFx(t.pos, t.model.coat.base, e, !1, !1), this.audio.meow({ pos: t.pos, type: "angry" }));
+        t.hp <= 0 && ((t.hp = 0), (t.state = "ko"), (t.timer = 40), n.kills++, this.addXP(40 + t.level * 12, t.name), this.makeLoot(t));
+      }
+      updateFPS(t, e) {
+        let i = this.fps,
+          n = this.player;
+        if (((i.t -= t), (i.cd -= t), e.attackPressed && ((e.attackPressed = !1), this.fireFPS()), (e.pounceHeld = !1), n.ko)) return this.endFPS("ko");
+        if (i.t <= 0) return this.endFPS("time");
+        if (i.w === "pistol" && i.ammo <= 0 && i.cd <= 0) return this.endFPS("ammo");
+        let s = this.viewmodel;
+        if (s) {
+          ((i.kick = Math.max(0, i.kick - t * 6)), (i.flash -= t), (i.bob += t * n.speed * 2.2));
+          let a = i.w === "knife" ? i.kick : 0;
+          (s.position.set(0.16 + Math.sin(i.bob) * 0.012 - a * 0.1, -0.15 + Math.abs(Math.cos(i.bob)) * 0.01 - i.kick * 0.015 * (i.w === "pistol" ? 1 : -3), -0.36 + i.kick * 0.05 - a * 0.12),
+            (s.rotation.x = i.kick * (i.w === "pistol" ? 0.35 : -0.6)),
+            (s.userData.flash.visible = i.flash > 0),
+            (s.userData.light.intensity = i.flash > 0 ? 18 : 0));
+        }
+      }
       // ---------- loot from beaten cats (WoW style) ----------
       makeLoot(t) {
         let e = st() === "es",
@@ -32457,6 +32587,14 @@ ${L2}`,
           for (; u < o.length - 1 && (h -= o[u][0]) > 0; ) u++;
           n.push(o.splice(u, 1)[0][1]);
         }
+        // rare weapons: picking one up switches to first-person "Doom mode"
+        let w = t.boss ? 0.45 : t.isRival || t.hostile ? 0.22 : 0.1;
+        s() < w &&
+          n.push(
+            s() < 0.55
+              ? i("weapon", e ? "Pistola oxidada" : "Rusty pistol", "\u{1F52B}", 4, { w: "pistol", ammo: 18 + Math.floor(s() * 18) })
+              : i("weapon", e ? "Cortaplumas" : "Pocket knife", "\u{1F52A}", 3, { w: "knife" }),
+          );
         t.boss &&
           (n.push(i("collar", e ? `Collar de jefe \xB7 ${t.sector?.name || a}` : `Boss collar \xB7 ${t.sector?.name || a}`, "\u{1F451}", 4, { color: "#d4af37" })),
           n.push(i("claw", e ? "Garra del jefe (garras afiladas 10 min)" : "Boss claw (sharp claws 10 min)", "\u{1F43E}", 3, { claw: 600 })));
@@ -32478,6 +32616,8 @@ ${L2}`,
             ? ((i.hunger = Math.min(100, i.hunger + s.hunger)), s.hp && (i.hp = Math.min(i.maxHp, i.hp + i.maxHp * s.hp)), (i.eatT = 1), this.audio.crunch(i.pos))
             : s.id === "nip"
               ? (i.nip = (i.nip || 0) + s.nip)
+              : s.id === "weapon"
+                ? (this.ui.lootWindow(null), setTimeout(() => this.startFPS(s.w, s.ammo), 50))
               : s.id === "claw"
                 ? (i.clawBuffT = Math.max(i.clawBuffT || 0, s.claw))
                 : s.id === "collar"
@@ -33738,6 +33878,7 @@ ${L2}`,
           i.scratchT > 0 && ((e.x = 0), (e.z = 0)),
           this.updateSpots(a, e),
           this.updateInteriors(a),
+          this.fps && this.updateFPS(a, e),
           i.update(a, e, h),
           (e.x || e.z) &&
             ((this._walked = (this._walked || 0) + i.speed * a),
@@ -33905,6 +34046,7 @@ ${L2}`,
           nv: !!i.nv,
           trip: Et((i.nip || 0) - 1, 0, 1.2),
           flash: this.weather ? this.weather.flash : 0,
+          retro: !!this.fps,
           speedLines: i.speed > 6.5 ? (i.speed - 6.5) / 3 : 0,
         }),
           this.audio.setListener(this.camera),
@@ -34038,6 +34180,22 @@ ${L2}`,
           n = this.player,
           s = this.app.settings,
           a = s.sensitivity || 1;
+        if (this.fps) {
+          // first person: eyes of the cat, mouse-look
+          ((i.yaw -= e.mdx * 0.0026 * a * (s.invertX ? -1 : 1)), (i.pitch = Et(i.pitch - e.mdy * 0.0022 * a * (s.invertY ? -1 : 1), -1.25, 1.25)));
+          let r = new I(-Math.sin(i.yaw) * Math.cos(i.pitch), -Math.sin(i.pitch), -Math.cos(i.yaw) * Math.cos(i.pitch)),
+            q = n.pos.clone();
+          q.y += 0.3 * n.scale + 0.12;
+          let m = this.vfx.consumeShake(t);
+          (m > 0 && ((q.x += (Math.random() - 0.5) * m * 0.1), (q.y += (Math.random() - 0.5) * m * 0.1)),
+            this.camera.position.copy(q),
+            this.camera.lookAt(q.clone().add(r)),
+            (this.camera.fov = ee(this.camera.fov, 78, 6, t)),
+            this.camera.updateProjectionMatrix(),
+            (this.camera.userData.focus = n.pos),
+            (i.focus.copy(n.pos)));
+          return;
+        }
         ((i.yaw -= e.mdx * 0.0026 * a * (s.invertX ? -1 : 1)),
           (i.pitch += e.mdy * 0.0022 * a * (s.invertY ? -1 : 1)),
           s.camFollow !== !1 &&
@@ -34188,7 +34346,7 @@ ${L2}`,
           t && this.ui.toast(X("saved")));
       }
       dispose() {
-        ((this.disposed = !0), this.save(), this.weather?.dispose(), this.guideArrow && this.scene.remove(this.guideArrow), this.spotGroup && this.scene.remove(this.spotGroup));
+        (this.fps && this.endFPS("time"), (this.disposed = !0), this.save(), this.weather?.dispose(), this.guideArrow && this.scene.remove(this.guideArrow), this.spotGroup && this.scene.remove(this.spotGroup));
         for (let t of [...this.cats, ...this.dogs, ...this.birds, ...this.rats, ...this.humans])
           this.scene.remove(t.obj);
         for (let t of this.cars) (this.scene.remove(t.obj), this.audio.stopEngine(t.id));
@@ -36547,13 +36705,15 @@ ${L2}`,
               uNV: { value: 0 },
               uTrip: { value: 0 },
               uFlash: { value: 0 },
+              uRetro: { value: 0 },
             },
             vertexShader:
               "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }",
-            fragmentShader: `uniform sampler2D tDiffuse; uniform float uDanger, uTime, uHurt, uDesat, uCA, uWet, uSense, uVig, uGray, uNV, uTrip, uFlash; varying vec2 vUv;
+            fragmentShader: `uniform sampler2D tDiffuse; uniform float uDanger, uTime, uHurt, uDesat, uCA, uWet, uSense, uVig, uGray, uNV, uTrip, uFlash, uRetro; varying vec2 vUv;
         vec3 hueRot(vec3 c, float a){ const vec3 k = vec3(0.57735); float ca = cos(a); return c*ca + cross(k, c)*sin(a) + k*dot(k, c)*(1.0-ca); }
         float h21(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
         void main(){ vec2 uv = vUv; vec2 c = uv - 0.5; float r = length(c);
+          if (uRetro > 0.0) { vec2 g = vec2(480.0, 270.0); uv = mix(uv, (floor(uv * g) + 0.5) / g, uRetro); }
           if (uWet > 0.0) uv += vec2(sin(uv.y*40.0+uTime*6.0), cos(uv.x*35.0+uTime*5.0)) * 0.0025 * uWet;
           if (uTrip > 0.0) { // catnip: breathing, wobbly, melting world
             uv += vec2(sin(uv.y*9.0 + uTime*1.7 + sin(uv.x*5.0+uTime)), cos(uv.x*8.0 - uTime*1.3)) * 0.018 * uTrip;
@@ -36575,6 +36735,7 @@ ${L2}`,
             col = mix(col, nv, uNV);
           }
           col += vec3(0.75, 0.8, 1.0) * uFlash;
+          if (uRetro > 0.0) col = mix(col, floor(col * 9.0 + 0.5) / 9.0 * vec3(1.06, 0.98, 0.9), uRetro * 0.85);
           float lum = dot(col, vec3(0.299,0.587,0.114));
           col = mix(col, vec3(lum), uDesat);
           col = mix(col, vec3(lum*0.9, lum*1.05, lum*0.7) * 1.25 + vec3(0.02,0.03,0.0), uSense*0.55);
@@ -36888,6 +37049,7 @@ ${L2}`,
           (this.trip = Dt(this.trip, this.wasted ? 0 : n.trip || 0, 1 - Math.exp(-(this.wasted ? 12 : 1.5) * e))),
           (this.flash = Math.max(this.wasted ? 0 : n.flash || 0, this.flash - e * 3)),
           this.wasted && ((this.wet = 0), (this.sense = 0)),
+          (this.retro = Dt(this.retro || 0, n.retro ? 1 : 0, 1 - Math.exp(-5 * e))),
           !this.feline)
         ) {
           let l = document.getElementById("gl"),
@@ -36914,6 +37076,7 @@ ${L2}`,
             (l.uNV.value = this.nv),
             (l.uTrip.value = this.trip),
             (l.uFlash.value = this.flash),
+            (l.uRetro.value = this.retro),
             (this.bloom.strength = 0.3 + n.night * 0.45 + this.hurt * 0.4));
         } else {
           let l = document.getElementById("dangerOverlay");
@@ -37570,6 +37733,14 @@ ${L2}`,
             l.stroke());
         };
         x(e.home.x, e.home.z, "#6cc070", 6);
+        (this.mapIcons(e, l, m, g, 16 * devicePixelRatio),
+          (() => {
+            let p = st() === "es" ? "\u{1F6D2} Almac\xE9n   \u{1F6AA} Casa abierta   \u{1F33F} Hierba gatera" : "\u{1F6D2} Shop   \u{1F6AA} Open house   \u{1F33F} Catnip",
+              b = 13 * devicePixelRatio;
+            ((l.font = `600 ${b}px Barlow Condensed, system-ui, sans-serif`), (l.textAlign = "left"));
+            let v = l.measureText(p).width;
+            ((l.fillStyle = "rgba(22,21,27,0.8)"), l.fillRect(8, t.height - b * 2.2, v + 16, b * 1.8), (l.fillStyle = "#eef1f4"), l.fillText(p, 16, t.height - b * 0.9));
+          })());
         for (let p of e.cats) p.named && p.met && x(p.pos.x, p.pos.z, "#7fc8ff", 4);
         (e.mate && x(e.mate.pos.x, e.mate.pos.z, "#ff6f91", 5),
           e.waypoint &&
@@ -37683,6 +37854,8 @@ ${L2}`,
       <div class="vitals"><div class="portrait pp"></div><div class="vcol"><p class="who"><b class="nm"></b><span class="lvl"></span></p>
         <div class="bar hp"><i></i><span></span></div><div class="bar st"><i></i></div><div class="bar hu"><i></i></div><div class="xp"><i></i></div>
         <p class="legend small"><span class="c-hp">${X("hp")}</span><span class="c-st">${X("stamina")}</span><span class="c-hu">${X("hunger")}</span></p><p class="buffs small"></p></div></div>
+      <div class="doomhud"><div class="dcell"><b class="dammo"></b><span>${st() === "es" ? "BALAS" : "AMMO"}</span></div><div class="dcell"><b class="dhp"></b><span>${st() === "es" ? "VIDA" : "HEALTH"}</span></div><div class="portrait dface"><canvas width="168" height="168"></canvas></div><div class="dcell"><b class="dtime"></b><span>${st() === "es" ? "TIEMPO" : "TIME"}</span></div><div class="dcell"><b class="dkills"></b><span>${st() === "es" ? "BAJAS" : "KILLS"}</span></div></div>
+      <div class="xhair"></div>
       <div class="tframe" hidden><div class="portrait tp"></div><div class="vcol"><p class="who"><b class="tn"></b><span class="tlv"></span></p>
         <p class="ttype small"></p><div class="bar hp thp"><i></i><span></span></div><p class="tst"></p></div></div>
       <div class="compass"><div class="ticks"></div><p class="street"></p></div>
@@ -37735,6 +37908,11 @@ ${L2}`,
             thpT: rt(".thp span", t),
             tst: rt(".tst", t),
             buffs: rt(".buffs", t),
+            dface: rt(".dface", t),
+            dammo: rt(".dammo", t),
+            dhp: rt(".dhp", t),
+            dtime: rt(".dtime", t),
+            dkills: rt(".dkills", t),
           }),
           (this.mmCtx = this.q.mm.getContext("2d")),
           this.q.ctx.addEventListener("pointerdown", (e) => {
@@ -38187,6 +38365,12 @@ ${L2}`,
           (this._t -= e),
           this.updateMarks(t),
           this.waypointMark(t),
+          t.fps &&
+            ((n.dammo.textContent = t.fps.w === "pistol" ? t.fps.ammo : "\u221E"),
+            (n.dhp.textContent = `${Math.max(0, Math.round((100 * i.hp) / i.maxHp))}%`),
+            (n.dtime.textContent = `${Math.floor(Math.max(0, t.fps.t) / 60)}:${String(Math.floor(Math.max(0, t.fps.t) % 60)).padStart(2, "0")}`),
+            (n.dkills.textContent = t.fps.kills),
+            n.dface.classList.toggle("hurt", i.hp < i.maxHp * 0.35)),
           this.targetFrame(t, e),
           this.updateGivers(t),
           this.updateBar(t),
@@ -38336,6 +38520,7 @@ ${L2}`,
         for (let d of s.sectors)
           g(d.post.x, d.post.z, d.owner === "player" ? "#ffc861" : d.bossBeaten ? "#ffffff" : "#e2463f", 6);
         g(t.home.x, t.home.z, "#6cc070", 7);
+        this.mapIcons(t, e, f, m, 22, c);
         for (let d of t.dogs) (d.state === "chase" || d.state === "alert" || x) && g(d.pos.x, d.pos.z, "#e2463f", 5);
         for (let d of t.cats)
           d.obj.visible &&
@@ -38414,6 +38599,22 @@ ${L2}`,
           (e.font = "700 22px Barlow Condensed, system-ui"),
           (e.textAlign = "center"),
           e.fillText("N", n / 2, 26));
+      }
+      mapIcons(t, e, i, n, s, a = 1 / 0) {
+        // shops, open houses and catnip on a 2D map; i/n map world x/z to canvas, s = icon px
+        let o = t.player.pos,
+          l = [];
+        for (let c of t.shops || []) l.push([c.x, c.z, "\u{1F6D2}", "#f08a3c"]);
+        for (let c of t.openHouses || []) l.push([c.h.cx, c.h.cz, "\u{1F6AA}", "#6fa0ff"]);
+        for (let c of t.spots || []) c.kind === "nip" && l.push([c.x, c.z, "\u{1F33F}", "#b79be0"]);
+        ((e.textAlign = "center"), (e.textBaseline = "middle"), (e.font = `${Math.round(s * 0.8)}px system-ui, "Segoe UI Emoji", "Apple Color Emoji", sans-serif`));
+        for (let [c, h, u, f] of l) {
+          if (Math.abs(c - o.x) > a || Math.abs(h - o.z) > a) continue;
+          let m = i(c),
+            g = n(h);
+          ((e.fillStyle = "rgba(22,21,27,0.85)"), e.beginPath(), e.arc(m, g, s * 0.62, 0, 7), e.fill(), (e.strokeStyle = f), (e.lineWidth = Math.max(1.5, s * 0.1)), e.stroke(), (e.fillStyle = "#fff"), e.fillText(u, m, g + s * 0.04));
+        }
+        e.textBaseline = "alphabetic";
       }
       lootWindow(t) {
         let e = this.app.game,
@@ -38534,7 +38735,7 @@ ${L2}`,
             return o;
           })();
         t.player.obj.layers.isEnabled(7) || t.player.obj.traverse((o) => o.layers.enable(7));
-        let s = [[i.pp, t.player, 7]];
+        let s = [[t.fps ? i.dface : i.pp, t.player, 7]];
         (this._tfObj && !i.tf.hidden && s.push([i.tp, this._tfObj, 8]),
           (this._pv || (this._pv = [new I(), new I(), new ft()])));
         let [a, o, l] = this._pv,
@@ -38548,7 +38749,7 @@ ${L2}`,
           let d = m.model ? m.model.head : m.obj.userData.head;
           if (!d) continue;
           d.getWorldPosition(a);
-          let p = m.yaw ?? m.obj.rotation.y,
+          let p = (m.yaw ?? m.obj.rotation.y) + (t.fps && f === i.dface ? [0, 0.55, 0, -0.55][Math.floor(t.time / 1.3) % 4] : 0),
             b = m.model ? 0.25 * m.model.scale * (m.model.ageP?.head || 1) : m instanceof ks ? 0.62 * (m.size || 1) : 0.62;
           (o.set(Math.sin(p), 0, Math.cos(p)),
             n.position.copy(a).addScaledVector(o, b).add(o.set(0, b * 0.12, 0)),
@@ -38567,6 +38768,25 @@ ${L2}`,
             e.setClearColor(1447450, 1),
             e.clear(!0, !0, !1),
             e.render(t.scene, n));
+          if (f === i.dface) {
+            // the Doom status bar is opaque: copy the freshly drawn face into its own canvas
+            let _ = f.firstChild,
+              E = e.getPixelRatio();
+            (this._dctx || (this._dctx = _.getContext("2d")),
+              this._dctx.drawImage(e.domElement, x.left * E, x.top * E, x.width * E, x.height * E, 0, 0, _.width, _.height));
+            let S = t.player.hp / t.player.maxHp;
+            if (S < 0.8) {
+              // blood: more of it the lower the health
+              let T = this._dctx;
+              ((T.globalCompositeOperation = "multiply"), (T.fillStyle = `rgba(200,20,10,${(0.8 - S) * 0.9})`), T.fillRect(0, 0, _.width, _.height), (T.globalCompositeOperation = "source-over"));
+              for (let A = 0; A < Math.floor((1 - S) * 7); A++) {
+                let k = ((A * 53) % 120) + 20,
+                  y = ((A * 97) % 110) + 30;
+                ((T.fillStyle = "rgba(120,0,0,0.75)"), T.beginPath(), T.ellipse(k, y, 5 + (A % 3) * 3, 9 + (A % 2) * 6, 0.3, 0, 7), T.fill());
+              }
+            }
+            t.vfx.hurt > 0.3 && ((this._dctx.fillStyle = "rgba(255,40,20,0.35)"), this._dctx.fillRect(0, 0, _.width, _.height));
+          }
         }
         (e.setScissorTest(!1),
           e.setViewport(0, 0, innerWidth, innerHeight),
@@ -39169,7 +39389,7 @@ ${L2}`,
       let a = this.renderer.domElement;
       a.tabIndex = -1;
       let o = (this.mouse = { l: !1, r: !1, moved: 0, t: 0, x: 0, y: 0 }),
-        l = () => this.settings.mouseMode === "capture",
+        l = () => this.settings.mouseMode === "capture" || !!this.game?.fps,
         c = (h) => [(h.clientX / innerWidth) * 2 - 1, -(h.clientY / innerHeight) * 2 + 1];
       (a.addEventListener("mousedown", (h) => {
         if (

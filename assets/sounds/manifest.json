@@ -178,5 +178,11 @@
     "glass_1.mp3",
     "glass_2.mp3",
     "glass_3.mp3"
+  ],
+  "gunshot": [
+    "gunshot_1.mp3",
+    "gunshot_2.mp3",
+    "gunshot_3.mp3",
+    "gunshot_4.mp3"
   ]
 }

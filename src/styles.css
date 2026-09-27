@@ -2038,3 +2038,110 @@ input[type="checkbox"] {
 .lootwin .lootall {
   width: auto;
 }
+/* ---------- first-person "Doom mode" HUD ---------- */
+.doomhud,
+.xhair {
+  display: none;
+}
+#hud.fps .vitals,
+#hud.fps .abar,
+#hud.fps .tframe,
+#hud.fps .tracker,
+#hud.fps .ctx,
+#hud.fps .hint,
+#hud.fps .danger,
+#hud.fps .compass,
+#hud.fps .mapBox,
+#hud.fps .carry {
+  display: none !important;
+}
+#hud.fps .doomhud {
+  display: flex;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 96px;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.08) 0 2px, transparent 2px 5px),
+    linear-gradient(#5b5446, #3b362c 55%, #2a2620);
+  border-top: 3px solid #8a8070;
+  box-shadow: inset 0 3px 0 #1d1a15;
+}
+.dcell {
+  flex: 0 1 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(#34302a, #25221d);
+  border: 2px solid;
+  border-color: #1b1814 #7a705f #7a705f #1b1814;
+}
+.dcell b {
+  font: 400 2.9rem/1 "Anton", Impact, var(--display);
+  color: #d11f12;
+  letter-spacing: 0.02em;
+  text-shadow: 2px 2px 0 #000, 0 0 10px rgba(209, 31, 18, 0.45);
+}
+.dcell span {
+  font: 700 0.8rem/1 var(--body);
+  letter-spacing: 0.2em;
+  color: #cfc4a8;
+}
+#hud.fps .dface {
+  width: 84px;
+  height: 84px;
+  border-radius: 6px;
+  border-color: #7a705f;
+  background: #1a1612;
+}
+#hud.fps .dface.hurt {
+  border-color: #d11f12;
+  box-shadow: 0 0 14px rgba(209, 31, 18, 0.8);
+}
+#hud.fps .xhair {
+  display: block;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  background:
+    linear-gradient(#ffd23f, #ffd23f) center / 2px 8px no-repeat,
+    linear-gradient(#ffd23f, #ffd23f) center / 8px 2px no-repeat;
+  filter: drop-shadow(0 0 2px #000);
+}
+@media (max-width: 720px) {
+  #hud.fps .doomhud {
+    height: 70px;
+  }
+  .dcell b {
+    font-size: 1.8rem;
+  }
+  #hud.fps .dface {
+    width: 58px;
+    height: 58px;
+  }
+}
+#hud.fps .dface {
+  width: 96px;
+  height: 96px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.dface canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+.dface:not(:has(canvas)) {
+  background: transparent;
+}
+#hud.fps .doomhud {
+  height: 108px;
+}
