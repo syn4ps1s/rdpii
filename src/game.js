@@ -30461,6 +30461,102 @@ ${L2}`,
       },
     },
     pr = "es";
+  // ---------- Spotify Web API (OAuth PKCE, no secret): what's playing on the user's account + controls ----------
+  var SpotifyLink = class r {
+    constructor(t) {
+      ((this.s = t), (this.tok = Li("rdp2:sptok")));
+    }
+    get clientId() {
+      return (this.s.spotify.clientId || "").trim();
+    }
+    get redirect() {
+      return location.origin + location.pathname;
+    }
+    get connected() {
+      return !!this.tok?.refresh;
+    }
+    static b64(t) {
+      return btoa(String.fromCharCode(...new Uint8Array(t))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+    async login() {
+      let t = r.b64(crypto.getRandomValues(new Uint8Array(48))),
+        e = r.b64(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t))),
+        i = r.b64(crypto.getRandomValues(new Uint8Array(12)));
+      Li("rdp2:sppkce", { v: t, st: i, redirect: this.redirect });
+      let n =
+          "https://accounts.spotify.com/authorize?" +
+          new URLSearchParams({
+            response_type: "code",
+            client_id: this.clientId,
+            scope: "user-read-playback-state user-modify-playback-state user-read-currently-playing",
+            redirect_uri: this.redirect,
+            code_challenge_method: "S256",
+            code_challenge: e,
+            state: i,
+          }),
+        s = window.open(n, "rdp-spotify", "width=480,height=760");
+      s || (location.href = n);
+    }
+    static callback() {
+      // runs at boot: the login popup lands back on this page with ?code=
+      let t = new URLSearchParams(location.search),
+        e = t.get("code"),
+        i = t.get("state");
+      if (!e || !i) return !1;
+      if (window.opener && window.opener !== window) {
+        try {
+          window.opener.postMessage({ rdpSpotify: { code: e, state: i } }, "*");
+        } catch {}
+        return (
+          (document.body.innerHTML =
+            '<p style="font:600 20px system-ui;padding:24px;color:#1ed760;background:#121212;margin:0;min-height:100vh">Spotify conectado \u2713 Puedes cerrar esta ventana.</p>'),
+          setTimeout(() => window.close(), 900),
+          !0
+        );
+      }
+      return (Li("rdp2:spcode", { code: e, state: i }), history.replaceState(null, "", location.pathname), !1);
+    }
+    async exchange(t, e) {
+      let i = Li("rdp2:sppkce");
+      if (!i || i.st !== e) throw new Error("state mismatch");
+      let n = await fetch("https://accounts.spotify.com/api/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ grant_type: "authorization_code", code: t, redirect_uri: i.redirect, client_id: this.clientId, code_verifier: i.v }),
+        }),
+        s = await n.json();
+      if (!n.ok) throw new Error(s.error_description || s.error || n.status);
+      (this.setTok(s), Li("rdp2:sppkce", null));
+    }
+    setTok(t) {
+      ((this.tok = { access: t.access_token, refresh: t.refresh_token || this.tok?.refresh, exp: Date.now() + (t.expires_in - 60) * 1e3 }),
+        Li("rdp2:sptok", this.tok));
+    }
+    logout() {
+      ((this.tok = null), Li("rdp2:sptok", null));
+    }
+    async token() {
+      if (!this.tok) return null;
+      if (Date.now() < this.tok.exp) return this.tok.access;
+      let t = await fetch("https://accounts.spotify.com/api/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: this.tok.refresh, client_id: this.clientId }),
+        }),
+        e = await t.json();
+      return t.ok ? (this.setTok(e), this.tok.access) : (this.logout(), null);
+    }
+    async api(t, e) {
+      let i = await this.token();
+      if (!i) return { status: 401 };
+      let n = await fetch("https://api.spotify.com/v1" + e, { method: t, headers: { Authorization: "Bearer " + i } }),
+        s = null;
+      try {
+        s = n.status === 204 ? null : await n.json();
+      } catch {}
+      return { status: n.status, data: s };
+    }
+  };
   // ---------- GTA mode: everyone talks like they're from the Bronx ----------
   var GTA = {
     intro: ["Yo, ", "Ayo, ", "Aight, check it: ", "Yo, yo, yo! ", "Listen here, B: ", "Ay, lil' homie, ", "Yo, word up: "],
@@ -37527,6 +37623,7 @@ ${L2}`,
       <div class="abar" role="toolbar" aria-label="Acciones"></div>
       <div class="qdlg" hidden></div>
       <button class="hudbtn spbtn" title="Spotify (P)" aria-label="Spotify">\u266B</button>
+      <button class="spmini" hidden title="Spotify"><img alt=""><div><b></b><span></span></div></button>
       <button class="hudbtn setbtn" title="${st() === "es" ? "Ajustes (Esc)" : "Settings (Esc)"}" aria-label="${st() === "es" ? "Ajustes" : "Settings"}">\u2699</button>`),
           (this.q = {
             hp: rt(".bar.hp i", t),
@@ -37576,6 +37673,8 @@ ${L2}`,
           this.buildBar(),
           (this.giverEls = {}),
           rt(".spbtn", t).addEventListener("click", () => this.spotify()),
+          rt(".spmini", t).addEventListener("click", () => this.spotify()),
+          this.spLink().connected && this._spPollStart(),
           rt(".setbtn", t).addEventListener("click", () => {
             (this.app.pause(), (this.back = "pause"), this.show("settings"));
           }));
@@ -37779,6 +37878,17 @@ ${L2}`,
         ((n = Kt("aside", "spotify")),
           (n.id = "spotify"),
           (n.innerHTML = `<header><b>Spotify</b><button class="x" aria-label="${e ? "Cerrar" : "Close"}">\u2715</button></header>
+      <div class="spNow" hidden><img class="spArt" alt=""><div class="spMeta"><b class="spTitle"></b><span class="spArtist"></span><span class="spDev small"></span><div class="spProg"><i></i></div></div>
+        <div class="spCtl"><button class="spPrev" aria-label="${e ? "Anterior" : "Previous"}">\u23EE</button><button class="spPlay" aria-label="Play/Pause">\u23EF</button><button class="spNext" aria-label="${e ? "Siguiente" : "Next"}">\u23ED</button></div></div>
+      <div class="spConn"><p class="small spConnMsg"></p>
+        <div class="spRow"><input id="spCid" placeholder="Client ID (developer.spotify.com)" value="${ke(i.clientId || "")}"><button class="chip spLogin">${e ? "Conectar Spotify" : "Connect Spotify"}</button></div>
+        <details class="spHelp"><summary>${e ? "\xBFC\xF3mo obtengo el Client ID? (2 min, gratis)" : "How do I get a Client ID? (2 min, free)"}</summary>
+          <ol class="small"><li>${e ? "Entra a" : "Go to"} <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> ${e ? "y crea una app (Web API)." : "and create an app (Web API)."}</li>
+          <li>${e ? "En <b>Redirect URIs</b> agrega exactamente:" : "Under <b>Redirect URIs</b> add exactly:"}<br><code class="spRedir"></code> <button class="chip spCopy">${e ? "Copiar" : "Copy"}</button></li>
+          <li>${e ? "Copia el <b>Client ID</b>, p\xE9galo arriba y pulsa Conectar." : "Copy the <b>Client ID</b>, paste it above and press Connect."}</li>
+          <li>${e ? "Si la ventana de Spotify no vuelve sola, copia la URL a la que te llev\xF3 y p\xE9gala aqu\xED:" : "If the Spotify window doesn't come back, copy the URL it ended on and paste it here:"}<div class="spRow"><input id="spBack" placeholder="https://\u2026?code=\u2026"><button class="chip spBackGo">OK</button></div></li></ol></details>
+        <p class="small">${e ? "Muestra y controla lo que suena en tu cuenta (app del computador, tel\xE9fono, web). Controlar requiere Spotify Premium." : "Shows and controls what's playing on your account (desktop app, phone, web). Controls need Spotify Premium."}</p></div>
+      <p class="small spDisc"><button class="chip spLogout">${e ? "Desconectar" : "Disconnect"}</button></p>
       <div class="spSlot"><div id="spEmbed"></div><p class="small spMsg">${e ? "Cargando Spotify\u2026" : "Loading Spotify\u2026"}</p></div>
       <div class="spRow"><input id="spUrl" placeholder="${e ? "Pega un link de Spotify (playlist, \xE1lbum, canci\xF3n)" : "Paste a Spotify link (playlist, album, track)"}" value=""><button class="chip spGo">${e ? "Cargar" : "Load"}</button></div>
       <div class="spRow chips"><button class="chip spTop">Top 50 \xB7 Chile</button><a class="chip spApp" href="${spWeb(i.uri)}" target="_blank" rel="noopener">${e ? "Abrir en Spotify" : "Open in Spotify"}</a></div>
@@ -37810,7 +37920,106 @@ ${L2}`,
               t.renderer.domElement.focus({ preventScroll: !0 });
             } catch {}
           }),
+          this._spNowInit(n),
           this._spLoad());
+      }
+      // --- account "now playing" (Spotify Web API) ---
+      spLink() {
+        return this._spl || (this._spl = new SpotifyLink(this.app.settings));
+      }
+      _spNowInit(t) {
+        let e = this.spLink(),
+          i = st() === "es",
+          n = this.app.settings.spotify;
+        ((rt(".spRedir", t).textContent = e.redirect),
+          (rt(".spCopy", t).onclick = () => navigator.clipboard?.writeText(e.redirect).then(() => this.toast(i ? "Copiado" : "Copied"))),
+          rt("#spCid", t).addEventListener("keydown", (h) => h.stopPropagation()),
+          rt("#spBack", t).addEventListener("keydown", (h) => h.stopPropagation()),
+          (rt(".spLogin", t).onclick = () => {
+            let h = rt("#spCid", t).value.trim();
+            if (!/^[0-9a-f]{32}$/i.test(h)) return this.toast(i ? "Pega un Client ID v\xE1lido (32 caracteres)" : "Paste a valid Client ID (32 chars)");
+            ((n.clientId = h), this.app.saveSettings(), e.login().catch((u) => this.toast("Spotify: " + u.message)));
+          }),
+          (rt(".spBackGo", t).onclick = () => {
+            try {
+              let h = new URL(rt("#spBack", t).value.trim()).searchParams;
+              this._spCode(h.get("code"), h.get("state"));
+            } catch {
+              this.toast(i ? "URL no v\xE1lida" : "Invalid URL");
+            }
+          }),
+          (rt(".spLogout", t).onclick = () => (e.logout(), (this.spNow = null), this._spRender())),
+          (rt(".spPrev", t).onclick = () => this._spCmd("POST", "/me/player/previous")),
+          (rt(".spNext", t).onclick = () => this._spCmd("POST", "/me/player/next")),
+          (rt(".spPlay", t).onclick = () => this._spCmd("PUT", this.spNow?.is_playing ? "/me/player/pause" : "/me/player/play")));
+        let s = Li("rdp2:spcode");
+        (s && (Li("rdp2:spcode", null), this._spCode(s.code, s.state)), this._spRender(), this._spPollStart());
+      }
+      _spCode(t, e) {
+        let i = st() === "es";
+        t &&
+          this.spLink()
+            .exchange(t, e)
+            .then(() => (this.toast(i ? "Spotify conectado" : "Spotify connected"), this._spPollStart(!0)))
+            .catch((n) => this.toast(`Spotify: ${n.message}${/fetch|Failed/i.test(n.message) ? (i ? " (esta p\xE1gina bloquea la conexi\xF3n)" : " (this page blocks the connection)") : ""}`, 6e3));
+      }
+      _spPollStart(t) {
+        (this._spTimer || (this._spTimer = setInterval(() => this._spPoll(), 4e3)), t !== !1 && this._spPoll());
+      }
+      async _spPoll() {
+        let t = this.spLink();
+        if (!t.connected) return this._spRender();
+        try {
+          let e = await t.api("GET", "/me/player");
+          ((this.spNow = e.status === 200 ? e.data : null), (this.spNowT = performance.now()));
+          let i = !!this.spNow?.is_playing;
+          (i !== this.spPlaying && ((this.spPlaying = i), this._spDuck()), this._spRender());
+        } catch (e) {
+          ((this.spErr = e.message), this._spRender());
+        }
+      }
+      async _spCmd(t, e) {
+        let i = st() === "es",
+          n = await this.spLink().api(t, e).catch(() => ({ status: 0 }));
+        n.status === 403
+          ? this.toast(i ? "Los controles requieren Spotify Premium" : "Controls need Spotify Premium", 4e3)
+          : n.status === 404
+            ? this.toast(i ? "No hay Spotify activo: abre Spotify en tu computador o tel\xE9fono" : "No active Spotify: open Spotify on your computer or phone", 4e3)
+            : n.status === 401 && this.toast(i ? "Conecta tu cuenta de Spotify" : "Connect your Spotify account");
+        setTimeout(() => this._spPoll(), 450);
+      }
+      _spRender() {
+        let t = this.spLink(),
+          e = st() === "es",
+          i = this.spNow,
+          n = i?.item,
+          s = document.getElementById("spotify");
+        if (s) {
+          ((rt(".spConn", s).hidden = t.connected),
+            (rt(".spDisc", s).hidden = !t.connected),
+            (rt(".spNow", s).hidden = !t.connected),
+            (rt(".spSlot", s).hidden = t.connected));
+          let a = rt(".spConnMsg", s);
+          a.textContent = e ? "Conecta tu cuenta para ver la car\xE1tula y controlar lo que suena." : "Connect your account to see the cover art and control what's playing.";
+          if (t.connected) {
+            let o = n?.album?.images?.[1]?.url || n?.album?.images?.[0]?.url || n?.images?.[0]?.url;
+            (o ? (rt(".spArt", s).src = o) : rt(".spArt", s).removeAttribute("src"),
+              (rt(".spTitle", s).textContent = n?.name || (e ? "Nada sonando" : "Nothing playing")),
+              (rt(".spArtist", s).textContent = n ? (n.artists || []).map((l) => l.name).join(", ") || n.show?.name || "" : e ? "Abre Spotify en tu computador o tel\xE9fono" : "Open Spotify on your computer or phone"),
+              (rt(".spDev", s).textContent = i?.device ? `\u25B6 ${i.device.name}` : ""),
+              (rt(".spProg i", s).style.width = n?.duration_ms ? `${(100 * (i.progress_ms || 0)) / n.duration_ms}%` : "0"),
+              (rt(".spPlay", s).textContent = i?.is_playing ? "\u23F8" : "\u25B6"));
+          }
+        }
+        // mini player in the HUD
+        let a = this.hudEl && rt(".spmini", this.hudEl);
+        a &&
+          ((a.hidden = !(t.connected && n)),
+          n &&
+            ((rt("img", a).src = n.album?.images?.[2]?.url || n.album?.images?.[0]?.url || ""),
+            (rt("b", a).textContent = n.name),
+            (rt("span", a).textContent = (n.artists || []).map((o) => o.name).join(", ")),
+            a.classList.toggle("paused", !i?.is_playing)));
       }
       _spDuck() {
         let t = this.app.settings.spotify;
@@ -39123,6 +39332,7 @@ ${L2}`,
     }
   };
   function jd() {
+    if (SpotifyLink.callback()) return;
     try {
       window.__app = new wh();
     } catch (r) {
