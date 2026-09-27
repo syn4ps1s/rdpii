@@ -37926,6 +37926,7 @@ ${L2}`,
           (this.giverEls = {}),
           rt(".spbtn", t).addEventListener("click", () => this.spotify()),
           rt(".spmini", t).addEventListener("click", () => this.spotify()),
+          this.spMcpStart(),
           this.spLink().connected && this._spPollStart(),
           rt(".setbtn", t).addEventListener("click", () => {
             (this.app.pause(), (this.back = "pause"), this.show("settings"));
@@ -38131,7 +38132,7 @@ ${L2}`,
           (n.id = "spotify"),
           (n.innerHTML = `<header><b>Spotify</b><button class="x" aria-label="${e ? "Cerrar" : "Close"}">\u2715</button></header>
       <div class="spNow" hidden><img class="spArt" alt=""><div class="spMeta"><b class="spTitle"></b><span class="spArtist"></span><span class="spDev small"></span><div class="spProg"><i></i></div></div>
-        <div class="spCtl"><button class="spPrev" aria-label="${e ? "Anterior" : "Previous"}">\u23EE</button><button class="spPlay" aria-label="Play/Pause">\u23EF</button><button class="spNext" aria-label="${e ? "Siguiente" : "Next"}">\u23ED</button></div></div>
+        <div class="spCtl"><button class="spPrev" aria-label="${e ? "Anterior" : "Previous"}">\u23EE</button><button class="spPlay" aria-label="Play/Pause">\u23EF</button><button class="spNext" aria-label="${e ? "Siguiente" : "Next"}">\u23ED</button><button class="spLove" hidden aria-label="${e ? "Guardar en tu biblioteca" : "Save to your library"}">\u2661</button></div></div>
       <div class="spConn"><p class="small spConnMsg"></p>
         <div class="spRow"><input id="spCid" placeholder="Client ID (developer.spotify.com)" value="${ke(i.clientId || "")}"><button class="chip spLogin">${e ? "Conectar Spotify" : "Connect Spotify"}</button></div>
         <details class="spHelp"><summary>${e ? "\xBFC\xF3mo obtengo el Client ID? (2 min, gratis)" : "How do I get a Client ID? (2 min, free)"}</summary>
@@ -38175,6 +38176,74 @@ ${L2}`,
           this._spNowInit(n),
           this._spLoad());
       }
+      // --- claude.ai Spotify connector (mcp capability): works inside claude.ai where the Web API is blocked ---
+      async spMcpStart() {
+        if (this._spMcpTry) return;
+        this._spMcpTry = !0;
+        let t = null;
+        try {
+          t = window.claude?.use ? await window.claude.use("mcp") : null;
+        } catch {}
+        if (!t) return;
+        ((this.spMcp = t), (this.spSrc = "mcp"));
+        let e = (i) => {
+          if (i.type === "data") {
+            let n = i.result?.payload?.currently_playing_entity;
+            ((this.spErr = null),
+              (this.spNow = n
+                ? {
+                    is_playing: !0,
+                    mcp: !0,
+                    item: {
+                      name: n.name,
+                      uri: n.uri,
+                      url: n.url,
+                      saved: n.library_status === "SAVED",
+                      duration_ms: +n.playback?.duration_ms || 0,
+                      artists: (n.creators || []).map((s) => ({ name: s.name })),
+                      album: { name: n.parent?.name, images: (n.display?.covers || []).map((s) => ({ url: s.url, size: s.size })) },
+                    },
+                  }
+                : null));
+          } else {
+            let n = i.error?.code;
+            ((this.spErr = n),
+              ["needs_reauth", "server_not_connected", "selection_required", "not_in_manifest", "blocked_by_policy", "approval_required", "not_granted"].includes(n) && (this.spNow = null));
+          }
+          let a = !!this.spNow;
+          (a !== this.spPlaying && ((this.spPlaying = a), this._spDuck()), this._spRender());
+        };
+        this._spUnwatch = t.watchTool("Spotify", "get_currently_playing", null, e, { refetchInterval: 3e4 });
+      }
+      spMcpRefresh() {
+        this.spMcp?.invalidate?.("Spotify", "get_currently_playing").catch(() => {});
+      }
+      async spMcpLove() {
+        let t = this.spNow?.item,
+          e = st() === "es";
+        if (!t?.uri || !this.spMcp) return;
+        try {
+          (await this.spMcp.callTool("Spotify", t.saved ? "remove_from_library" : "save_to_library", { uri: t.uri }),
+            (t.saved = !t.saved),
+            this.toast(t.saved ? (e ? "Guardada en tu biblioteca de Spotify" : "Saved to your Spotify library") : e ? "Quitada de tu biblioteca" : "Removed from your library"),
+            this._spRender(),
+            this.spMcpRefresh());
+        } catch (i) {
+          this.toast(`Spotify: ${this.spMcpMsg(i.code) || i.message}`, 5e3);
+        }
+      }
+      spMcpMsg(t) {
+        let e = st() === "es";
+        return {
+          needs_reauth: e ? "Reconecta Spotify en claude.ai \u2192 Ajustes \u2192 Conectores" : "Reconnect Spotify in claude.ai \u2192 Settings \u2192 Connectors",
+          server_not_connected: e ? "Agrega el conector Spotify en claude.ai \u2192 Ajustes \u2192 Conectores" : "Add the Spotify connector in claude.ai \u2192 Settings \u2192 Connectors",
+          selection_required: e ? "Elige cu\xE1l conector de Spotify usar (aviso de claude.ai)" : "Choose which Spotify connector to use (claude.ai prompt)",
+          not_in_manifest: e ? "No diste permiso para usar Spotify en este juego (recarga para volver a preguntar)" : "Spotify isn't allowed for this game (reload to be asked again)",
+          blocked_by_policy: e ? "Tu organizaci\xF3n bloquea este conector" : "Your organization blocks this connector",
+          approval_required: e ? "Este conector requiere aprobaci\xF3n" : "This connector needs approval",
+          server_unavailable: e ? "Spotify no responde, reintentando\u2026" : "Spotify isn't answering, retrying\u2026",
+        }[t];
+      }
       // --- account "now playing" (Spotify Web API) ---
       spLink() {
         return this._spl || (this._spl = new SpotifyLink(this.app.settings));
@@ -38203,7 +38272,11 @@ ${L2}`,
           (rt(".spLogout", t).onclick = () => (e.logout(), (this.spNow = null), this._spRender())),
           (rt(".spPrev", t).onclick = () => this._spCmd("POST", "/me/player/previous")),
           (rt(".spNext", t).onclick = () => this._spCmd("POST", "/me/player/next")),
-          (rt(".spPlay", t).onclick = () => this._spCmd("PUT", this.spNow?.is_playing ? "/me/player/pause" : "/me/player/play")));
+          (rt(".spPlay", t).onclick = () =>
+            this.spSrc === "mcp"
+              ? this.spNow?.item?.url && window.open(this.spNow.item.url, "_blank", "noopener")
+              : this._spCmd("PUT", this.spNow?.is_playing ? "/me/player/pause" : "/me/player/play")));
+        ((rt(".spLove", t).onclick = () => this.spMcpLove()), this.spMcpStart(), this.spMcpRefresh());
         let s = Li("rdp2:spcode");
         (s && (Li("rdp2:spcode", null), this._spCode(s.code, s.state)), this._spRender(), this._spPollStart());
       }
@@ -38219,6 +38292,7 @@ ${L2}`,
         (this._spTimer || (this._spTimer = setInterval(() => this._spPoll(), 4e3)), t !== !1 && this._spPoll());
       }
       async _spPoll() {
+        if (this.spSrc === "mcp") return;
         let t = this.spLink();
         if (!t.connected) return this._spRender();
         try {
@@ -38245,9 +38319,14 @@ ${L2}`,
           e = st() === "es",
           i = this.spNow,
           n = i?.item,
-          s = document.getElementById("spotify");
-        if (s) {
-          ((rt(".spConn", s).hidden = t.connected),
+          s = document.getElementById("spotify"),
+          mc = this.spSrc === "mcp";
+        if ((mc && (t = { connected: !0 }), s)) {
+          (s.classList.toggle("mcp", mc),
+            (rt(".spPrev", s).hidden = rt(".spNext", s).hidden = mc),
+            (rt(".spLove", s).hidden = !(mc && n)),
+            mc && n && (rt(".spLove", s).textContent = n.saved ? "\u2665" : "\u2661"),
+            (rt(".spConn", s).hidden = t.connected),
             (rt(".spDisc", s).hidden = !t.connected),
             (rt(".spNow", s).hidden = !t.connected),
             (rt(".spSlot", s).hidden = t.connected));
@@ -38258,9 +38337,19 @@ ${L2}`,
             (o ? (rt(".spArt", s).src = o) : rt(".spArt", s).removeAttribute("src"),
               (rt(".spTitle", s).textContent = n?.name || (e ? "Nada sonando" : "Nothing playing")),
               (rt(".spArtist", s).textContent = n ? (n.artists || []).map((l) => l.name).join(", ") || n.show?.name || "" : e ? "Abre Spotify en tu computador o tel\xE9fono" : "Open Spotify on your computer or phone"),
-              (rt(".spDev", s).textContent = i?.device ? `\u25B6 ${i.device.name}` : ""),
+              (rt(".spDev", s).textContent = mc
+                ? this.spErr
+                  ? this.spMcpMsg(this.spErr) || ""
+                  : n
+                    ? e ? "\u25B6 Sonando en Spotify" : "\u25B6 Playing on Spotify"
+                    : e ? "Pon algo en Spotify (se actualiza cada 30 s)" : "Play something on Spotify (updates every 30 s)"
+                : i?.device
+                  ? `\u25B6 ${i.device.name}`
+                  : ""),
               (rt(".spProg i", s).style.width = n?.duration_ms ? `${(100 * (i.progress_ms || 0)) / n.duration_ms}%` : "0"),
-              (rt(".spPlay", s).textContent = i?.is_playing ? "\u23F8" : "\u25B6"));
+              (rt(".spPlay", s).textContent = mc ? "\u2197" : i?.is_playing ? "\u23F8" : "\u25B6"),
+              (rt(".spPlay", s).title = mc ? (e ? "Abrir en Spotify" : "Open in Spotify") : ""),
+              mc && (rt(".spDisc", s).hidden = !0));
           }
         }
         // mini player in the HUD

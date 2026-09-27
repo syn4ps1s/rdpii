@@ -2145,3 +2145,10 @@ input[type="checkbox"] {
 #hud.fps .doomhud {
   height: 108px;
 }
+.spCtl .spLove {
+  color: #1ed760;
+  font-size: 1.2rem;
+}
+.spotify.mcp .spProg {
+  display: none;
+}
