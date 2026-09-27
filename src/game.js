@@ -30451,6 +30451,71 @@ ${L2}`,
       },
     },
     pr = "es";
+  // ---------- GTA mode: everyone talks like they're from the Bronx ----------
+  var GTA = {
+    intro: ["Yo, ", "Ayo, ", "Aight, check it: ", "Yo, yo, yo! ", "Listen here, B: ", "Ay, lil' homie, ", "Yo, word up: "],
+    outro: [" You feel me?", " Deadass.", " Word.", " Capisce?", " Fuhgeddaboudit.", " Ya heard?", " No cap.", " Aight?"],
+    lines: {
+      kid: ["Yo, kitty! You mad fast, son!", "Ayo, c'mere, lil' homie! I just wanna pet you, B!", "Yo, that cat is straight fire!", "Bet I could catch you, deadass!"],
+      walker: ["Yo, what's good, my dude?", "Ayo, look at this lil' street king right here.", "Sup, cat? You runnin' this block now?", "Aight, aight, I see you, homie.", "Yo, this cat got more swagger than my cousin Vinnie."],
+      night: ["Yo, it's mad late, B. Watch your back out here.", "Ayo, streets is dark, lil' homie. Stay frosty.", "Yo, what you doin' out this late, son?"],
+      haterSpot: ["Ayo! Get off my property, ya mangy lil' punk!", "Yo! Beat it, cat! This my crib!", "Fuhgeddaboudit! Not on my lawn, B!", "Get outta here before I call my cousin Sal!"],
+      haterHit: ["How you like that, huh?!", "Yeah, run, ya lil' bum!", "Don't come back, ya hear me?!"],
+      haterGrumble: ["Tch. Mangy lil' punk.", "Every day with this cat, I swear...", "Aight, aight. Next time, B."],
+      feeder: ["Ayo, my baby! Come get your food, lil' homie!", "Yo, you look hungry, papi. Mama got you.", "C'mere, sweetie. Nobody feeds you like me, deadass."],
+      feederPet: ["Aww, who's my lil' gangsta? You are!", "Mm-hm, that's right. You the boss of this block, baby."],
+      feederEat: ["Eat up, eat up! You gotta stay strong for these streets.", "That's it, baby. Mama's cookin' hits different."],
+      shopkeep: ["Bodega's open, fam! Chopped cheese, fresh bread!", "Yo, you want somethin' or you just lookin', B?", "Ay, hold up, lemme find your change...", "Fresh sausages just came in, no cap!"],
+      shopCatch: ["Ayo! Drop that sausage, ya lil' thief!", "Yo! I see you, cat! Not in my bodega!", "Get outta my store, ya bum!"],
+      pet: ["Yo, c'mere, lil' homie. I ain't gonna hurt you.", "Ayo, look at you! Who's a good lil' gangsta?", "Psst, psst! Yo, kitty, kitty!"],
+      chase: ["Yo, come back here, cat!", "Ayo, I'm gonna get you, son!", "Kittyyy! Wait up, B!"],
+      shoo: ["Beat it, cat!", "Yo, scram! Get outta here!", "Ayo, go on, shoo! Fuhgeddaboudit!"],
+      cat: ["Yo, what's good?", "Sup, B.", "Ayo, look who it is.", "Aight, aight. I see you.", "Word up, homie.", "Yo, this my block, you know that?", "Meow, son. Meow."],
+      rival: ["You lookin' at me? YOU lookin' at ME?!", "Yo, you in the wrong alley, B.", "Step off, punk."],
+    },
+    subs: [
+      [/\bHi\b|\bHello\b|\bHey\b/g, "Yo"],
+      [/\bmy friend\b/gi, "my dude"],
+      [/\bfriends\b/gi, "homies"],
+      [/\bfriend\b/gi, "homie"],
+      [/\bkitty\b/gi, "lil' homie"],
+      [/\byoungster\b/gi, "young blood"],
+      [/\bThank you\b|\bThanks\b/g, "Good lookin' out"],
+      [/\bgoing to\b/gi, "gonna"],
+      [/\bwant to\b/gi, "wanna"],
+      [/\bgot to\b|\bhave to\b/gi, "gotta"],
+      [/\bisn't\b|\baren't\b|\bam not\b/gi, "ain't"],
+      [/\bvery\b/gi, "mad"],
+      [/\breally\b/gi, "deadass"],
+      [/\bCome here\b/g, "C'mere"],
+      [/\bthem\b/g, "'em"],
+      [/\bhouse\b/gi, "crib"],
+      [/\bneighbou?rhood\b/gi, "block"],
+      [/\bmoney\b/gi, "paper"],
+      [/\bgood\b/g, "dope"],
+      [/\bpolice\b/gi, "cops"],
+      [/\byes\b/gi, "word"],
+      [/\bokay\b|\bOK\b/g, "aight"],
+      [/\b(\w{3,})ing\b/g, "$1in'"],
+    ],
+    hash(r) {
+      let t = 0;
+      for (let e = 0; e < r.length; e++) t = (t * 31 + r.charCodeAt(e)) | 0;
+      return Math.abs(t);
+    },
+    say(r, t) {
+      // deterministic per text so the dialog box and the voice say the same thing
+      if (!r) return r;
+      let e = r;
+      for (let [i, n] of GTA.subs) e = e.replace(i, n);
+      let i = GTA.hash(r);
+      return ((e = e.replace(/\b(Y|y)ou[\u2019']re\b/g, "$1ou")), /^(Yo|Ayo|Aight|Lil' homie|lil' homie)\b/.test(e) || (e = GTA.intro[i % GTA.intro.length] + e.charAt(0).toLowerCase() + e.slice(1)), t !== !1 && (e = e.replace(/\s*$/, "") + GTA.outro[(i >> 3) % GTA.outro.length]), e.charAt(0).toUpperCase() + e.slice(1));
+    },
+    line(r, t) {
+      let e = GTA.lines[r] || GTA.lines.walker;
+      return e[(t ?? Math.floor(Math.random() * 1e3)) % e.length];
+    },
+  };
   // Automatic weather: clear -> cloudy -> rain -> storm, with rain streaks, gloom, lightning and thunder
   var Wx = class {
     constructor(t) {
@@ -31037,17 +31102,17 @@ ${L2}`,
       step(t) {
         return ze[t]?.steps[this.st[t].step];
       }
-      text(t, e) {
+      text(t, e, lang) {
         let i = this.g,
           n = ze[t],
-          s = he(n[e]) || "",
+          s = (lang ? n[e]?.[lang] : he(n[e])) || "",
           a =
             i.homeSector?.boss && !i.homeSector.boss.dead
               ? i.homeSector.boss.name
               : st() === "es"
                 ? "un gato bravo"
                 : "a tough cat",
-          o = st() === "es",
+          o = lang ? lang === "es" : st() === "es",
           c =
             i.player?.spec.sex === "male"
               ? o
@@ -31814,7 +31879,14 @@ ${L2}`,
       }
       say(t, e, i = 1) {
         let [n, s] = e,
-          a = t.voice || {},
+          gta = this.app.settings.gta;
+        if (gta) {
+          // category pools when the line comes from one, otherwise Bronx-ify the English line
+          let r = t.kind === "kid" ? "kid" : t.kind === "shop" ? "shopkeep" : t.kind === "hater" ? "haterSpot" : t.kind === "feeder" ? "feeder" : "walker",
+            q = Object.keys(Vd).find((l) => Vd[l].includes(e));
+          ((n = q && GTA.lines[q] ? GTA.line(q) : Math.random() < 0.35 ? GTA.line(r) : GTA.say(s || n)), (s = null));
+        }
+        let a = t.voice || {},
           o = t.female ?? a.pitch > 1.1,
           l = (this.speech.esVoices?.length || 0) > 1,
           h = a.pitch ?? 1,
@@ -31823,12 +31895,13 @@ ${L2}`,
             pitch: l ? 1 + (h - 1) * (t.kind === "kid" ? 0.8 : 0.35) : h,
             rate: (a.rate ?? 1) * 0.96,
             voiceIdx: t.vIdx ?? (t.vIdx = Math.floor(Math.random() * 97)),
+            en: gta,
             vol: Et(1.2 - t.dP() / 25, 0.15, 1),
             pos: t.pos,
             priority: i,
             female: o,
           });
-        this.ui.subtitle(t.name || "", n, st() === "en" ? s : null, Math.max(2.2, c + 0.6));
+        this.ui.subtitle(t.name || "", n, st() === "en" && !gta ? s : null, Math.max(2.2, c + 0.6));
       }
       event(t, e) {
         let i = this.player;
@@ -32251,6 +32324,18 @@ ${L2}`,
       }
       onMeow() {
         let t = this.player;
+        if (this.app.settings.gta && (this._gtaCatT || 0) < this.time) {
+          let e = this.cats
+            .filter((i) => !i.dead && i.obj.visible && i.dP() < 7 && i.role !== "kitten")
+            .sort((i, n) => i.dP() - n.dP())[0];
+          e &&
+            ((this._gtaCatT = this.time + 5),
+            setTimeout(() => {
+              let i = GTA.line(e.isRival || e.hostile ? "rival" : "cat");
+              (this.speech.say(i, { pitch: e.sex === "female" ? 1.2 : 0.95, rate: 1.05, priority: 1, female: e.sex === "female", voiceIdx: GTA.hash(e.name || "cat"), en: !0 }),
+                this.ui.subtitle(e.name || (st() === "es" ? "Gato" : "Cat"), i, null, 2.6));
+            }, 650));
+        }
         for (let e of this.cats)
           if (!(e.dead || !e.obj.visible || e.dP() > 11)) {
             if (e.role === "mate") {
@@ -33170,6 +33255,14 @@ ${L2}`,
             ],
             hugo: ["Ya, ya, gato. Tamos en paz.", "Alright, cat. We\u2019re at peace."],
           }[t] || ["Mrrp.", "Mrrp."];
+          if (this.app.settings.gta && !s) {
+            let r = GTA.say(h[1]);
+            return (
+              this.audio.meow({ pos: e.pos, type: "mrrp" }),
+              this.speech.say(r, { pitch: t === "canuto" ? 0.75 : 0.95, priority: 2, female: e.sex === "female", voiceIdx: GTA.hash(t), en: !0 }),
+              void this.ui.subtitle($e[t], r, null, 3.5)
+            );
+          }
           s
             ? this.say(e, h, 2)
             : (this.audio.meow({ pos: e.pos, type: "mrrp" }), this.ui.subtitle($e[t], h[0], n ? null : h[1], 3));
@@ -33184,7 +33277,22 @@ ${L2}`,
               : i.kind === "ready"
                 ? this.quests.text(i.id, "done")
                 : this.quests.fmt(he(o.txt)) + (o.goal > 1 ? ` (${Math.floor(l.p)}/${o.goal})` : "");
-        if (s && i.kind !== "active") {
+        if (this.app.settings.gta) {
+          let h = e.voice || {},
+            r = e instanceof Fi,
+            q = i.kind === "active" ? this.quests.fmt(o.txt.en || he(o.txt)) : this.quests.text(i.id, i.kind === "available" ? "offer" : "done", "en");
+          ((c = GTA.say(q.replace(/\{[^}]*\}/g, ""))),
+            i.kind === "active" && o.goal > 1 && (c += ` (${Math.floor(l.p)}/${o.goal})`),
+            r && this.audio.meow({ pos: e.pos, type: "mrrp", pitch: t === "canuto" ? 0.85 : 1.1 }),
+            this.speech.say(c.replace(/\([^)]*\)/g, ""), {
+              pitch: r ? (e.sex === "female" ? 1.15 : t === "canuto" ? 0.75 : 0.95) : (h.pitch ?? 1) * 0.92,
+              rate: r ? 1.05 : 1,
+              priority: 2,
+              female: r ? e.sex === "female" : e.female,
+              voiceIdx: GTA.hash(t),
+              en: !0,
+            }));
+        } else if (s && i.kind !== "active") {
           let h = e.voice || {};
           this.speech.say(
             (i.kind === "available" ? a.offer : a.done).es.replace(/\([^)]*\)/g, "").replace(/\{[^}]*\}/g, ""),
@@ -35357,6 +35465,23 @@ ${L2}`,
           (this.voice = this.esVoices[0] || null),
           this.setPref(this.pref));
       }
+      enVoice(t, e = 0) {
+        // English (US first) voice for GTA mode; natural/neural voices sound far less robotic
+        let i = (this.all || [])
+          .filter((a) => a.lang.toLowerCase().startsWith("en"))
+          .map((a) => ({
+            v: a,
+            s:
+              (/natural|neural|online|premium|enhanced/i.test(a.name) ? 100 : 0) +
+              (/en-us/i.test(a.lang.replace("_", "-")) ? 30 : 0) +
+              (/google/i.test(a.name) ? -20 : 0),
+          }))
+          .sort((a, o) => o.s - a.s);
+        if (!i.length) return null;
+        let n = /aria|jenny|michelle|ana|emma|sara|samantha|zira|nancy|ava|allison|susan|karen|moira|tessa|female/i,
+          s = i.filter((a) => (t ? n.test(a.v.name) : !n.test(a.v.name)));
+        return ((s = s.length ? s.filter((a) => a.s >= s[0].s - 12) : i), s[Math.abs(e | 0) % s.length].v);
+      }
       setPref(t) {
         ((this.pref = t || ""), (this.forced = (t && this.esVoices?.find((e) => e.name === t)) || null));
       }
@@ -35388,11 +35513,12 @@ ${L2}`,
         if (((this.busyUntil = performance.now() + c * 1e3), this.has && this.voice && this.vol > 0))
           try {
             a >= 2 && speechSynthesis.cancel();
-            let h = new SpeechSynthesisUtterance(t);
+            let h = new SpeechSynthesisUtterance(t),
+              en = arguments[1]?.en && this.enVoice(l, o);
             return (
-              (h.lang = this.voice.lang),
-              (h.voice = this.voiceFor(l, o)),
-              h.voice.lang.toLowerCase().startsWith("es") || (h.voice = this.voice),
+              (h.lang = en ? en.lang : this.voice.lang),
+              (h.voice = en || this.voiceFor(l, o)),
+              en || h.voice.lang.toLowerCase().startsWith("es") || (h.voice = this.voice),
               (h.pitch = Et(e, 0.1, 2)),
               (h.rate = Et(i, 0.5, 1.6)),
               (h.volume = Et(n * this.vol, 0, 1)),
@@ -36953,6 +37079,7 @@ ${L2}`,
       <div class="row"><label for="invz">${st() === "es" ? "Invertir zoom / eje Z (rueda)" : "Invert zoom / Z axis (wheel)"}</label><input type="checkbox" id="invz" ${e.invertZoom ? "checked" : ""}></div>
       <div class="row"><label for="cfol">${st() === "es" ? "La c\xE1mara sigue al gato" : "Camera follows the cat"}</label><input type="checkbox" id="cfol" ${e.camFollow !== !1 ? "checked" : ""}></div>
       <div class="row"><label for="guide">${st() === "es" ? "Gu\xEDa de misiones (marcadores)" : "Quest guide (markers)"}</label><input type="checkbox" id="guide" ${e.guide !== !1 ? "checked" : ""}></div>
+      <div class="row"><label for="gtam">${st() === "es" ? "Modo GTA (voces del Bronx, en ingl\xE9s)" : "GTA mode (Bronx street voices)"}</label><input type="checkbox" id="gtam" ${e.gta ? "checked" : ""}></div>
       <div class="row"><label for="vpick">${st() === "es" ? "Voz de las personas" : "People's voice"}</label><select id="vpick"></select></div>
       <p class="small voiceInfo"></p></div><footer class="scrFoot"></footer>`),
           rt(".langSlot", i).appendChild(this.langToggle()));
@@ -36996,6 +37123,11 @@ ${L2}`,
         }
         rt("#guide", i).addEventListener("change", (l) => {
           ((e.guide = l.target.checked), t.applySettings());
+        });
+        rt("#gtam", i).addEventListener("change", (l) => {
+          ((e.gta = l.target.checked),
+            t.saveSettings(),
+            e.gta && t.speech.say("Yo, what's good, B? Welcome to the block. Deadass.", { priority: 2, en: !0, pitch: 0.9 }));
         });
         {
           let l = rt("#vpick", i),
@@ -38219,6 +38351,7 @@ ${L2}`,
         mouseMode: t.mouseMode || "drag",
         camFollow: t.camFollow !== !1,
         guide: t.guide !== !1,
+        gta: !!t.gta,
         bar: Array.isArray(t.bar) && t.bar.length === 10 ? t.bar : [...Mo],
         spotify: { uri: "spotify:playlist:37i9dQZEVXbL0GavIqMTeb", duck: "duck", ...(t.spotify || {}) },
       }),
