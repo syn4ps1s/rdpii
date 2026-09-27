@@ -28405,6 +28405,28 @@ ${L2}`,
     }
   };
   var Vd = {
+      petLine: [
+        ["\xA1Hola, gatito! Ven, michi, michi\u2026", "Hi, kitty! Here, kitty kitty\u2026"],
+        ["\xA1Qu\xE9 lindo! \xBFDe qui\xE9n eres t\xFA?", "So cute! Whose are you?"],
+        ["Psst, psst\u2026 ven, no te voy a hacer nada.", "Psst, psst\u2026 come here, I won't hurt you."],
+      ],
+      chaseLine: [
+        ["\xA1Gatitooo!", "Kittyyy!"],
+        ["\xA1Ven ac\xE1, gato!", "Come here, cat!"],
+        ["\xA1Te voy a pillar!", "I'm gonna get you!"],
+      ],
+      shooLine: [
+        ["\xA1Sale, gato!", "Shoo, cat!"],
+        ["\xA1Fuera de aqu\xED, gato cochino!", "Get out of here, dirty cat!"],
+      ],
+      shopCatch: [
+        ["\xA1Oye! \xA1Gato ladr\xF3n! \xA1Devuelve eso!", "Hey! Thief cat! Give that back!"],
+        ["\xA1Se llev\xF3 la longaniza! \xA1Pillen a ese gato!", "It took the sausage! Get that cat!"],
+      ],
+      shopSpot: [
+        ["\xA1Sale de aqu\xED, gato! \xA1Te estoy viendo!", "Get out of here, cat! I can see you!"],
+        ["\xA1Ni se te ocurra, michi!", "Don't even think about it, kitty!"],
+      ],
       shopkeep: [
         ["Pan amasado, marraquetas calentitas\u2026", "Homemade bread, warm marraquetas\u2026"],
         ["\xBFQu\xE9 le doy, vecina? \xBFUn cuarto de jam\xF3n?", "What can I get you? A quarter of ham?"],
@@ -29275,20 +29297,12 @@ ${L2}`,
               (this.temper === "lover"
                 ? ((this.state = "approach"),
                   (this.timer = 9),
-                  e.say(
-                    this,
-                    pe([
-                      ["\xA1Hola, gatito! Ven, michi, michi\u2026", "Hi, kitty! Here, kitty kitty\u2026"],
-                      ["\xA1Qu\xE9 lindo! \xBFDe qui\xE9n eres t\xFA?", "So cute! Whose are you?"],
-                      ["Psst, psst\u2026 ven, no te voy a hacer nada.", "Psst, psst\u2026 come here, I won't hurt you."],
-                    ]),
-                    1,
-                  ))
+                  e.say(this, pe(Vd.petLine), 1))
                 : this.temper === "chaser"
                   ? ((this.state = "chase"), (this.timer = 5 + j() * 3), e.audio.sample("laugh", { pos: this.pos, vol: 0.5 }))
                   : ((this.state = "shoo"),
                     (this.timer = 6),
-                    e.say(this, pe([["\xA1Sale, gato!", "Shoo, cat!"], ["\xA1Fuera de aqu\xED, gato cochino!", "Get out of here, dirty cat!"]]), 1))),
+                    e.say(this, pe(Vd.shooLine), 1))),
             this.temper === "lover" &&
               this.cool < 0 &&
               this.state === "walk" &&
@@ -29334,7 +29348,7 @@ ${L2}`,
           ((s.speed = this.speed),
             this.lineT < 0 &&
               j() < t * 0.6 &&
-              (e.say(this, pe([["\xA1Gatitooo!", "Kittyyy!"], ["\xA1Ven ac\xE1, gato!", "Come here, cat!"], ["\xA1Te voy a pillar!", "I'm gonna get you!"]]), 1),
+              (e.say(this, pe(Vd.chaseLine), 1),
               j() < 0.5 && e.audio.sample("laugh", { pos: this.pos, vol: 0.45 })),
             a < 1 &&
               (this.grabT || 0) < e.time &&
@@ -29415,11 +29429,7 @@ ${L2}`,
         (this.state !== "chase" &&
           this.game.say(
             this,
-            pe(
-              t === "theft"
-                ? [["\xA1Oye! \xA1Gato ladr\xF3n! \xA1Devuelve eso!", "Hey! Thief cat! Give that back!"], ["\xA1Se llev\xF3 la longaniza! \xA1Pillen a ese gato!", "It took the sausage! Get that cat!"]]
-                : [["\xA1Sale de aqu\xED, gato! \xA1Te estoy viendo!", "Get out of here, cat! I can see you!"], ["\xA1Ni se te ocurra, michi!", "Don't even think about it, kitty!"]],
-            ),
+            pe(t === "theft" ? Vd.shopCatch : Vd.shopSpot),
             2,
           ),
           (this.state = "chase"),
@@ -30469,6 +30479,10 @@ ${L2}`,
       shopCatch: ["Ayo! Drop that sausage, ya lil' thief!", "Yo! I see you, cat! Not in my bodega!", "Get outta my store, ya bum!"],
       pet: ["Yo, c'mere, lil' homie. I ain't gonna hurt you.", "Ayo, look at you! Who's a good lil' gangsta?", "Psst, psst! Yo, kitty, kitty!"],
       chase: ["Yo, come back here, cat!", "Ayo, I'm gonna get you, son!", "Kittyyy! Wait up, B!"],
+      petLine: ["Yo, c'mere, lil' homie. I ain't gonna hurt you.", "Ayo, look at you! Who's a good lil' gangsta?", "Psst, psst! Yo, kitty, kitty!"],
+      chaseLine: ["Yo, come back here, cat!", "Ayo, I'm gonna get you, son!", "Kittyyy! Wait up, B!"],
+      shooLine: ["Beat it, cat!", "Yo, scram! Get outta here!", "Ayo, go on, shoo! Fuhgeddaboudit!"],
+      shopSpot: ["Yo! I see you, cat! Not in my bodega!", "Ayo, don't even think about it, lil' homie!"],
       shoo: ["Beat it, cat!", "Yo, scram! Get outta here!", "Ayo, go on, shoo! Fuhgeddaboudit!"],
       cat: ["Yo, what's good?", "Sup, B.", "Ayo, look who it is.", "Aight, aight. I see you.", "Word up, homie.", "Yo, this my block, you know that?", "Meow, son. Meow."],
       rival: ["You lookin' at me? YOU lookin' at ME?!", "Yo, you in the wrong alley, B.", "Step off, punk."],
@@ -31102,10 +31116,10 @@ ${L2}`,
       step(t) {
         return ze[t]?.steps[this.st[t].step];
       }
-      text(t, e, lang) {
+      text(t, e, lang, raw) {
         let i = this.g,
           n = ze[t],
-          s = (lang ? n[e]?.[lang] : he(n[e])) || "",
+          s = (raw ?? (lang ? n[e]?.[lang] : he(n[e]))) || "",
           a =
             i.homeSector?.boss && !i.homeSector.boss.dead
               ? i.homeSector.boss.name
@@ -31122,6 +31136,10 @@ ${L2}`,
                 ? "Copito anda perdido, y hay otros gatos por el barrio\u2026"
                 : "Copito is lost somewhere, and there are other toms around\u2026";
         return this.fmt(s.replaceAll("{boss}", a).replaceAll("{mate}", c));
+      }
+      subst(t, e) {
+        // run {boss}/{mate}/{k:..} substitution on an arbitrary (e.g. GTA-ified) string
+        return this.text(null, null, e, t);
       }
       forGiver(t) {
         let e = Object.keys(ze).filter((a) => ze[a].giver === t),
@@ -31884,7 +31902,7 @@ ${L2}`,
           // category pools when the line comes from one, otherwise Bronx-ify the English line
           let r = t.kind === "kid" ? "kid" : t.kind === "shop" ? "shopkeep" : t.kind === "hater" ? "haterSpot" : t.kind === "feeder" ? "feeder" : "walker",
             q = Object.keys(Vd).find((l) => Vd[l].includes(e));
-          ((n = q && GTA.lines[q] ? GTA.line(q) : Math.random() < 0.35 ? GTA.line(r) : GTA.say(s || n)), (s = null));
+          ((n = q ? (GTA.lines[q] && Math.random() < 0.5 ? GTA.line(q) : GTA.say(e[1])) : GTA.line(r)), (s = null));
         }
         let a = t.voice || {},
           o = t.female ?? a.pitch > 1.1,
@@ -33280,11 +33298,11 @@ ${L2}`,
         if (this.app.settings.gta) {
           let h = e.voice || {},
             r = e instanceof Fi,
-            q = i.kind === "active" ? this.quests.fmt(o.txt.en || he(o.txt)) : this.quests.text(i.id, i.kind === "available" ? "offer" : "done", "en");
-          ((c = GTA.say(q.replace(/\{[^}]*\}/g, ""))),
+            q = GTA.say(i.kind === "active" ? o.txt.en : a[i.kind === "available" ? "offer" : "done"].en);
+          ((c = this.quests.subst(q, "en")),
             i.kind === "active" && o.goal > 1 && (c += ` (${Math.floor(l.p)}/${o.goal})`),
             r && this.audio.meow({ pos: e.pos, type: "mrrp", pitch: t === "canuto" ? 0.85 : 1.1 }),
-            this.speech.say(c.replace(/\([^)]*\)/g, ""), {
+            this.speech.say(q.replace(/\([^)]*\)/g, "").replace(/\{[^}]*\}/g, ""), {
               pitch: r ? (e.sex === "female" ? 1.15 : t === "canuto" ? 0.75 : 0.95) : (h.pitch ?? 1) * 0.92,
               rate: r ? 1.05 : 1,
               priority: 2,
@@ -34979,6 +34997,35 @@ ${L2}`,
           n.crickets && n.crickets.gain.gain.setTargetAtTime(n.crickets.base * Math.max(0, t * 1.3 - 0.3), i, 1.5),
           n.wind && n.wind.gain.gain.setTargetAtTime(n.wind.base * (0.7 + t * 0.3), i, 1.5));
       }
+      async voiceClip(t, { pos: e = null, rate: i = 1, vol: n = 1 } = {}) {
+        if (!this.ok) return 0;
+        let s = (this._vc || (this._vc = new Map())).get(t);
+        if (!s) {
+          let l = atob(t.slice(t.indexOf(",") + 1)),
+            c = new Uint8Array(l.length);
+          for (let h = 0; h < l.length; h++) c[h] = l.charCodeAt(h);
+          ((s = await this.ctx.decodeAudioData(c.buffer)), this._vc.set(t, s));
+        }
+        this.stopVoice();
+        let a = this.ctx.createBufferSource(),
+          o = this.ctx.createGain();
+        return (
+          (a.buffer = s),
+          (a.playbackRate.value = i),
+          (o.gain.value = n),
+          a.connect(o),
+          o.connect(this.dest(e, "voice", 0.12, 6)),
+          a.start(),
+          (this._vsrc = a),
+          s.duration / i
+        );
+      }
+      stopVoice() {
+        try {
+          this._vsrc?.stop();
+        } catch {}
+        this._vsrc = null;
+      }
       rainLoop(t, e = !1) {
         if (!this.ok) return;
         if (this.samplesReady && this.has("rain") && !this._rainS) {
@@ -35442,6 +35489,9 @@ ${L2}`,
           } catch {}
         }
       }
+      static norm(t) {
+        return String(t).replace(/\([^)]*\)/g, "").replace(/\{[^}]*\}/g, "").replace(/\s+/g, " ").trim();
+      }
       static score(t) {
         // neural/natural voices sound adult and warm; Google's default Spanish voice sounds young and robotic
         let e = t.lang.replace("_", "-").toLowerCase(),
@@ -35510,6 +35560,22 @@ ${L2}`,
       ) {
         if (this.speaking() && a < 2) return 0;
         let c = 0.35 + (t.length * 0.062) / i;
+        {
+          // pre-rendered neural voice (Kokoro) when this exact line exists; system TTS otherwise
+          let r = window.__VOX,
+            q = arguments[1]?.en ? "gta" : "es",
+            v = !this.pref && r && r[`${q}|${po.norm(t)}`];
+          if (v && this.vol > 0) {
+            let u = v[l ? "f" : "m"] || v.f || v.m,
+              f = Et(0.9 + (e - 1) * 0.55 + (((o | 0) % 5) - 2) * 0.025, 0.82, 1.25);
+            (a >= 2 && (this.audio.stopVoice(), this.has && speechSynthesis.cancel()),
+              (this.busyUntil = performance.now() + c * 1e3),
+              this.audio.voiceClip(u, { pos: s, rate: f, vol: Et(n * this.vol, 0, 1) }).then((h) => {
+                h && (this.busyUntil = performance.now() + h * 1e3);
+              }).catch(() => {}));
+            return c;
+          }
+        }
         if (((this.busyUntil = performance.now() + c * 1e3), this.has && this.voice && this.vol > 0))
           try {
             a >= 2 && speechSynthesis.cancel();
@@ -35532,7 +35598,7 @@ ${L2}`,
         try {
           speechSynthesis.cancel();
         } catch {}
-        this.busyUntil = 0;
+        (this.audio.stopVoice?.(), (this.busyUntil = 0));
       }
     };
   var mo = {
@@ -37136,7 +37202,7 @@ ${L2}`,
               let m = document.createElement("option");
               return ((m.value = u), (m.textContent = f), l.appendChild(m), m);
             };
-          (h("", st() === "es" ? "Autom\xE1tica (mejor disponible)" : "Automatic (best available)"),
+          (h("", window.__VOX ? (st() === "es" ? "Neural grabada (Kokoro) \u2605" : "Pre-recorded neural (Kokoro) \u2605") : st() === "es" ? "Autom\xE1tica (mejor disponible)" : "Automatic (best available)"),
             (c.ranked || []).forEach((u) =>
               h(u.v.name, `${u.v.name} \xB7 ${u.v.lang}${u.s >= 100 ? " \u2605" : ""}`),
             ),

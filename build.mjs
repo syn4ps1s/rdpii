@@ -23,6 +23,25 @@ async function build() {
   for (const [k, files] of Object.entries(manifest))
     snd[k] = files.map((f) => `data:audio/mpeg;base64,${fs.readFileSync(r("assets/sounds", f)).toString("base64")}`);
 
+  // pre-rendered neural voices (scripts/render-voices.py) -> window.__VOX = { "lang|text": { m, f } }
+  let vox = null;
+  if (fs.existsSync(r("voice/manifest.json"))) {
+    let man = JSON.parse(fs.readFileSync(r("voice/manifest.json"), "utf8")),
+      uri = new Map(),
+      load = (f) => {
+        if (!uri.has(f)) {
+          let p = r("assets/voice", f);
+          uri.set(f, fs.existsSync(p) ? `data:audio/mpeg;base64,${fs.readFileSync(p).toString("base64")}` : null);
+        }
+        return uri.get(f);
+      };
+    vox = {};
+    for (let [k, g] of Object.entries(man)) {
+      let e = {};
+      for (let [x, f] of Object.entries(g)) load(f) && (e[x] = load(f));
+      Object.keys(e).length && (vox[k] = e);
+    }
+  }
   let js = fs.readFileSync(r("src/game.js"), "utf8");
   if (args.has("--minify")) {
     const { transform } = await import("esbuild");
@@ -43,7 +62,7 @@ async function build() {
 ${fonts}${css}</style>
 </head>
 <body>
-${body}<script>window.__SND=${safe(JSON.stringify(snd))};</script>
+${body}<script>window.__SND=${safe(JSON.stringify(snd))};${vox ? `window.__VOX=${safe(JSON.stringify(vox))};` : ""}</script>
 <script>
 ${safe(js)}</script>
 </body>

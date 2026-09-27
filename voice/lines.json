@@ -1,0 +1,2292 @@
+[
+ {
+  "key": "es|¡Michito! Estái en los huesos. Ven, come de tu platito rojo, al lado de la caja.",
+  "lang": "es",
+  "speaker": "gladys",
+  "text": "¡Michito! Estái en los huesos. Ven, come de tu platito rojo, al lado de la caja.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Lil' homie! You skin and bones. Come eat from your little red bowl, next to the box. Deadass.",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Lil' homie! You skin and bones. Come eat from your little red bowl, next to the box. Deadass.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Eso! Ahora sí tienes cara de gato feliz. Toma, este collarcito es para ti.",
+  "lang": "es",
+  "speaker": "gladys",
+  "text": "¡Eso! Ahora sí tienes cara de gato feliz. Toma, este collarcito es para ti.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: that’s it! Now you look like a happy cat. Here, this little collar is for you. Word.",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Aight, check it: that’s it! Now you look like a happy cat. Here, this little collar is for you. Word.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! eat from Tía Gladys’s red bowl Aight?",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Yo, yo, yo! eat from Tía Gladys’s red bowl Aight?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Las palomas me tienen el patio hecho un asco… Si atrapas una, te guardo un pedacito de jurel.",
+  "lang": "es",
+  "speaker": "gladys",
+  "text": "Las palomas me tienen el patio hecho un asco… Si atrapas una, te guardo un pedacito de jurel.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! the pigeons have made a mess of my yard… Catch one and I’ll save you a bit of mackerel. Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Yo, yo, yo! the pigeons have made a mess of my yard… Catch one and I’ll save you a bit of mackerel. Fuhgeddaboudit.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Qué cazador más lindo! Toma, tu jurel prometido.",
+  "lang": "es",
+  "speaker": "gladys",
+  "text": "¡Qué cazador más lindo! Toma, tu jurel prometido.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: what a lovely hunter! Here’s the mackerel I promised. Capisce?",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Listen here, B: what a lovely hunter! Here’s the mackerel I promised. Capisce?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: catch a bird: sneak up crouched and pounce Word.",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Listen here, B: catch a bird: sneak up crouched and pounce Word.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Miau… Joven, en este pasaje manda el que sabe arrancar. Anda, que un perro callejero te persiga, y vuelve entero.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Miau… Joven, en este pasaje manda el que sabe arrancar. Anda, que un perro callejero te persiga, y vuelve entero.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, meow… young blood, in this alley the one who can run rules. Go get a street dog to chase you, and come back in one piece. Ya heard?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Yo, meow… young blood, in this alley the one who can run rules. Go get a street dog to chase you, and come back in one piece. Ya heard?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Hmm. Sigues entero. Tienes madera de gato de pasaje.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Hmm. Sigues entero. Tienes madera de gato de pasaje.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: hmm. Still in one piece. You made of alley-cat stuff. Word.",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Yo, word up: hmm. Still in one piece. You made of alley-cat stuff. Word.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: get a dog to chase you and escape: climb a wall, roof or tree Capisce?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Listen here, B: get a dog to chase you and escape: climb a wall, roof or tree Capisce?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Cada sector tiene un jefe. Por aquí manda . En el duelo de miradas bufa ; si pelea, zarpazos y esquiva cuando se agache.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Cada sector tiene un jefe. Por aquí manda . En el duelo de miradas bufa ; si pelea, zarpazos y esquiva cuando se agache.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, every sector has a boss. Around here rules. In the stare-down, hiss ; if it fights, swipe and dodge when it crouches. Deadass.",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Ay, lil' homie, every sector has a boss. Around here rules. In the stare-down, hiss ; if it fights, swipe and dodge when it crouches. Deadass.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Eso es. Pero un territorio sin marcar no es de nadie…",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Eso es. Pero un territorio sin marcar no es de nadie…",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Ayo, that’s it. But unmarked territory belongs to no one… No cap.",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Ayo, that’s it. But unmarked territory belongs to no one… No cap.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, defeat a territory boss You feel me?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Ay, lil' homie, defeat a territory boss You feel me?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Ve al poste del sector que ganaste y márcalo . Que todos sepan que ahí mandas tú.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Ve al poste del sector que ganaste y márcalo . Que todos sepan que ahí mandas tú.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, go to the post of the sector you won and mark it . Let everyone know you rule there. You feel me?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Yo, go to the post of the sector you won and mark it . Let everyone know you rule there. You feel me?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Huele a ti. Así se hace.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Huele a ti. Así se hace.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Ayo, it smells like you. That’s how it’s done. Word.",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Ayo, it smells like you. That’s how it’s done. Word.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: mark the post of a won territory Ya heard?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Yo, word up: mark the post of a won territory Ya heard?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Un gato sin familia es gato a medias. Maúllale , regálale una presa y acurrúcate .",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Un gato sin familia es gato a medias. Maúllale , regálale una presa y acurrúcate .",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Ayo, a cat without family is half a cat. Meow , gift prey and nuzzle . Aight?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Ayo, a cat without family is half a cat. Meow , gift prey and nuzzle . Aight?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Se nota en tu cola, joven. Cuídense.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Se nota en tu cola, joven. Cuídense.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, i can tell by your tail, young blood. Take care of each other. Deadass.",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Ay, lil' homie, i can tell by your tail, young blood. Take care of each other. Deadass.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: win a cat over until it becomes your mate Ya heard?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Listen here, B: win a cat over until it becomes your mate Ya heard?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|¿Y esa carita de enamorado? Si van a tener gatitos, la caja es de ustedes. Duerman ahí de noche .",
+  "lang": "es",
+  "speaker": "gladys",
+  "text": "¿Y esa carita de enamorado? Si van a tener gatitos, la caja es de ustedes. Duerman ahí de noche .",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! what’s with that lovestruck face? If you two are havin' kittens, the box is yours. Sleep there at night . You feel me?",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Yo, yo, yo! what’s with that lovestruck face? If you two are havin' kittens, the box is yours. Sleep there at night . You feel me?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Ay, qué cosita más linda! Los voy a malcriar a todos.",
+  "lang": "es",
+  "speaker": "gladys",
+  "text": "¡Ay, qué cosita más linda! Los voy a malcriar a todos.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! oh, how adorable! I’m gonna spoil every one of 'em. Word.",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Yo, yo, yo! oh, how adorable! I’m gonna spoil every one of 'em. Word.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, sleep in the box at night with your mate nearby Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Ay, lil' homie, sleep in the box at night with your mate nearby Fuhgeddaboudit.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Un pasaje no basta para una familia. Conquista tres territorios.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Un pasaje no basta para una familia. Conquista tres territorios.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: one alley isn’t enough for a family. Conquer three territories. Capisce?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Listen here, B: one alley isn’t enough for a family. Conquer three territories. Capisce?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Tres. Ya te respetan en la feria.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Tres. Ya te respetan en la feria.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: three. They respect you at the street market now. Aight?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Aight, check it: three. They respect you at the street market now. Aight?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: conquer 3 territories Word.",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Aight, check it: conquer 3 territories Word.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Solo queda una cosa: que todo el barrio huela a ti.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Solo queda una cosa: que todo el barrio huela a ti.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! only one thing left: the whole block must smell like you. Capisce?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Yo, yo, yo! only one thing left: the whole block must smell like you. Capisce?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Nunca vi algo así en mis nueve vidas. El barrio es tuyo.",
+  "lang": "es",
+  "speaker": "canuto",
+  "text": "Nunca vi algo así en mis nueve vidas. El barrio es tuyo.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: never seen anythin' like it in all nine lives. The block is yours. Deadass.",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Aight, check it: never seen anythin' like it in all nine lives. The block is yours. Deadass.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! conquer all 9 territories Capisce?",
+  "lang": "gta",
+  "speaker": "canuto",
+  "text": "Yo, yo, yo! conquer all 9 territories Capisce?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|¡Gato de…! Ya, espera. Tengo ratones en el patio. Si me sacas tres, te dejo tranquilo. Palabra.",
+  "lang": "es",
+  "speaker": "hugo",
+  "text": "¡Gato de…! Ya, espera. Tengo ratones en el patio. Si me sacas tres, te dejo tranquilo. Palabra.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: you darn cat…! Okay, wait. I’ve got rats in the yard. Get rid of three and I’ll leave you alone. My word. Aight?",
+  "lang": "gta",
+  "speaker": "hugo",
+  "text": "Listen here, B: you darn cat…! Okay, wait. I’ve got rats in the yard. Get rid of three and I’ll leave you alone. My word. Aight?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Tres ratones… Bueno, un trato es un trato. Desde hoy no te mojo más.",
+  "lang": "es",
+  "speaker": "hugo",
+  "text": "Tres ratones… Bueno, un trato es un trato. Desde hoy no te mojo más.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, three rats… Well, a deal’s a deal. From today on, no more hosin' you. Ya heard?",
+  "lang": "gta",
+  "speaker": "hugo",
+  "text": "Yo, three rats… Well, a deal’s a deal. From today on, no more hosin' you. Ya heard?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, catch 3 rats Word.",
+  "lang": "gta",
+  "speaker": "hugo",
+  "text": "Ay, lil' homie, catch 3 rats Word.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|¿Has visto a Copito? Es blanquito, de pelo mediano… No ha vuelto en dos días. Tráemelo, porfa.",
+  "lang": "es",
+  "speaker": "gladys",
+  "text": "¿Has visto a Copito? Es blanquito, de pelo mediano… No ha vuelto en dos días. Tráemelo, porfa.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: have you seen Copito? He’s snow white, medium coat… He hasn’t been back for two days. Bring him home, please. You feel me?",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Yo, word up: have you seen Copito? He’s snow white, medium coat… He hasn’t been back for two days. Bring him home, please. You feel me?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Copito! Ay, gracias, michito. Te guardé lechita.",
+  "lang": "es",
+  "speaker": "gladys",
+  "text": "¡Copito! Ay, gracias, michito. Te guardé lechita.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: copito! Oh, thank you, lil' homie. I saved you some milk. Deadass.",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Aight, check it: copito! Oh, thank you, lil' homie. I saved you some milk. Deadass.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, find Copito and bring him home Aight?",
+  "lang": "gta",
+  "speaker": "gladys",
+  "text": "Yo, find Copito and bring him home Aight?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¿Tú, rápido? Te apuesto a que te gano por los techos. Sigue los anillos azules… ¡a la cuenta de tres!",
+  "lang": "es",
+  "speaker": "rayita",
+  "text": "¿Tú, rápido? Te apuesto a que te gano por los techos. Sigue los anillos azules… ¡a la cuenta de tres!",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, you, fast? Bet I beat you across the rooftops. Follow the blue rings… on the count of three! Aight?",
+  "lang": "gta",
+  "speaker": "rayita",
+  "text": "Yo, you, fast? Bet I beat you across the rooftops. Follow the blue rings… on the count of three! Aight?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|…Tuviste suerte. La próxima te gano, ¿oíste?",
+  "lang": "es",
+  "speaker": "rayita",
+  "text": "…Tuviste suerte. La próxima te gano, ¿oíste?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, …You got lucky. Next time I win, you hear? Capisce?",
+  "lang": "gta",
+  "speaker": "rayita",
+  "text": "Yo, …You got lucky. Next time I win, you hear? Capisce?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: beat Rayita across the rooftops Deadass.",
+  "lang": "gta",
+  "speaker": "rayita",
+  "text": "Yo, word up: beat Rayita across the rooftops Deadass.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Hace días que no como nada… ¿me convidai algo? Con dos presas quedo feliz.",
+  "lang": "es",
+  "speaker": "flaqui",
+  "text": "Hace días que no como nada… ¿me convidai algo? Con dos presas quedo feliz.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: i haven’t eaten in days… would you share somethin'? Two prey would make me happy. Ya heard?",
+  "lang": "gta",
+  "speaker": "flaqui",
+  "text": "Listen here, B: i haven’t eaten in days… would you share somethin'? Two prey would make me happy. Ya heard?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Gracias… por fin la guata llena. Te debo una.",
+  "lang": "es",
+  "speaker": "flaqui",
+  "text": "Gracias… por fin la guata llena. Te debo una.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: good lookin' out… a full belly at last. I owe you one. Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "flaqui",
+  "text": "Aight, check it: good lookin' out… a full belly at last. I owe you one. Fuhgeddaboudit.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, gift Flaqui 2 prey Capisce?",
+  "lang": "gta",
+  "speaker": "flaqui",
+  "text": "Ayo, gift Flaqui 2 prey Capisce?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¿Qué mirai? Esta basura es mía. Si querís mi respeto, gánamelo a zarpazos.",
+  "lang": "es",
+  "speaker": "bacteria",
+  "text": "¿Qué mirai? Esta basura es mía. Si querís mi respeto, gánamelo a zarpazos.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! what are you lookin' at? This trash is mine. Want my respect? Earn it with your claws. Word.",
+  "lang": "gta",
+  "speaker": "bacteria",
+  "text": "Yo, yo, yo! what are you lookin' at? This trash is mine. Want my respect? Earn it with your claws. Word.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Ya, ya… peleai bien, oye. Desde hoy no te toco las presas.",
+  "lang": "es",
+  "speaker": "bacteria",
+  "text": "Ya, ya… peleai bien, oye. Desde hoy no te toco las presas.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, okay, aight… you fight well. From today on I won’t touch your prey. Aight?",
+  "lang": "gta",
+  "speaker": "bacteria",
+  "text": "Yo, okay, aight… you fight well. From today on I won’t touch your prey. Aight?",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "gta|Yo, beat El Bacteria in a fight No cap.",
+  "lang": "gta",
+  "speaker": "bacteria",
+  "text": "Yo, beat El Bacteria in a fight No cap.",
+  "genders": [
+   "m"
+  ]
+ },
+ {
+  "key": "es|Me gusta mirar la luna desde el techo más alto del barrio. ¿Me acompañai? Te espero allá arriba.",
+  "lang": "es",
+  "speaker": "iris",
+  "text": "Me gusta mirar la luna desde el techo más alto del barrio. ¿Me acompañai? Te espero allá arriba.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: i like to watch the moon from the tallest roof in the block. Will you join me? I’ll wait up there. Ya heard?",
+  "lang": "gta",
+  "speaker": "iris",
+  "text": "Aight, check it: i like to watch the moon from the tallest roof in the block. Will you join me? I’ll wait up there. Ya heard?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|…Qué bonita se ve la cordillera de noche, ¿cierto?",
+  "lang": "es",
+  "speaker": "iris",
+  "text": "…Qué bonita se ve la cordillera de noche, ¿cierto?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! …The mountains look so pretty at night, don’t they? You feel me?",
+  "lang": "gta",
+  "speaker": "iris",
+  "text": "Yo, yo, yo! …The mountains look so pretty at night, don’t they? You feel me?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, climb the tall roof where Iris waits Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "iris",
+  "text": "Ay, lil' homie, climb the tall roof where Iris waits Fuhgeddaboudit.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Hola, gatito! Ven, michi, michi…",
+  "lang": "es",
+  "speaker": "petLine",
+  "text": "¡Hola, gatito! Ven, michi, michi…",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, lil' homie! Here, lil' homie lil' homie… Capisce?",
+  "lang": "gta",
+  "speaker": "petLine",
+  "text": "Yo, lil' homie! Here, lil' homie lil' homie… Capisce?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Qué lindo! ¿De quién eres tú?",
+  "lang": "es",
+  "speaker": "petLine",
+  "text": "¡Qué lindo! ¿De quién eres tú?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: so cute! Whose are you? Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "petLine",
+  "text": "Listen here, B: so cute! Whose are you? Fuhgeddaboudit.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Psst, psst… ven, no te voy a hacer nada.",
+  "lang": "es",
+  "speaker": "petLine",
+  "text": "Psst, psst… ven, no te voy a hacer nada.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: psst, psst… come here, I won't hurt you. Aight?",
+  "lang": "gta",
+  "speaker": "petLine",
+  "text": "Yo, word up: psst, psst… come here, I won't hurt you. Aight?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Gatitooo!",
+  "lang": "es",
+  "speaker": "chaseLine",
+  "text": "¡Gatitooo!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: kittyyy! Capisce?",
+  "lang": "gta",
+  "speaker": "chaseLine",
+  "text": "Aight, check it: kittyyy! Capisce?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Ven acá, gato!",
+  "lang": "es",
+  "speaker": "chaseLine",
+  "text": "¡Ven acá, gato!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: c'mere, cat! Word.",
+  "lang": "gta",
+  "speaker": "chaseLine",
+  "text": "Aight, check it: c'mere, cat! Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Te voy a pillar!",
+  "lang": "es",
+  "speaker": "chaseLine",
+  "text": "¡Te voy a pillar!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, i'm gonna get you! Aight?",
+  "lang": "gta",
+  "speaker": "chaseLine",
+  "text": "Ay, lil' homie, i'm gonna get you! Aight?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Sale, gato!",
+  "lang": "es",
+  "speaker": "shooLine",
+  "text": "¡Sale, gato!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, shoo, cat! Ya heard?",
+  "lang": "gta",
+  "speaker": "shooLine",
+  "text": "Ayo, shoo, cat! Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Fuera de aquí, gato cochino!",
+  "lang": "es",
+  "speaker": "shooLine",
+  "text": "¡Fuera de aquí, gato cochino!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! get out of here, dirty cat! Word.",
+  "lang": "gta",
+  "speaker": "shooLine",
+  "text": "Yo, yo, yo! get out of here, dirty cat! Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Oye! ¡Gato ladrón! ¡Devuelve eso!",
+  "lang": "es",
+  "speaker": "shopCatch",
+  "text": "¡Oye! ¡Gato ladrón! ¡Devuelve eso!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo! Thief cat! Give that back! Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "shopCatch",
+  "text": "Yo! Thief cat! Give that back! Fuhgeddaboudit.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Se llevó la longaniza! ¡Pillen a ese gato!",
+  "lang": "es",
+  "speaker": "shopCatch",
+  "text": "¡Se llevó la longaniza! ¡Pillen a ese gato!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! it took the sausage! Get that cat! Word.",
+  "lang": "gta",
+  "speaker": "shopCatch",
+  "text": "Yo, yo, yo! it took the sausage! Get that cat! Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Sale de aquí, gato! ¡Te estoy viendo!",
+  "lang": "es",
+  "speaker": "shopSpot",
+  "text": "¡Sale de aquí, gato! ¡Te estoy viendo!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, get out of here, cat! I can see you! Capisce?",
+  "lang": "gta",
+  "speaker": "shopSpot",
+  "text": "Ay, lil' homie, get out of here, cat! I can see you! Capisce?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Ni se te ocurra, michi!",
+  "lang": "es",
+  "speaker": "shopSpot",
+  "text": "¡Ni se te ocurra, michi!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, don't even think about it, lil' homie! Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "shopSpot",
+  "text": "Ay, lil' homie, don't even think about it, lil' homie! Fuhgeddaboudit.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Pan amasado, marraquetas calentitas…",
+  "lang": "es",
+  "speaker": "shopkeep",
+  "text": "Pan amasado, marraquetas calentitas…",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, homemade bread, warm marraquetas… Word.",
+  "lang": "gta",
+  "speaker": "shopkeep",
+  "text": "Yo, homemade bread, warm marraquetas… Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¿Qué le doy, vecina? ¿Un cuarto de jamón?",
+  "lang": "es",
+  "speaker": "shopkeep",
+  "text": "¿Qué le doy, vecina? ¿Un cuarto de jamón?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: what can I get you? A quarter of ham? Ya heard?",
+  "lang": "gta",
+  "speaker": "shopkeep",
+  "text": "Aight, check it: what can I get you? A quarter of ham? Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Ya, espere un poquito que busco el vuelto…",
+  "lang": "es",
+  "speaker": "shopkeep",
+  "text": "Ya, espere un poquito que busco el vuelto…",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, hang on, let me find your change… Deadass.",
+  "lang": "gta",
+  "speaker": "shopkeep",
+  "text": "Ay, lil' homie, hang on, let me find your change… Deadass.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Llegaron las longanizas de Chillán!",
+  "lang": "es",
+  "speaker": "shopkeep",
+  "text": "¡Llegaron las longanizas de Chillán!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, the Chillán sausages just arrived! Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "shopkeep",
+  "text": "Ayo, the Chillán sausages just arrived! Fuhgeddaboudit.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Sale, gato! ¡Sale de aquí!",
+  "lang": "es",
+  "speaker": "haterSpot",
+  "text": "¡Sale, gato! ¡Sale de aquí!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, shoo, cat! Get out of here! Word.",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Yo, shoo, cat! Get out of here! Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Otra vez este gato en el techo, oye!",
+  "lang": "es",
+  "speaker": "haterSpot",
+  "text": "¡Otra vez este gato en el techo, oye!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: this cat on the roof again, ugh! Ya heard?",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Listen here, B: this cat on the roof again, ugh! Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Ya po, ándate, gato cochino!",
+  "lang": "es",
+  "speaker": "haterSpot",
+  "text": "¡Ya po, ándate, gato cochino!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, come on, get lost, you filthy cat! Aight?",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Ayo, come on, get lost, you filthy cat! Aight?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Te voy a mojar enterito, vai a ver!",
+  "lang": "es",
+  "speaker": "haterSpot",
+  "text": "¡Te voy a mojar enterito, vai a ver!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, i’m gonna soak you head to tail, you’ll see! You feel me?",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Ayo, i’m gonna soak you head to tail, you’ll see! You feel me?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Mi auto lleno de patitas, no puede ser!",
+  "lang": "es",
+  "speaker": "haterSpot",
+  "text": "¡Mi auto lleno de patitas, no puede ser!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: my car is covered in paw prints, unbelievable! Deadass.",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Yo, word up: my car is covered in paw prints, unbelievable! Deadass.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Fuera de mi patio, cachai!",
+  "lang": "es",
+  "speaker": "haterSpot",
+  "text": "¡Fuera de mi patio, cachai!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, out of my yard, got it?! Deadass.",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Yo, out of my yard, got it?! Deadass.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Gato de porquería, me rompiste las plantas!",
+  "lang": "es",
+  "speaker": "haterSpot",
+  "text": "¡Gato de porquería, me rompiste las plantas!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: rotten cat, you wrecked my plants! Capisce?",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Listen here, B: rotten cat, you wrecked my plants! Capisce?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Toma! ¡Pa’ que aprendai!",
+  "lang": "es",
+  "speaker": "haterHit",
+  "text": "¡Toma! ¡Pa’ que aprendai!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: take that! That’ll teach you! Aight?",
+  "lang": "gta",
+  "speaker": "haterHit",
+  "text": "Aight, check it: take that! That’ll teach you! Aight?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Eso, ándate!",
+  "lang": "es",
+  "speaker": "haterHit",
+  "text": "¡Eso, ándate!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! that’s right, scram! You feel me?",
+  "lang": "gta",
+  "speaker": "haterHit",
+  "text": "Yo, yo, yo! that’s right, scram! You feel me?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Y no volvai más!",
+  "lang": "es",
+  "speaker": "haterHit",
+  "text": "¡Y no volvai más!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: and don’t come back! Ya heard?",
+  "lang": "gta",
+  "speaker": "haterHit",
+  "text": "Yo, word up: and don’t come back! Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Ya se fue el gato… qué lata.",
+  "lang": "es",
+  "speaker": "haterGrumble",
+  "text": "Ya se fue el gato… qué lata.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: the cat’s gone… what a pain. Ya heard?",
+  "lang": "gta",
+  "speaker": "haterGrumble",
+  "text": "Yo, word up: the cat’s gone… what a pain. Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Estos gatos no dejan dormir, oye.",
+  "lang": "es",
+  "speaker": "haterGrumble",
+  "text": "Estos gatos no dejan dormir, oye.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, these cats won’t let anyone sleep. Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "haterGrumble",
+  "text": "Ay, lil' homie, these cats won’t let anyone sleep. Fuhgeddaboudit.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Mañana llamo a la municipalidad.",
+  "lang": "es",
+  "speaker": "haterGrumble",
+  "text": "Mañana llamo a la municipalidad.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: tomorrow I’m callin' the municipality. Deadass.",
+  "lang": "gta",
+  "speaker": "haterGrumble",
+  "text": "Aight, check it: tomorrow I’m callin' the municipality. Deadass.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Michito, michito! ¡Ven, cuchito!",
+  "lang": "es",
+  "speaker": "feeder",
+  "text": "¡Michito, michito! ¡Ven, cuchito!",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Lil' homie, lil' homie! C'mere, sweetie! Word.",
+  "lang": "gta",
+  "speaker": "feeder",
+  "text": "Lil' homie, lil' homie! C'mere, sweetie! Word.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¿Tení hambre, mi amor? Toma tu comidita.",
+  "lang": "es",
+  "speaker": "feeder",
+  "text": "¿Tení hambre, mi amor? Toma tu comidita.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! are you hungry, love? Here’s your food. Ya heard?",
+  "lang": "gta",
+  "speaker": "feeder",
+  "text": "Yo, yo, yo! are you hungry, love? Here’s your food. Ya heard?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Ay, qué lindo este gatito!",
+  "lang": "es",
+  "speaker": "feeder",
+  "text": "¡Ay, qué lindo este gatito!",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! oh, what a lovely little cat! You feel me?",
+  "lang": "gta",
+  "speaker": "feeder",
+  "text": "Yo, yo, yo! oh, what a lovely little cat! You feel me?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Cuídate de los perros, ¿ya?",
+  "lang": "es",
+  "speaker": "feeder",
+  "text": "Cuídate de los perros, ¿ya?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, watch out for the dogs, aight? Word.",
+  "lang": "gta",
+  "speaker": "feeder",
+  "text": "Yo, watch out for the dogs, aight? Word.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Aquí tení agüita fresca, michi.",
+  "lang": "es",
+  "speaker": "feeder",
+  "text": "Aquí tení agüita fresca, michi.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! here’s some fresh water, lil' homie. No cap.",
+  "lang": "gta",
+  "speaker": "feeder",
+  "text": "Yo, yo, yo! here’s some fresh water, lil' homie. No cap.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Eso, come tranquilo!",
+  "lang": "es",
+  "speaker": "feederEat",
+  "text": "¡Eso, come tranquilo!",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, that’s it, eat in peace! Ya heard?",
+  "lang": "gta",
+  "speaker": "feederEat",
+  "text": "Ayo, that’s it, eat in peace! Ya heard?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Cómete todo, flaquito.",
+  "lang": "es",
+  "speaker": "feederEat",
+  "text": "Cómete todo, flaquito.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, eat it all, skinny. Capisce?",
+  "lang": "gta",
+  "speaker": "feederEat",
+  "text": "Ayo, eat it all, skinny. Capisce?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|Ay, ronroneas como motorcito.",
+  "lang": "es",
+  "speaker": "feederPet",
+  "text": "Ay, ronroneas como motorcito.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, word up: aw, you purr like a little motor. Ya heard?",
+  "lang": "gta",
+  "speaker": "feederPet",
+  "text": "Yo, word up: aw, you purr like a little motor. Ya heard?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¿Quién es el gatito más regalón?",
+  "lang": "es",
+  "speaker": "feederPet",
+  "text": "¿Quién es el gatito más regalón?",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! who’s the most spoiled lil' homie? No cap.",
+  "lang": "gta",
+  "speaker": "feederPet",
+  "text": "Yo, yo, yo! who’s the most spoiled lil' homie? No cap.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Mamá, mira, un gatito!",
+  "lang": "es",
+  "speaker": "kid",
+  "text": "¡Mamá, mira, un gatito!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: mom, look, a lil' homie! Deadass.",
+  "lang": "gta",
+  "speaker": "kid",
+  "text": "Listen here, B: mom, look, a lil' homie! Deadass.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Gatito, gatito, ven!",
+  "lang": "es",
+  "speaker": "kid",
+  "text": "¡Gatito, gatito, ven!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Lil' homie, lil' homie, come here! Word.",
+  "lang": "gta",
+  "speaker": "kid",
+  "text": "Lil' homie, lil' homie, come here! Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Qué suavecito!",
+  "lang": "es",
+  "speaker": "kid",
+  "text": "¡Qué suavecito!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! so soft! Ya heard?",
+  "lang": "gta",
+  "speaker": "kid",
+  "text": "Yo, yo, yo! so soft! Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¿Viste el partido ayer? Puro sufrimiento.",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "¿Viste el partido ayer? Puro sufrimiento.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, yo, yo! did you see the match yesterday? Pure sufferin'. Aight?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Yo, yo, yo! did you see the match yesterday? Pure sufferin'. Aight?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Hace un frío terrible, oye.",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "Hace un frío terrible, oye.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, it’s terribly cold, man. You feel me?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Ay, lil' homie, it’s terribly cold, man. You feel me?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Pasó el camión de la basura!",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "¡Pasó el camión de la basura!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, check it: the garbage truck just went by! Ya heard?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Aight, check it: the garbage truck just went by! Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Ya, nos vemos, cuídate.",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "Ya, nos vemos, cuídate.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: alright, see you, take care. Capisce?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Listen here, B: alright, see you, take care. Capisce?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Se viene la lluvia, parece.",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "Se viene la lluvia, parece.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, looks like rain is comin'. Capisce?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Ayo, looks like rain is comin'. Capisce?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¿Y este gato de quién será?",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "¿Y este gato de quién será?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, whose cat could this be? Word.",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Ay, lil' homie, whose cat could this be? Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Otra vez se cortó la luz en el pasaje.",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "Otra vez se cortó la luz en el pasaje.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, the power went out in the alley again. Ya heard?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Ay, lil' homie, the power went out in the alley again. Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Voy a comprar pan a la esquina.",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "Voy a comprar pan a la esquina.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, lil' homie, i’m gonna buy bread at the corner. Capisce?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Ay, lil' homie, i’m gonna buy bread at the corner. Capisce?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Qué esmog más grande hoy.",
+  "lang": "es",
+  "speaker": "walker",
+  "text": "Qué esmog más grande hoy.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, what heavy smog today. Fuhgeddaboudit.",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Yo, what heavy smog today. Fuhgeddaboudit.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Firulais, ven acá! ¡Deja al gato!",
+  "lang": "es",
+  "speaker": "dogOwner",
+  "text": "¡Firulais, ven acá! ¡Deja al gato!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, firulais, come here! Leave the cat alone! You feel me?",
+  "lang": "gta",
+  "speaker": "dogOwner",
+  "text": "Yo, firulais, come here! Leave the cat alone! You feel me?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¡Suelta al gato, Cholito!",
+  "lang": "es",
+  "speaker": "dogOwner",
+  "text": "¡Suelta al gato, Cholito!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: drop the cat, Cholito! Word.",
+  "lang": "gta",
+  "speaker": "dogOwner",
+  "text": "Listen here, B: drop the cat, Cholito! Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|Buenas noches, vecina.",
+  "lang": "es",
+  "speaker": "night",
+  "text": "Buenas noches, vecina.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Listen here, B: good night, neighbor. Word.",
+  "lang": "gta",
+  "speaker": "night",
+  "text": "Listen here, B: good night, neighbor. Word.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "es|¿Escuchaste los gatos peleando?",
+  "lang": "es",
+  "speaker": "night",
+  "text": "¿Escuchaste los gatos peleando?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, did you hear the cats fightin'? Ya heard?",
+  "lang": "gta",
+  "speaker": "night",
+  "text": "Yo, did you hear the cats fightin'? Ya heard?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, kitty! You mad fast, son!",
+  "lang": "gta",
+  "speaker": "kid",
+  "text": "Yo, kitty! You mad fast, son!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, c'mere, lil' homie! I just wanna pet you, B!",
+  "lang": "gta",
+  "speaker": "kid",
+  "text": "Ayo, c'mere, lil' homie! I just wanna pet you, B!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, that cat is straight fire!",
+  "lang": "gta",
+  "speaker": "kid",
+  "text": "Yo, that cat is straight fire!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Bet I could catch you, deadass!",
+  "lang": "gta",
+  "speaker": "kid",
+  "text": "Bet I could catch you, deadass!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, what's good, my dude?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Yo, what's good, my dude?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, look at this lil' street king right here.",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Ayo, look at this lil' street king right here.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Sup, cat? You runnin' this block now?",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Sup, cat? You runnin' this block now?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, aight, I see you, homie.",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Aight, aight, I see you, homie.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, this cat got more swagger than my cousin Vinnie.",
+  "lang": "gta",
+  "speaker": "walker",
+  "text": "Yo, this cat got more swagger than my cousin Vinnie.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, it's mad late, B. Watch your back out here.",
+  "lang": "gta",
+  "speaker": "night",
+  "text": "Yo, it's mad late, B. Watch your back out here.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, streets is dark, lil' homie. Stay frosty.",
+  "lang": "gta",
+  "speaker": "night",
+  "text": "Ayo, streets is dark, lil' homie. Stay frosty.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, what you doin' out this late, son?",
+  "lang": "gta",
+  "speaker": "night",
+  "text": "Yo, what you doin' out this late, son?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo! Get off my property, ya mangy lil' punk!",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Ayo! Get off my property, ya mangy lil' punk!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo! Beat it, cat! This my crib!",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Yo! Beat it, cat! This my crib!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Fuhgeddaboudit! Not on my lawn, B!",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Fuhgeddaboudit! Not on my lawn, B!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Get outta here before I call my cousin Sal!",
+  "lang": "gta",
+  "speaker": "haterSpot",
+  "text": "Get outta here before I call my cousin Sal!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|How you like that, huh?!",
+  "lang": "gta",
+  "speaker": "haterHit",
+  "text": "How you like that, huh?!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yeah, run, ya lil' bum!",
+  "lang": "gta",
+  "speaker": "haterHit",
+  "text": "Yeah, run, ya lil' bum!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Don't come back, ya hear me?!",
+  "lang": "gta",
+  "speaker": "haterHit",
+  "text": "Don't come back, ya hear me?!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Tch. Mangy lil' punk.",
+  "lang": "gta",
+  "speaker": "haterGrumble",
+  "text": "Tch. Mangy lil' punk.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Every day with this cat, I swear...",
+  "lang": "gta",
+  "speaker": "haterGrumble",
+  "text": "Every day with this cat, I swear...",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, aight. Next time, B.",
+  "lang": "gta",
+  "speaker": "haterGrumble",
+  "text": "Aight, aight. Next time, B.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, my baby! Come get your food, lil' homie!",
+  "lang": "gta",
+  "speaker": "feeder",
+  "text": "Ayo, my baby! Come get your food, lil' homie!",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, you look hungry, papi. Mama got you.",
+  "lang": "gta",
+  "speaker": "feeder",
+  "text": "Yo, you look hungry, papi. Mama got you.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|C'mere, sweetie. Nobody feeds you like me, deadass.",
+  "lang": "gta",
+  "speaker": "feeder",
+  "text": "C'mere, sweetie. Nobody feeds you like me, deadass.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aww, who's my lil' gangsta? You are!",
+  "lang": "gta",
+  "speaker": "feederPet",
+  "text": "Aww, who's my lil' gangsta? You are!",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Mm-hm, that's right. You the boss of this block, baby.",
+  "lang": "gta",
+  "speaker": "feederPet",
+  "text": "Mm-hm, that's right. You the boss of this block, baby.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Eat up, eat up! You gotta stay strong for these streets.",
+  "lang": "gta",
+  "speaker": "feederEat",
+  "text": "Eat up, eat up! You gotta stay strong for these streets.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|That's it, baby. Mama's cookin' hits different.",
+  "lang": "gta",
+  "speaker": "feederEat",
+  "text": "That's it, baby. Mama's cookin' hits different.",
+  "genders": [
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Bodega's open, fam! Chopped cheese, fresh bread!",
+  "lang": "gta",
+  "speaker": "shopkeep",
+  "text": "Bodega's open, fam! Chopped cheese, fresh bread!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, you want somethin' or you just lookin', B?",
+  "lang": "gta",
+  "speaker": "shopkeep",
+  "text": "Yo, you want somethin' or you just lookin', B?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ay, hold up, lemme find your change...",
+  "lang": "gta",
+  "speaker": "shopkeep",
+  "text": "Ay, hold up, lemme find your change...",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Fresh sausages just came in, no cap!",
+  "lang": "gta",
+  "speaker": "shopkeep",
+  "text": "Fresh sausages just came in, no cap!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo! Drop that sausage, ya lil' thief!",
+  "lang": "gta",
+  "speaker": "shopCatch",
+  "text": "Ayo! Drop that sausage, ya lil' thief!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo! I see you, cat! Not in my bodega!",
+  "lang": "gta",
+  "speaker": "shopCatch",
+  "text": "Yo! I see you, cat! Not in my bodega!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Get outta my store, ya bum!",
+  "lang": "gta",
+  "speaker": "shopCatch",
+  "text": "Get outta my store, ya bum!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, c'mere, lil' homie. I ain't gonna hurt you.",
+  "lang": "gta",
+  "speaker": "pet",
+  "text": "Yo, c'mere, lil' homie. I ain't gonna hurt you.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, look at you! Who's a good lil' gangsta?",
+  "lang": "gta",
+  "speaker": "pet",
+  "text": "Ayo, look at you! Who's a good lil' gangsta?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Psst, psst! Yo, kitty, kitty!",
+  "lang": "gta",
+  "speaker": "pet",
+  "text": "Psst, psst! Yo, kitty, kitty!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, come back here, cat!",
+  "lang": "gta",
+  "speaker": "chase",
+  "text": "Yo, come back here, cat!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, I'm gonna get you, son!",
+  "lang": "gta",
+  "speaker": "chase",
+  "text": "Ayo, I'm gonna get you, son!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Kittyyy! Wait up, B!",
+  "lang": "gta",
+  "speaker": "chase",
+  "text": "Kittyyy! Wait up, B!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Beat it, cat!",
+  "lang": "gta",
+  "speaker": "shooLine",
+  "text": "Beat it, cat!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, scram! Get outta here!",
+  "lang": "gta",
+  "speaker": "shooLine",
+  "text": "Yo, scram! Get outta here!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, go on, shoo! Fuhgeddaboudit!",
+  "lang": "gta",
+  "speaker": "shooLine",
+  "text": "Ayo, go on, shoo! Fuhgeddaboudit!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, don't even think about it, lil' homie!",
+  "lang": "gta",
+  "speaker": "shopSpot",
+  "text": "Ayo, don't even think about it, lil' homie!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, what's good?",
+  "lang": "gta",
+  "speaker": "cat",
+  "text": "Yo, what's good?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Sup, B.",
+  "lang": "gta",
+  "speaker": "cat",
+  "text": "Sup, B.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Ayo, look who it is.",
+  "lang": "gta",
+  "speaker": "cat",
+  "text": "Ayo, look who it is.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Aight, aight. I see you.",
+  "lang": "gta",
+  "speaker": "cat",
+  "text": "Aight, aight. I see you.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Word up, homie.",
+  "lang": "gta",
+  "speaker": "cat",
+  "text": "Word up, homie.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, this my block, you know that?",
+  "lang": "gta",
+  "speaker": "cat",
+  "text": "Yo, this my block, you know that?",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Meow, son. Meow.",
+  "lang": "gta",
+  "speaker": "cat",
+  "text": "Meow, son. Meow.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|You lookin' at me? YOU lookin' at ME?!",
+  "lang": "gta",
+  "speaker": "rival",
+  "text": "You lookin' at me? YOU lookin' at ME?!",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Yo, you in the wrong alley, B.",
+  "lang": "gta",
+  "speaker": "rival",
+  "text": "Yo, you in the wrong alley, B.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ },
+ {
+  "key": "gta|Step off, punk.",
+  "lang": "gta",
+  "speaker": "rival",
+  "text": "Step off, punk.",
+  "genders": [
+   "m",
+   "f"
+  ]
+ }
+]
